@@ -1,0 +1,469 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application.",
+  "Parameters": {
+    
+    "MongoConnectionString": {
+      "Type": "String",
+      "Description": "Mongo ConnectionString"
+    }
+  },
+  "Resources": {
+    
+    "OnConnectFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::OnConnectHandler",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        
+        "Environment": {
+          "Variables": {
+            
+            "Nuages:Mongo:Connection": {
+              "Ref": "MongoConnectionString"
+            }
+          }
+        }
+      }
+    },
+    "OnDisconnectFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::OnDisconnectHandler",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Environment": {
+          "Variables": {
+           
+            "Nuages:Mongo:Connection": {
+              "Ref": "MongoConnectionString"
+            }
+          }
+        }
+      }
+    },
+    "OnAuthorizeFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::OnAuthorizeHandlerAsync",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null
+      }
+    },
+    "SendMessageFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::SendMessageHandler",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          
+          {
+            "Statement": {
+              "Effect": "Allow",
+              "Action": "execute-api:ManageConnections",
+              "Resource": "arn:aws:execute-api:*:*:*/@connections/*"
+            }
+          }
+        ],
+        "Environment": {
+          "Variables": {
+            
+            "Nuages:Mongo:Connection": {
+              "Ref": "MongoConnectionString"
+            }
+          }
+        }
+      }
+    },
+    "EchoFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::EchoHandler",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+         
+          {
+            "Statement": {
+              "Effect": "Allow",
+              "Action": "execute-api:ManageConnections",
+              "Resource": "arn:aws:execute-api:*:*:*/@connections/*"
+            }
+          }
+        ]
+      }
+    },
+    "Nuages.PubSub.LambdaApp": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "Nuages.PubSub.LambdaApp",
+        "ProtocolType": "WEBSOCKET",
+        "RouteSelectionExpression": "$request.body.message"
+      }
+    },
+    "Authorizer": {
+      "Type": "AWS::ApiGatewayV2::Authorizer",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "AuthorizerType": "REQUEST",
+        "AuthorizerUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "OnAuthorizeFunction",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        },
+        "IdentitySource": [
+          "route.request.querystring.authorization"
+        ],
+        "Name": "Authorizer"
+      }
+    },
+    "ConnectRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "RouteKey": "$connect",
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "Authorizer"
+        },
+        "OperationName": "ConnectRoute",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "ConnectInteg"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "ConnectInteg": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Sub": [
+            "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${function}/invocations",
+            {
+              "region": {
+                "Ref": "AWS::Region"
+              },
+              "function": {
+                "Fn::GetAtt": [
+                  "OnConnectFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "DisconnectRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "RouteKey": "$disconnect",
+        "AuthorizationType": "NONE",
+        "OperationName": "ConnectRoute",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "DisconnectInteg"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "DisconnectInteg": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Sub": [
+            "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${function}/invocations",
+            {
+              "region": {
+                "Ref": "AWS::Region"
+              },
+              "function": {
+                "Fn::GetAtt": [
+                  "OnDisconnectFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "SendMessageRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "RouteKey": "sendmessage",
+        "AuthorizationType": "NONE",
+        "OperationName": "ConnectRoute",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "SendMessageInteg"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "SendMessageInteg": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Sub": [
+            "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${function}/invocations",
+            {
+              "region": {
+                "Ref": "AWS::Region"
+              },
+              "function": {
+                "Fn::GetAtt": [
+                  "SendMessageFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "EchoRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "RouteKey": "echo",
+        "AuthorizationType": "NONE",
+        "OperationName": "EchoRoute",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "EchoInteg"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "EchoInteg": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Sub": [
+            "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${function}/invocations",
+            {
+              "region": {
+                "Ref": "AWS::Region"
+              },
+              "function": {
+                "Fn::GetAtt": [
+                  "EchoFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "Deployment": {
+      "Type": "AWS::ApiGatewayV2::Deployment",
+      "DependsOn": [
+        "ConnectRoute",
+        "SendMessageRoute",
+        "DisconnectRoute"
+      ],
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        }
+      }
+    },
+    "Stage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Nuages.PubSub.LambdaApp"
+        },
+        "DeploymentId": {
+          "Ref": "Deployment"
+        },
+        "StageName": "Prod"
+      }
+    },
+    "OnConnectPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "OnConnectFunction",
+        "Nuages.PubSub.LambdaApp"
+      ],
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "OnConnectFunction"
+        },
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "OnDisconnectPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "OnDisconnectFunction",
+        "Nuages.PubSub.LambdaApp"
+      ],
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "OnDisconnectFunction"
+        },
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "SendMessagePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "SendMessageFunction",
+        "Nuages.PubSub.LambdaApp"
+      ],
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "SendMessageFunction"
+        },
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "EchoPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "EchoFunction",
+        "Nuages.PubSub.LambdaApp"
+      ],
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EchoFunction"
+        },
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "OnAuthorizePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "OnAuthorizeFunction",
+        "Nuages.PubSub.LambdaApp"
+      ],
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "OnAuthorizeFunction"
+        },
+        "Principal": "apigateway.amazonaws.com"
+      }
+    }
+  },
+  "Outputs": {
+    "WebSocketURI": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "wss://",
+            {
+              "Ref": "Nuages.PubSub.LambdaApp"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazonaws.com/",
+            {
+              "Ref": "Stage"
+            }
+          ]
+        ]
+      },
+      "Description": "The WSS Protocol URI to connect to"
+    }
+  }
+}
