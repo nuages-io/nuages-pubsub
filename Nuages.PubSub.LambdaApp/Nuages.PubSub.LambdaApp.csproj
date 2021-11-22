@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <AWSProjectType>Lambda</AWSProjectType>
         <LangVersion>default</LangVersion>
@@ -16,5 +16,10 @@
     <ItemGroup>
       <ProjectReference Include="..\Nuages.Lambda\Nuages.Lambda.csproj" />
     </ItemGroup>
-    
+
+    <ItemGroup>
+        <None Remove="appsettings.json" />
+        <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+       
+    </ItemGroup>
 </Project>

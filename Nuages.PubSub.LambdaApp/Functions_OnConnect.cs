@@ -23,7 +23,6 @@ namespace Nuages.PubSub.LambdaApp
         {
             var sub = request.RequestContext.Authorizer.SingleOrDefault(c => c.Key == "sub").Value.ToString();
 
-
             try
             {
                 var connectionId = request.RequestContext.ConnectionId;

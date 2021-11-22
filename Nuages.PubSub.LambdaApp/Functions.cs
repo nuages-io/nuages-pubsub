@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.Lambda;
 using Nuages.MongoDB;
+using Nuages.PubSub.LambdaApp.DataModel;
 
 #endregion
 
@@ -22,21 +24,15 @@ namespace Nuages.PubSub.LambdaApp
     // ReSharper disable once UnusedType.Global
     public partial class Functions
     {
-        private readonly ServiceProvider _serviceProvider;
-        private readonly IConfiguration _configuration;
+        private ServiceProvider _serviceProvider;
+        private IConfiguration _configuration;
 
         public Functions()
         {
-            var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection);
-            
-            _serviceProvider = serviceCollection.BuildServiceProvider();
-            
-            var configService = _serviceProvider.GetRequiredService<IConfigurationService>();
-            _configuration = configService.GetConfiguration();
-            
-            serviceCollection.AddNuagesMongoDb(_configuration);
-            
+            BuildConfiguration();
+
+            BuildServices();
+
             ApiGatewayManagementApiClientFactory =
                 endpoint =>
                     new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
@@ -47,12 +43,41 @@ namespace Nuages.PubSub.LambdaApp
             ClientFactory = new MongoClientFactory();
         }
 
-        private void ConfigureServices(ServiceCollection serviceCollection)
+        private void BuildServices()
         {
-            serviceCollection.AddTransient<IEnvironmentService, EnvironmentService>();
-            serviceCollection.AddTransient<IConfigurationService, ConfigurationService>();
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddSingleton(_configuration);
+            serviceCollection.AddScoped<IWebSocketRepository, WebSocketRepository>();
+            serviceCollection.AddNuagesMongoDb(_configuration);
+
+            _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
+        private void BuildConfiguration()
+        {
+            var configManager = new ConfigurationManager();
+
+            var builder = configManager
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            var configurationManagerPath = configManager.GetValue<string>("Nuages:ConfigurationManagerPath");
+
+            if (!string.IsNullOrEmpty(configurationManagerPath))
+            {
+                builder.AddSystemsManager(configureSource =>
+                {
+                    configureSource.Path = configurationManagerPath;
+                    configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
+                    configureSource.Optional = true;
+                });
+            }
+
+            _configuration = builder
+                .Build();
+        }
 
         private Func<string, AmazonApiGatewayManagementApiClient> ApiGatewayManagementApiClientFactory { get; }
 

@@ -7,10 +7,79 @@
     "MongoConnectionString": {
       "Type": "String",
       "Description": "Mongo ConnectionString"
+    },
+    "Issuers": {
+      "Type": "String",
+      "Description": "List of valid issuers"
+    },
+    "Audiences": {
+      "Type": "String",
+      "Description": "List of valid audiences"
+    },
+    "DisableSslCheck": {
+      "Type": "String",
+      "Description": "Disable SSL check when loading signing key set"
+    },
+    "ConfigurationManagerPath": {
+      "Type": "String",
+      "Description": "Path of the COnfiguration Manager section to load into the configuration"
     }
   },
   "Resources": {
-    
+    "NuagesPubSubRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "NuagesPubSubRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [ "lambda.amazonaws.com" ]
+            },
+            "Action": [ "sts:AssumeRole" ]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "LambdaBasicExecutionRole",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "*"
+            }]
+          }
+        },
+          {
+            "PolicyName": "SystemsManagerParametersRole",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [{
+                "Effect": "Allow",
+                "Action": "ssm:GetParametersByPath",
+                "Resource": "*"
+              }]
+            }
+          },
+          {
+            "PolicyName" : "ExecuteApiConnectionRole",
+              "PolicyDocument":
+              {
+                "Statement": {
+                  "Effect": "Allow",
+                  "Action": "execute-api:ManageConnections",
+                  "Resource": "arn:aws:execute-api:*:*:*/@connections/*"
+                }
+            }
+          }]
+      }
+    },
     "OnConnectFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
@@ -19,12 +88,28 @@
         "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
-        "Role": null,
-        
+        "Role": {
+          "Fn::GetAtt": [
+            "NuagesPubSubRole",
+            "Arn"
+          ]
+        },
         "Environment": {
           "Variables": {
-            
-            "Nuages:Mongo:Connection": {
+
+            "Nuages__Mongo__Connection": {
+              "Ref": "MongoConnectionString"
+            },
+            "Nuages__Auth__Issuers": {
+              "Ref": "Issuers"
+            },
+            "Nuages__Auth__Audiences": {
+              "Ref": "Audiences"
+            },
+            "Nuages__DisableSslCheck": {
+              "Ref": "DisableSslCheck"
+            },
+            "Nuages__ConfigurationManagerPath": {
               "Ref": "MongoConnectionString"
             }
           }
@@ -39,11 +124,27 @@
         "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
-        "Role": null,
+        "Role": {
+          "Fn::GetAtt": [
+            "NuagesPubSubRole",
+            "Arn"
+          ]
+        },
         "Environment": {
           "Variables": {
-           
-            "Nuages:Mongo:Connection": {
+            "Nuages__Mongo__Connection": {
+              "Ref": "MongoConnectionString"
+            },
+            "Nuages__Auth__Issuers": {
+              "Ref": "Issuers"
+            },
+            "Nuages__Auth__Audiences": {
+              "Ref": "Audiences"
+            },
+            "Nuages__DisableSslCheck": {
+              "Ref": "DisableSslCheck"
+            },
+            "Nuages__ConfigurationManagerPath": {
               "Ref": "MongoConnectionString"
             }
           }
@@ -58,7 +159,31 @@
         "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
-        "Role": null
+        "Role": {
+          "Fn::GetAtt": [
+            "NuagesPubSubRole",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "Nuages__Mongo__Connection": {
+              "Ref": "MongoConnectionString"
+            },
+            "Nuages__Auth__Issuers": {
+              "Ref": "Issuers"
+            },
+            "Nuages__Auth__Audiences": {
+              "Ref": "Audiences"
+            },
+            "Nuages__DisableSslCheck": {
+              "Ref": "DisableSslCheck"
+            },
+            "Nuages__ConfigurationManagerPath": {
+              "Ref": "MongoConnectionString"
+            }
+          }
+        }
       }
     },
     "SendMessageFunction": {
@@ -69,21 +194,28 @@
         "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
-        "Role": null,
-        "Policies": [
-          
-          {
-            "Statement": {
-              "Effect": "Allow",
-              "Action": "execute-api:ManageConnections",
-              "Resource": "arn:aws:execute-api:*:*:*/@connections/*"
-            }
-          }
-        ],
+        "Role": {
+          "Fn::GetAtt": [
+            "NuagesPubSubRole",
+            "Arn"
+          ]
+        }
+        ,
         "Environment": {
           "Variables": {
-            
-            "Nuages:Mongo:Connection": {
+            "Nuages__Mongo__Connection": {
+              "Ref": "MongoConnectionString"
+            },
+            "Nuages__Auth__Issuers": {
+              "Ref": "Issuers"
+            },
+            "Nuages__Auth__Audiences": {
+              "Ref": "Audiences"
+            },
+            "Nuages__DisableSslCheck": {
+              "Ref": "DisableSslCheck"
+            },
+            "Nuages__ConfigurationManagerPath": {
               "Ref": "MongoConnectionString"
             }
           }
@@ -98,23 +230,37 @@
         "CodeUri": "",
         "MemorySize": 256,
         "Timeout": 30,
-        "Role": null,
-        "Policies": [
-         
-          {
-            "Statement": {
-              "Effect": "Allow",
-              "Action": "execute-api:ManageConnections",
-              "Resource": "arn:aws:execute-api:*:*:*/@connections/*"
+        "Role": {
+          "Fn::GetAtt": [
+            "NuagesPubSubRole",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "Nuages__Mongo__Connection": {
+              "Ref": "MongoConnectionString"
+            },
+            "Nuages__Auth__Issuers": {
+              "Ref": "Issuers"
+            },
+            "Nuages__Auth__Audiences": {
+              "Ref": "Audiences"
+            },
+            "Nuages__DisableSslCheck": {
+              "Ref": "DisableSslCheck"
+            },
+            "Nuages__ConfigurationManagerPath": {
+              "Ref": "MongoConnectionString"
             }
           }
-        ]
+        }
       }
     },
-    "Nuages.PubSub.LambdaApp": {
+    "NuagesPubSubLambdaApp": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
-        "Name": "Nuages.PubSub.LambdaApp",
+        "Name": "NuagesPubSubLambdaApp",
         "ProtocolType": "WEBSOCKET",
         "RouteSelectionExpression": "$request.body.message"
       }
@@ -123,7 +269,7 @@
       "Type": "AWS::ApiGatewayV2::Authorizer",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "AuthorizerType": "REQUEST",
         "AuthorizerUri": {
@@ -159,7 +305,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "RouteKey": "$connect",
         "AuthorizationType": "CUSTOM",
@@ -184,7 +330,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -209,7 +355,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "RouteKey": "$disconnect",
         "AuthorizationType": "NONE",
@@ -231,7 +377,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -256,7 +402,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "RouteKey": "sendmessage",
         "AuthorizationType": "NONE",
@@ -278,7 +424,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -303,7 +449,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "RouteKey": "echo",
         "AuthorizationType": "NONE",
@@ -325,7 +471,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -355,7 +501,7 @@
       ],
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         }
       }
     },
@@ -363,7 +509,7 @@
       "Type": "AWS::ApiGatewayV2::Stage",
       "Properties": {
         "ApiId": {
-          "Ref": "Nuages.PubSub.LambdaApp"
+          "Ref": "NuagesPubSubLambdaApp"
         },
         "DeploymentId": {
           "Ref": "Deployment"
@@ -375,7 +521,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "OnConnectFunction",
-        "Nuages.PubSub.LambdaApp"
+        "NuagesPubSubLambdaApp"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -389,7 +535,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "OnDisconnectFunction",
-        "Nuages.PubSub.LambdaApp"
+        "NuagesPubSubLambdaApp"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -403,7 +549,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "SendMessageFunction",
-        "Nuages.PubSub.LambdaApp"
+        "NuagesPubSubLambdaApp"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -417,7 +563,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "EchoFunction",
-        "Nuages.PubSub.LambdaApp"
+        "NuagesPubSubLambdaApp"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -431,7 +577,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "OnAuthorizeFunction",
-        "Nuages.PubSub.LambdaApp"
+        "NuagesPubSubLambdaApp"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -443,14 +589,14 @@
     }
   },
   "Outputs": {
-    "WebSocketURI": {
+    "NuagesPubSubURI": {
       "Value": {
         "Fn::Join": [
           "",
           [
             "wss://",
             {
-              "Ref": "Nuages.PubSub.LambdaApp"
+              "Ref": "NuagesPubSubLambdaApp"
             },
             ".execute-api.",
             {

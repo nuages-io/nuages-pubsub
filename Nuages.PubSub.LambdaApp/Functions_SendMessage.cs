@@ -78,7 +78,7 @@ namespace Nuages.PubSub.LambdaApp
                     {
                         // API Gateway returns a status of 410 GONE then the connection is no
                         // longer available. If this happens, delete the identifier
-                        // from our DynamoDB table.
+                        // from our collection.
                         if (e.StatusCode == HttpStatusCode.Gone)
                         {
                             await repository.DeleteOneAsync(c => c.ConnectionId == postConnectionRequest.ConnectionId);

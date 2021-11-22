@@ -6,7 +6,7 @@ using Nuages.MongoDB.Model;
 
 namespace Nuages.PubSub.LambdaApp.DataModel
 {
-    [MongoCollection("web_socket_connexion", "nuages_system", true)]
+    [MongoCollection("web_socket_connexion", "Nuages:DbName", true)]
     public class WebSocketConnection : MongoDocument
     {
         public string ConnectionId { get; set; } = "";

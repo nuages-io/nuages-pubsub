@@ -50,10 +50,12 @@ namespace Nuages.PubSub.Samples.Console
             _authority = _configuration.GetSection("Auth:Authority").Value;
             _audience = _configuration.GetSection("Auth:Audience").Value;
 
-            System.Console.WriteLine("Connecting...");
+            System.Console.WriteLine("Getting Token...");
 
             var token = await GetTokenAsync();
-
+            
+            LogData(token);
+           
             // var t = new JwtSecurityTokenHandler()
             //     .ReadJwtToken(token);
             //
@@ -61,11 +63,17 @@ namespace Nuages.PubSub.Samples.Console
             //     .Claims
             //     .ToDictionary(claim => claim.Type, claim => claim.Value);
 
-            var url = string.Format(_configuration.GetSection("WebSocket:Url").Value, token, _clientId);
+            System.Console.WriteLine("Try connect to Server with Uri");
+            var url = string.Format(_configuration.GetSection("WebSocket:Url").Value, token);
 
-            System.Console.WriteLine(url);
-
+            LogData(url);
+            
             await Connect(url);
+        }
+
+        private static void LogLine()
+        {
+            System.Console.WriteLine("----------------------------");
         }
 
         private static async Task Connect(string uri)
@@ -75,6 +83,9 @@ namespace Nuages.PubSub.Samples.Console
                 _webSocket = new ClientWebSocket();
                 await _webSocket.ConnectAsync(new Uri(uri), CancellationToken.None);
 
+                System.Console.WriteLine("WebSocket Connected");
+                System.Console.WriteLine("Sending echo message...");
+                
                 var msg = new {message = "echo", data = ""};
                 await SendMessageAsync(_webSocket, msg);
 
@@ -119,7 +130,9 @@ namespace Nuages.PubSub.Samples.Console
 
         private static async Task SendMessageAsync(WebSocket webSocket, object msg)
         {
-            var dataToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(msg)));
+            var data = JsonSerializer.Serialize(msg);
+            LogData(data);
+            var dataToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes(data));
             await webSocket.SendAsync(dataToSend, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
@@ -150,19 +163,35 @@ namespace Nuages.PubSub.Samples.Console
             }
         }
 
+        private static void LogData(string data)
+        {
+            lock (ConsoleLock)
+            {
+                LogLine();
+                System.Console.ForegroundColor = ConsoleColor.Blue;
+                System.Console.WriteLine(data);
+                System.Console.ResetColor();
+                LogLine();
+            }
+        }
+
         private static async Task<string> GetTokenAsync()
         {
             var client = new HttpClient();
 
             var response = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
-                Address = $"{_authority}/connect/token",
+                Address = $"{_authority}/oauth/token",
 
                 ClientId = _clientId,
                 ClientSecret = _secret,
-                Scope = _audience,
+                Scope = "connect:pubsub",
                 UserName = _email,
-                Password = _password
+                Password = _password,
+                Parameters =
+                {
+                    { "audience", _audience}
+                }
             });
 
             return response.AccessToken;

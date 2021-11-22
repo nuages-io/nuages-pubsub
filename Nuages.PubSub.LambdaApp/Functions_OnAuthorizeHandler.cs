@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
@@ -21,64 +23,36 @@ namespace Nuages.PubSub.LambdaApp
             APIGatewayCustomAuthorizerRequest input,
             ILambdaContext context)
         {
-            //context.Logger.Log(JsonSerializer.Serialize(input));
+            var architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
+            var dotnetVersion = Environment.Version.ToString();
+            context.Logger.LogLine(
+                $"Architecture: {architecture}, .NET Version: {dotnetVersion}");
 
-            //var issuer = Environment.GetEnvironmentVariable("ISSUER");
-            var disableSslCheck = false;
-
-            var audience = input.QueryStringParameters["client_id"];
-            if (string.IsNullOrEmpty(audience))
-                return CreateResponse(false, input.MethodArn);
-
+            
             var token = input.QueryStringParameters["authorization"];
             if (string.IsNullOrEmpty(token))
                 return CreateResponse(false, input.MethodArn);
 
-            var claims = new JwtSecurityTokenHandler()
-                .ReadJwtToken(token)
-                .Claims;
+            var claimDict = GetClaims(token);
 
-            var claimDict = new Dictionary<string, string>();
-            foreach (var c in claims)
-                if (!claimDict.ContainsKey(c.Type))
-                    claimDict.Add(c.Type, c.Value);
-                else
-                    claimDict[c.Type] = claimDict[c.Type] + " " + c.Value;
+            var keys = await GetSigningKeys(claimDict["iss"], context);
 
-            var issuer = claimDict["iss"];
-            var endpoint = issuer;
+            context.Logger.LogLine($"iss: {claimDict["iss"]}");
             
-            if (endpoint == "https://localhost:8001")
-            {
-                endpoint = "https://auth-nuages.ngrok.io";
-            }
-
-            if (endpoint.ToLower().Contains("ngrok.io"))
-            {
-                disableSslCheck = true;
-            }
+            context.Logger.LogLine($"Valid issuers : {_configuration.GetSection("Nuages:Auth:Issuers").Value}");
+            context.Logger.LogLine($"Valid audiences : {_configuration.GetSection("Nuages:Auth:Audiences").Value}");
             
-            var jsonWebKeySetUrl = endpoint.EndsWith("/")
-                ? endpoint + ".well-known/openid-configuration/jwks"
-                : endpoint + "/.well-known/openid-configuration/jwks";
-
-            using var handler = new HttpClientHandler();
-
-            if (disableSslCheck) handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
-
-            using var httpClient = new HttpClient(handler);
-
-            var response = await httpClient.GetAsync(jsonWebKeySetUrl);
-            var issuerJsonWebKeySet = new JsonWebKeySet(await response.Content.ReadAsStringAsync());
+            var validIssuers = _configuration.GetSection("Nuages:Auth:Issuers").Value.Split(",");
+            var validAudiences = _configuration.GetSection("Nuages:Auth:Audiences").Value.Split(",");
 
             try
             {
                 new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
                 {
-                    IssuerSigningKeys = issuerJsonWebKeySet.Keys,
-                    ValidIssuer = issuer,
+                    IssuerSigningKeys = keys,
+                    ValidIssuers = validIssuers,
                     ValidateIssuer = true,
-                    ValidAudience = "API",
+                    ValidAudiences = validAudiences,
                     ValidateAudience = true
                 }, out _);
 
@@ -90,6 +64,55 @@ namespace Nuages.PubSub.LambdaApp
             }
 
             return CreateResponse(false, input.MethodArn);
+        }
+
+        private static string GetEndpoint(string issuer)
+        {
+            var endpoint = issuer;
+
+            if (!endpoint.EndsWith("/"))
+                endpoint += "/";
+            
+            return endpoint;
+        }
+
+        private async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
+        {
+            var endpoint = GetEndpoint(issuer);
+
+            var jsonWebKeySetUrl =  $"{endpoint}.well-known/jwks.json";
+            
+            context.Logger.LogLine(jsonWebKeySetUrl);
+            
+            var disableSslCheck = Convert.ToBoolean(_configuration.GetSection("Nuages:DisableSslCheck").Value) ;
+
+            using var handler = new HttpClientHandler();
+
+            if (disableSslCheck)
+                handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
+
+            using var httpClient = new HttpClient(handler);
+
+            var response = await httpClient.GetAsync(jsonWebKeySetUrl);
+            var issuerJsonWebKeySet = new JsonWebKeySet(await response.Content.ReadAsStringAsync());
+
+            var keys = issuerJsonWebKeySet.Keys;
+            return keys;
+        }
+
+        private static Dictionary<string, string> GetClaims(string token)
+        {
+            var claims = new JwtSecurityTokenHandler()
+                .ReadJwtToken(token)
+                .Claims;
+
+            var claimDict = new Dictionary<string, string>();
+            foreach (var c in claims)
+                if (!claimDict.ContainsKey(c.Type))
+                    claimDict.Add(c.Type, c.Value);
+                else
+                    claimDict[c.Type] = claimDict[c.Type] + " " + c.Value;
+            return claimDict;
         }
     }
 }

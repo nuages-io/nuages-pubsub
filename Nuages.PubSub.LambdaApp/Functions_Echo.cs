@@ -28,10 +28,6 @@ namespace Nuages.PubSub.LambdaApp
                 var endpoint = $"https://{domainName}/{stage}";
                 context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
 
-                // The body will look something like this: {"message":"sendmessage", "data":"What are you doing?"}
-                // var message = JsonDocument.Parse(request.Body);
-
-
                 var connectionId = request.RequestContext.ConnectionId;
                 context.Logger.LogLine($"ECHO ConnectionId: {connectionId}");
 
