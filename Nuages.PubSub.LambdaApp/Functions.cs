@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.Lambda;
 using Nuages.MongoDB;
-using Nuages.PubSub.LambdaApp.DataModel;
 
 #endregion
 
@@ -26,6 +25,7 @@ namespace Nuages.PubSub.LambdaApp
     {
         private ServiceProvider _serviceProvider;
         private IConfiguration _configuration;
+        private IPubSubService _pubSubService;
 
         public Functions()
         {
@@ -48,10 +48,13 @@ namespace Nuages.PubSub.LambdaApp
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddSingleton(_configuration);
-            serviceCollection.AddScoped<IWebSocketRepository, WebSocketRepository>();
             serviceCollection.AddNuagesMongoDb(_configuration);
+            
+            serviceCollection.AddPubSub();
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
+
+            _pubSubService = _serviceProvider.GetRequiredService<IPubSubService>();
         }
 
         private void BuildConfiguration()

@@ -8,7 +8,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
-using Nuages.PubSub.LambdaApp.DataModel;
+using Nuages.PubSub.DataModel;
 
 #endregion
 

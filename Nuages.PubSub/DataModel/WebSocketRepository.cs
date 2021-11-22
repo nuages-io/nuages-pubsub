@@ -6,7 +6,7 @@ using Nuages.MongoDB.Repository;
 
 #endregion
 
-namespace Nuages.PubSub.LambdaApp.DataModel
+namespace Nuages.PubSub.DataModel
 {
     // ReSharper disable once UnusedType.Global
     public class WebSocketRepository : MongoRepository<WebSocketConnection>, IWebSocketRepository

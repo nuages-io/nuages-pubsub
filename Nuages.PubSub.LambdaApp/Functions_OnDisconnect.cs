@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.LambdaApp.DataModel;
+using Nuages.PubSub.DataModel;
 
 #endregion
 
