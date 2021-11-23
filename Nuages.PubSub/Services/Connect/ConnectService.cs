@@ -1,19 +1,18 @@
 using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using MongoDB.Bson;
-using Nuages.PubSub.DataModel;
+using Nuages.PubSub.Storage;
 
 namespace Nuages.PubSub.Services.Connect;
 
 // ReSharper disable once UnusedType.Global
 public class ConnectService : PubSubServiceBase, IConnectService
 {
-    private readonly IWebSocketRepository _webSocketRepository;
+    private readonly IPubSubStorage _storage;
 
-    public ConnectService(IWebSocketRepository webSocketRepository)
+    public ConnectService(IPubSubStorage storage)
     {
-        _webSocketRepository = webSocketRepository;
+        _storage = storage;
     }
     
     public async Task<APIGatewayProxyResponse> Connect(APIGatewayProxyRequest request, ILambdaContext context)
@@ -27,12 +26,7 @@ public class ConnectService : PubSubServiceBase, IConnectService
 
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _webSocketRepository.InsertOneAsync(new WebSocketConnection
-            {
-                Id = ObjectId.GenerateNewId().ToString(),
-                ConnectionId = connectionId,
-                Sub = sub!
-            });
+            await _storage.InsertAsync(connectionId, sub!);
 
             return new APIGatewayProxyResponse
             {

@@ -1,17 +1,17 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Nuages.PubSub.DataModel;
+using Nuages.PubSub.Storage;
 
 namespace Nuages.PubSub.Services.Disconnect;
 
 // ReSharper disable once UnusedType.Global
 public class DisconnectService : PubSubServiceBase, IDisconnectService
 {
-    private readonly IWebSocketRepository _webSocketRepository;
+    private readonly IPubSubStorage _storage;
 
-    public DisconnectService(IWebSocketRepository webSocketRepository) : base()
+    public DisconnectService(IPubSubStorage storage)
     {
-        _webSocketRepository = webSocketRepository;
+        _storage = storage;
     }
     
     public async Task<APIGatewayProxyResponse> Disconnect(APIGatewayProxyRequest request, ILambdaContext context)
@@ -21,7 +21,7 @@ public class DisconnectService : PubSubServiceBase, IDisconnectService
             var connectionId = request.RequestContext.ConnectionId;
             context.Logger.LogLine($"ConnectionId: {connectionId}");
 
-            await _webSocketRepository.DeleteOneAsync(c => c.ConnectionId == connectionId);
+            await _storage.DeleteAsync(connectionId);
 
             return new APIGatewayProxyResponse
             {

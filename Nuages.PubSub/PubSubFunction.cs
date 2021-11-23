@@ -26,6 +26,7 @@ public class PubSubFunction
         _broadcastMessageService = serviceProvider.GetRequiredService<IBroadcastMessageService>();
     }
     
+    // ReSharper disable once UnusedMember.Global
     public async Task<APIGatewayProxyResponse> EchoHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
@@ -35,6 +36,7 @@ public class PubSubFunction
         return await _echoService.Echo(request, context);
     }
 
+    // ReSharper disable once UnusedMember.Global
     public  async Task<APIGatewayProxyResponse> OnDisconnectHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
@@ -43,6 +45,7 @@ public class PubSubFunction
         return await _disconnectService.Disconnect(request, context);
     }
 
+    // ReSharper disable once UnusedMember.Global
     public async Task<APIGatewayProxyResponse> OnConnectHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
@@ -51,6 +54,7 @@ public class PubSubFunction
         return await _connectService.Connect(request, context);
     }
         
+    // ReSharper disable once UnusedMember.Global
     public async Task<APIGatewayCustomAuthorizerResponse> OnAuthorizeHandlerAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
     {
         if (_authorizeService == null)
@@ -59,6 +63,7 @@ public class PubSubFunction
         return await _authorizeService.Authorize(input, context);
     }
 
+    // ReSharper disable once UnusedMember.Global
     public async Task<APIGatewayProxyResponse> BroadcastMessageHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {

@@ -4,11 +4,9 @@ namespace Nuages.PubSub.Services;
 
 public class PubSubServiceBase
 {
-    
     protected Func<string, AmazonApiGatewayManagementApiClient> ApiGatewayManagementApiClientFactory { get; }
 
-    
-    public PubSubServiceBase()
+    protected PubSubServiceBase()
     {
         ApiGatewayManagementApiClientFactory =
             endpoint =>

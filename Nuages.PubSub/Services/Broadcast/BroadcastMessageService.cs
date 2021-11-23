@@ -5,17 +5,17 @@ using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Runtime;
-using Nuages.PubSub.DataModel;
+using Nuages.PubSub.Storage;
 
 namespace Nuages.PubSub.Services.Broadcast;
 
 public class BroadcastMessageService : PubSubServiceBase, IBroadcastMessageService
 {
-    private readonly IWebSocketRepository _webSocketRepository;
+    private readonly IPubSubStorage _storage;
 
-    public BroadcastMessageService(IWebSocketRepository webSocketRepository)
+    public BroadcastMessageService(IPubSubStorage storage)
     {
-        _webSocketRepository = webSocketRepository;
+        _storage = storage;
     }
     
     public async Task<APIGatewayProxyResponse> Broadcast(APIGatewayProxyRequest request, ILambdaContext context)
@@ -48,7 +48,7 @@ public class BroadcastMessageService : PubSubServiceBase, IBroadcastMessageServi
                 // Construct the IAmazonApiGatewayManagementApi which will be used to send the message to.
                 var apiClient = ApiGatewayManagementApiClientFactory(endpoint);
 
-                var items = _webSocketRepository.All();
+                var items = _storage.GetAllConnectionIds();
 
                 // Loop through all of the connections and broadcast the message out to the connections.
                 var count = 0;
@@ -57,7 +57,7 @@ public class BroadcastMessageService : PubSubServiceBase, IBroadcastMessageServi
                 {
                     var postConnectionRequest = new PostToConnectionRequest
                     {
-                        ConnectionId = item.ConnectionId,
+                        ConnectionId = item,
                         Data = stream
                     };
 
@@ -75,7 +75,7 @@ public class BroadcastMessageService : PubSubServiceBase, IBroadcastMessageServi
                         // from our collection.
                         if (e.StatusCode == HttpStatusCode.Gone)
                         {
-                            await _webSocketRepository.DeleteOneAsync(c => c.ConnectionId == postConnectionRequest.ConnectionId);
+                            await _storage.DeleteAsync(postConnectionRequest.ConnectionId);
                         }
                         else
                         {
