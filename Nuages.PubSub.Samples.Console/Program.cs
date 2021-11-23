@@ -131,7 +131,7 @@ namespace Nuages.PubSub.Samples.Console
         private static async Task SendMessageAsync(WebSocket webSocket, object msg)
         {
             var data = JsonSerializer.Serialize(msg);
-            LogData(data);
+            LogData($"Sending message {data}");
             var dataToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes(data));
             await webSocket.SendAsync(dataToSend, WebSocketMessageType.Text, true, CancellationToken.None);
         }

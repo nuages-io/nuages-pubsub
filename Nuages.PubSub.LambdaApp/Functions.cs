@@ -1,15 +1,12 @@
 #region
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Amazon.ApiGatewayManagementApi;
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.Lambda;
 using Nuages.MongoDB;
 
 #endregion
@@ -25,7 +22,11 @@ namespace Nuages.PubSub.LambdaApp
     {
         private ServiceProvider _serviceProvider;
         private IConfiguration _configuration;
-        private IPubSubService _pubSubService;
+        private IEchoService _echoService;
+        private IDisconnectService _disconnectService;
+        private IConnectService _connectService;
+        private IAuthorizeService _authorizeService;
+        private IBroadcastMessageService _broadcastMessageService;
 
         public Functions()
         {
@@ -54,7 +55,11 @@ namespace Nuages.PubSub.LambdaApp
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
-            _pubSubService = _serviceProvider.GetRequiredService<IPubSubService>();
+            _echoService = _serviceProvider.GetRequiredService<IEchoService>();
+            _disconnectService = _serviceProvider.GetRequiredService<IDisconnectService>();
+            _connectService = _serviceProvider.GetRequiredService<IConnectService>();
+            _authorizeService = _serviceProvider.GetRequiredService<IAuthorizeService>();
+            _broadcastMessageService = _serviceProvider.GetRequiredService<IBroadcastMessageService>();
         }
 
         private void BuildConfiguration()
@@ -85,38 +90,5 @@ namespace Nuages.PubSub.LambdaApp
         private Func<string, AmazonApiGatewayManagementApiClient> ApiGatewayManagementApiClientFactory { get; }
 
         private MongoClientFactory ClientFactory { get; }
-
-        private static APIGatewayCustomAuthorizerResponse CreateResponse(bool success, string methodArn,
-            Dictionary<string, string> claims = null)
-        {
-            string principal = null;
-            claims?.TryGetValue("sub", out principal);
-
-            var contextOutput = new APIGatewayCustomAuthorizerContextOutput();
-
-            if (claims != null)
-                foreach (var keyValuePair in claims.Keys)
-                    contextOutput[keyValuePair] = claims[keyValuePair];
-
-            return new APIGatewayCustomAuthorizerResponse
-            {
-                PrincipalID = principal ?? "user",
-                PolicyDocument = new APIGatewayCustomAuthorizerPolicy
-                {
-                    Statement =
-                    {
-                        new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement
-                        {
-                            Action = new HashSet<string> {"execute-api:Invoke"},
-                            Effect = success
-                                ? "Allow"
-                                : "Deny",
-                            Resource = new HashSet<string> {methodArn}
-                        }
-                    }
-                },
-                Context = contextOutput
-            };
-        }
     }
 }

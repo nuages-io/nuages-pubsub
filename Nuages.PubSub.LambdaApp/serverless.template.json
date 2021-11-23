@@ -83,7 +83,7 @@
     "OnConnectFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::OnConnectHandler",
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::OnConnectHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -119,7 +119,7 @@
     "OnDisconnectFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::OnDisconnectHandler",
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::OnDisconnectHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -186,10 +186,10 @@
         }
       }
     },
-    "SendMessageFunction": {
+    "BroadcastMessageFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::SendMessageHandler",
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::BroadcastMessageHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -225,7 +225,7 @@
     "EchoFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::EchoHandler",
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::EchoHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -398,7 +398,7 @@
         }
       }
     },
-    "SendMessageRoute": {
+    "BroadcastMessageRoute": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
@@ -406,21 +406,21 @@
         },
         "RouteKey": "sendmessage",
         "AuthorizationType": "NONE",
-        "OperationName": "ConnectRoute",
+        "OperationName": "BroadcastRoute",
         "Target": {
           "Fn::Join": [
             "/",
             [
               "integrations",
               {
-                "Ref": "SendMessageInteg"
+                "Ref": "BroadcastMessageInteg"
               }
             ]
           ]
         }
       }
     },
-    "SendMessageInteg": {
+    "BroadcastMessageInteg": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -436,7 +436,7 @@
               },
               "function": {
                 "Fn::GetAtt": [
-                  "SendMessageFunction",
+                  "BroadcastMessageFunction",
                   "Arn"
                 ]
               }
@@ -496,7 +496,7 @@
       "Type": "AWS::ApiGatewayV2::Deployment",
       "DependsOn": [
         "ConnectRoute",
-        "SendMessageRoute",
+        "BroadcastMessageRoute",
         "DisconnectRoute"
       ],
       "Properties": {
@@ -545,16 +545,16 @@
         "Principal": "apigateway.amazonaws.com"
       }
     },
-    "SendMessagePermission": {
+    "BroadcastMessagePermission": {
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
-        "SendMessageFunction",
+        "BroadcastMessageFunction",
         "NuagesPubSubLambdaApp"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "SendMessageFunction"
+          "Ref": "BroadcastMessageFunction"
         },
         "Principal": "apigateway.amazonaws.com"
       }

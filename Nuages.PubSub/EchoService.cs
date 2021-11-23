@@ -1,27 +1,14 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
 namespace Nuages.PubSub;
 
-public class PubSubService : IPubSubService
+// ReSharper disable once UnusedType.Global
+public class EchoService : PubSubServiceBase, IEchoService
 {
-    public PubSubService()
-    {
-        ApiGatewayManagementApiClientFactory =
-            endpoint =>
-                new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
-                {
-                    ServiceURL = endpoint
-                });
-
-    }
-    
-    private Func<string, AmazonApiGatewayManagementApiClient> ApiGatewayManagementApiClientFactory { get; }
-    
     public async Task<APIGatewayProxyResponse> Echo(APIGatewayProxyRequest request,
         ILambdaContext context)
     {

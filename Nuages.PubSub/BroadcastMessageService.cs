@@ -1,29 +1,25 @@
-#region
-
-using System;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Runtime;
-using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.DataModel;
 
-#endregion
+namespace Nuages.PubSub;
 
-namespace Nuages.PubSub.LambdaApp
+public class BroadcastMessageService : PubSubServiceBase, IBroadcastMessageService
 {
-    // ReSharper disable once UnusedType.Global
-    public partial class Functions
+    private readonly IWebSocketRepository _webSocketRepository;
+
+    public BroadcastMessageService(IWebSocketRepository webSocketRepository)
     {
-        // ReSharper disable once UnusedMember.Global
-        public async Task<APIGatewayProxyResponse> SendMessageHandler(APIGatewayProxyRequest request,
-            ILambdaContext context)
-        {
+        _webSocketRepository = webSocketRepository;
+    }
+    
+    public async Task<APIGatewayProxyResponse> Broadcast(APIGatewayProxyRequest request, ILambdaContext context)
+    {
             try
             {
                 // Construct the API Gateway endpoint that incoming message will be broadcasted to.
@@ -52,9 +48,7 @@ namespace Nuages.PubSub.LambdaApp
                 // Construct the IAmazonApiGatewayManagementApi which will be used to send the message to.
                 var apiClient = ApiGatewayManagementApiClientFactory(endpoint);
 
-                var repository = _serviceProvider.GetRequiredService<IWebSocketRepository>();
-                
-                var items = repository.All();
+                var items = _webSocketRepository.All();
 
                 // Loop through all of the connections and broadcast the message out to the connections.
                 var count = 0;
@@ -81,7 +75,7 @@ namespace Nuages.PubSub.LambdaApp
                         // from our collection.
                         if (e.StatusCode == HttpStatusCode.Gone)
                         {
-                            await repository.DeleteOneAsync(c => c.ConnectionId == postConnectionRequest.ConnectionId);
+                            await _webSocketRepository.DeleteOneAsync(c => c.ConnectionId == postConnectionRequest.ConnectionId);
                         }
                         else
                         {
@@ -108,6 +102,5 @@ namespace Nuages.PubSub.LambdaApp
                     Body = $"Failed to send message: {e.Message}"
                 };
             }
-        }
     }
 }

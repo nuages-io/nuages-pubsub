@@ -3,7 +3,7 @@ using Amazon.Lambda.Core;
 
 namespace Nuages.PubSub;
 
-public interface IPubSubService
+public interface IEchoService
 {
     
     Task<APIGatewayProxyResponse> Echo(APIGatewayProxyRequest request,
