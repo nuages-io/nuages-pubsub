@@ -26,28 +26,7 @@ namespace Nuages.PubSub.LambdaApp
     // ReSharper disable once UnusedType.Global
     public partial class Functions : PubSubFunction
     {
-        private IConfiguration _configuration;
-       
         public Functions()
-        {
-            BuildConfiguration();
-            BuildServices();
-        }
-
-        private void BuildServices()
-        {
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddSingleton(_configuration);
-            serviceCollection.AddNuagesMongoDb(_configuration);
-            serviceCollection.AddPubSub();
-
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            GetServices(serviceProvider);
-        }
-
-        private void BuildConfiguration()
         {
             var configManager = new ConfigurationManager();
 
@@ -68,8 +47,18 @@ namespace Nuages.PubSub.LambdaApp
                 });
             }
 
-            _configuration = builder
+            IConfiguration configuration = builder
                 .Build();
+            
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddSingleton(configuration);
+            serviceCollection.AddNuagesMongoDb(configuration);
+            serviceCollection.AddPubSub();
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            GetRequiredServices(serviceProvider);
         }
     }
 }

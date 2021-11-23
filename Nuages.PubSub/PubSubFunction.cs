@@ -17,7 +17,7 @@ public class PubSubFunction
     private IAuthorizeService? _authorizeService;
     private IBroadcastMessageService? _broadcastMessageService;
     
-    protected void GetServices(ServiceProvider serviceProvider)
+    protected void GetRequiredServices(ServiceProvider serviceProvider)
     {
         _echoService = serviceProvider.GetRequiredService<IEchoService>();
         _disconnectService = serviceProvider.GetRequiredService<IDisconnectService>();
