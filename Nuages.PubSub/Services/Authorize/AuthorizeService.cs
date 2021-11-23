@@ -4,7 +4,7 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Services.Authorize;
 
 // ReSharper disable once UnusedType.Global
 public class AuthorizeService : PubSubServiceBase, IAuthorizeService

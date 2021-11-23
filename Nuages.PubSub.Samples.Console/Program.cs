@@ -122,7 +122,7 @@ namespace Nuages.PubSub.Samples.Console
                     }
                 };
 
-                var msg = new {message = "sendmessage", data = JsonSerializer.Serialize(o)};
+                var msg = new {message = "broadcast", data = JsonSerializer.Serialize(o)};
 
                 await SendMessageAsync(webSocket, msg);
             }

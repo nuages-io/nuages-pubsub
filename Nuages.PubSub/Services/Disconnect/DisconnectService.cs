@@ -2,7 +2,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.DataModel;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Services.Disconnect;
 
 // ReSharper disable once UnusedType.Global
 public class DisconnectService : PubSubServiceBase, IDisconnectService

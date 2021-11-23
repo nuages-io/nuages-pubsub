@@ -404,7 +404,7 @@
         "ApiId": {
           "Ref": "NuagesPubSubLambdaApp"
         },
-        "RouteKey": "sendmessage",
+        "RouteKey": "broadcast",
         "AuthorizationType": "NONE",
         "OperationName": "BroadcastRoute",
         "Target": {

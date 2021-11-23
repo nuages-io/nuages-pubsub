@@ -7,7 +7,7 @@ using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using Nuages.PubSub.DataModel;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Services.Broadcast;
 
 public class BroadcastMessageService : PubSubServiceBase, IBroadcastMessageService
 {

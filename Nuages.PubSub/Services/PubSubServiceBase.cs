@@ -1,6 +1,6 @@
 using Amazon.ApiGatewayManagementApi;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Services;
 
 public class PubSubServiceBase
 {

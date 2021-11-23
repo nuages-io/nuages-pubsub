@@ -5,9 +5,15 @@ using System.IO;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Amazon.SimpleSystemsManagement.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.MongoDB;
+using Nuages.PubSub.Services.Authorize;
+using Nuages.PubSub.Services.Broadcast;
+using Nuages.PubSub.Services.Connect;
+using Nuages.PubSub.Services.Disconnect;
+using Nuages.PubSub.Services.Echo;
 
 #endregion
 
@@ -18,30 +24,14 @@ using Nuages.MongoDB;
 namespace Nuages.PubSub.LambdaApp
 {
     // ReSharper disable once UnusedType.Global
-    public partial class Functions
+    public partial class Functions : PubSubFunction
     {
-        private ServiceProvider _serviceProvider;
         private IConfiguration _configuration;
-        private IEchoService _echoService;
-        private IDisconnectService _disconnectService;
-        private IConnectService _connectService;
-        private IAuthorizeService _authorizeService;
-        private IBroadcastMessageService _broadcastMessageService;
-
+       
         public Functions()
         {
             BuildConfiguration();
-
             BuildServices();
-
-            ApiGatewayManagementApiClientFactory =
-                endpoint =>
-                    new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
-                    {
-                        ServiceURL = endpoint
-                    });
-
-            ClientFactory = new MongoClientFactory();
         }
 
         private void BuildServices()
@@ -50,16 +40,11 @@ namespace Nuages.PubSub.LambdaApp
 
             serviceCollection.AddSingleton(_configuration);
             serviceCollection.AddNuagesMongoDb(_configuration);
-            
             serviceCollection.AddPubSub();
 
-            _serviceProvider = serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            _echoService = _serviceProvider.GetRequiredService<IEchoService>();
-            _disconnectService = _serviceProvider.GetRequiredService<IDisconnectService>();
-            _connectService = _serviceProvider.GetRequiredService<IConnectService>();
-            _authorizeService = _serviceProvider.GetRequiredService<IAuthorizeService>();
-            _broadcastMessageService = _serviceProvider.GetRequiredService<IBroadcastMessageService>();
+            GetServices(serviceProvider);
         }
 
         private void BuildConfiguration()
@@ -86,9 +71,5 @@ namespace Nuages.PubSub.LambdaApp
             _configuration = builder
                 .Build();
         }
-
-        private Func<string, AmazonApiGatewayManagementApiClient> ApiGatewayManagementApiClientFactory { get; }
-
-        private MongoClientFactory ClientFactory { get; }
     }
 }

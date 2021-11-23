@@ -4,7 +4,7 @@ using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Services.Echo;
 
 // ReSharper disable once UnusedType.Global
 public class EchoService : PubSubServiceBase, IEchoService

@@ -1,7 +1,7 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Services.Disconnect;
 
 public interface IDisconnectService
 {

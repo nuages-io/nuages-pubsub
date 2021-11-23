@@ -4,7 +4,7 @@ using Amazon.Lambda.Core;
 using MongoDB.Bson;
 using Nuages.PubSub.DataModel;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Services.Connect;
 
 // ReSharper disable once UnusedType.Global
 public class ConnectService : PubSubServiceBase, IConnectService
