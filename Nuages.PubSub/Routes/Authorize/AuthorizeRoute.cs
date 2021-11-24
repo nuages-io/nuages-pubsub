@@ -4,14 +4,14 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Nuages.PubSub.Services.Authorize;
+namespace Nuages.PubSub.Routes.Authorize;
 
 // ReSharper disable once UnusedType.Global
-public class AuthorizeService : PubSubServiceBase, IAuthorizeService
+public class AuthorizeRoute : PubSubRouteBase, IAuthorizeRoute
 {
     private readonly IConfiguration _configuration;
 
-    public AuthorizeService(IConfiguration configuration)
+    public AuthorizeRoute(IConfiguration configuration)
     {
         _configuration = configuration;
     }
@@ -24,7 +24,7 @@ public class AuthorizeService : PubSubServiceBase, IAuthorizeService
             $"Architecture: {architecture}, .NET Version: {dotnetVersion}");
 
             
-        var token = input.QueryStringParameters["authorization"];
+        var token = input.QueryStringParameters["access_token"];
         if (string.IsNullOrEmpty(token))
             return CreateResponse(false, input.MethodArn);
 

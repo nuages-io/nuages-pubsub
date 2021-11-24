@@ -4,10 +4,10 @@ using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub.Services.Echo;
+namespace Nuages.PubSub.Routes.Echo;
 
 // ReSharper disable once UnusedType.Global
-public class EchoService : PubSubServiceBase, IEchoService
+public class EchoRoute : PubSubRouteBase, IEchoRoute
 {
     public async Task<APIGatewayProxyResponse> Echo(APIGatewayProxyRequest request,
         ILambdaContext context)

@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.Services.Authorize;
-using Nuages.PubSub.Services.Broadcast;
-using Nuages.PubSub.Services.Connect;
-using Nuages.PubSub.Services.Disconnect;
-using Nuages.PubSub.Services.Echo;
+using Nuages.PubSub.Routes.Authorize;
+using Nuages.PubSub.Routes.Broadcast;
+using Nuages.PubSub.Routes.Connect;
+using Nuages.PubSub.Routes.Disconnect;
+using Nuages.PubSub.Routes.Echo;
 
 namespace Nuages.PubSub;
 
@@ -11,11 +11,11 @@ public static class PubSubConfigExtension
 {
     public static IPubSubBuilder AddPubSub(this ServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IAuthorizeService, AuthorizeService>();
-        serviceCollection.AddScoped<IConnectService, ConnectService>();
-        serviceCollection.AddScoped<IDisconnectService, DisconnectService>();
-        serviceCollection.AddScoped<IEchoService, EchoService>();
-        serviceCollection.AddScoped<IBroadcastMessageService, BroadcastMessageService>();
+        serviceCollection.AddScoped<IAuthorizeRoute, AuthorizeRoute>();
+        serviceCollection.AddScoped<IConnectRoute, ConnectRoute>();
+        serviceCollection.AddScoped<IDisconnectRoute, DisconnectRoute>();
+        serviceCollection.AddScoped<IEchoRoute, EchoRoute>();
+        serviceCollection.AddScoped<IBroadcastMessageRoute, BroadcastMessageRoute>();
         
         return new PubSubBuilder(serviceCollection);
     }

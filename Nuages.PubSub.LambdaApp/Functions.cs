@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using Amazon.ApiGatewayManagementApi;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
@@ -51,6 +52,8 @@ public class Functions : PubSubFunction
             .AddPubSub()
             .AddPubSubMongoStorage(configuration);
 
+        serviceCollection.AddAWSService<IAmazonApiGatewayManagementApi>();
+        
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         GetRequiredServices(serviceProvider);

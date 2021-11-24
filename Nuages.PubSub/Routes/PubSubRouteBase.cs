@@ -1,12 +1,12 @@
 using Amazon.ApiGatewayManagementApi;
 
-namespace Nuages.PubSub.Services;
+namespace Nuages.PubSub.Routes;
 
-public class PubSubServiceBase
+public class PubSubRouteBase
 {
     protected Func<string, AmazonApiGatewayManagementApiClient> ApiGatewayManagementApiClientFactory { get; }
-
-    protected PubSubServiceBase()
+    
+    protected PubSubRouteBase()
     {
         ApiGatewayManagementApiClientFactory =
             endpoint =>
@@ -14,6 +14,6 @@ public class PubSubServiceBase
                 {
                     ServiceURL = endpoint
                 });
-
+    
     }
 }

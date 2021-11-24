@@ -296,7 +296,7 @@
           ]
         },
         "IdentitySource": [
-          "route.request.querystring.authorization"
+          "route.request.querystring.access_token"
         ],
         "Name": "Authorizer"
       }

@@ -1,9 +1,9 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub.Services.Authorize;
+namespace Nuages.PubSub.Routes.Authorize;
 
-public interface IAuthorizeService
+public interface IAuthorizeRoute
 {
     Task<APIGatewayCustomAuthorizerResponse> Authorize(APIGatewayCustomAuthorizerRequest input, ILambdaContext context);
 }

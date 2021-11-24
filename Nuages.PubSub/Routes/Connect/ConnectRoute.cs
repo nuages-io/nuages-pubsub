@@ -3,14 +3,14 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Storage;
 
-namespace Nuages.PubSub.Services.Connect;
+namespace Nuages.PubSub.Routes.Connect;
 
 // ReSharper disable once UnusedType.Global
-public class ConnectService : PubSubServiceBase, IConnectService
+public class ConnectRoute : PubSubRouteBase, IConnectRoute
 {
     private readonly IPubSubStorage _storage;
 
-    public ConnectService(IPubSubStorage storage)
+    public ConnectRoute(IPubSubStorage storage)
     {
         _storage = storage;
     }
