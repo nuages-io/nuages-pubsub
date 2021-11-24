@@ -1,12 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
+namespace Nuages.PubSub.Service;
 
-namespace Nuages.PubSub.Lambda;
-
-public static class PubSubConfigExtension
-{
-   
-}
 
 public class PubSubBuilder : IPubSubBuilder
 {
@@ -18,9 +13,4 @@ public class PubSubBuilder : IPubSubBuilder
     /// <inheritdoc />
     public IServiceCollection Services { get; }
 
-}
-    
-public interface IPubSubBuilder
-{
-    IServiceCollection Services { get; }
 }

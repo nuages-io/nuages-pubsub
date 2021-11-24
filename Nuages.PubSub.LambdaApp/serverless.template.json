@@ -185,10 +185,10 @@
         }
       }
     },
-    "BroadcastMessageFunction": {
+    "SendFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::BroadcastMessageHandlerAsync",
+        "Handler": "Nuages.PubSub.LambdaApp::Nuages.PubSub.LambdaApp.Functions::SendHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -261,7 +261,7 @@
       "Properties": {
         "Name": "NuagesPubSubLambdaApp",
         "ProtocolType": "WEBSOCKET",
-        "RouteSelectionExpression": "$request.body.message"
+        "RouteSelectionExpression": "$request.body.type"
       }
     },
     "Authorizer": {
@@ -397,29 +397,29 @@
         }
       }
     },
-    "BroadcastMessageRoute": {
+    "SendRoute": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "NuagesPubSubLambdaApp"
         },
-        "RouteKey": "broadcast",
+        "RouteKey": "sendmessage",
         "AuthorizationType": "NONE",
-        "OperationName": "BroadcastRoute",
+        "OperationName": "SendRoute",
         "Target": {
           "Fn::Join": [
             "/",
             [
               "integrations",
               {
-                "Ref": "BroadcastMessageInteg"
+                "Ref": "SendInteg"
               }
             ]
           ]
         }
       }
     },
-    "BroadcastMessageInteg": {
+    "SendInteg": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -435,7 +435,7 @@
               },
               "function": {
                 "Fn::GetAtt": [
-                  "BroadcastMessageFunction",
+                  "SendFunction",
                   "Arn"
                 ]
               }
@@ -495,7 +495,7 @@
       "Type": "AWS::ApiGatewayV2::Deployment",
       "DependsOn": [
         "ConnectRoute",
-        "BroadcastMessageRoute",
+        "SendRoute",
         "DisconnectRoute"
       ],
       "Properties": {
@@ -544,16 +544,16 @@
         "Principal": "apigateway.amazonaws.com"
       }
     },
-    "BroadcastMessagePermission": {
+    "SendPermission": {
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
-        "BroadcastMessageFunction",
+        "SendFunction",
         "NuagesPubSubLambdaApp"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BroadcastMessageFunction"
+          "Ref": "SendFunction"
         },
         "Principal": "apigateway.amazonaws.com"
       }

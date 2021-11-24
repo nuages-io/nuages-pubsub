@@ -2,10 +2,10 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Lambda.Routes.Authorize;
-using Nuages.PubSub.Lambda.Routes.Broadcast;
 using Nuages.PubSub.Lambda.Routes.Connect;
 using Nuages.PubSub.Lambda.Routes.Disconnect;
 using Nuages.PubSub.Lambda.Routes.Echo;
+using Nuages.PubSub.Lambda.Routes.Send;
 
 namespace Nuages.PubSub.Lambda;
 
@@ -15,7 +15,7 @@ public class PubSubFunction
     private IDisconnectRoute? _disconnectRoute;
     private IConnectRoute? _connectRoute;
     private IAuthorizeRoute? _authorizeRoute;
-    private IBroadcastMessageRoute? _broadcastMessageRoute;
+    private ISendRoute? _sendMessageRoute;
     
     protected void GetRequiredServices(ServiceProvider serviceProvider)
     {
@@ -23,7 +23,7 @@ public class PubSubFunction
         _disconnectRoute = serviceProvider.GetRequiredService<IDisconnectRoute>();
         _connectRoute = serviceProvider.GetRequiredService<IConnectRoute>();
         _authorizeRoute = serviceProvider.GetRequiredService<IAuthorizeRoute>();
-        _broadcastMessageRoute = serviceProvider.GetRequiredService<IBroadcastMessageRoute>();
+        _sendMessageRoute = serviceProvider.GetRequiredService<ISendRoute>();
     }
     
     // ReSharper disable once UnusedMember.Global
@@ -64,12 +64,12 @@ public class PubSubFunction
     }
 
     // ReSharper disable once UnusedMember.Global
-    public async Task<APIGatewayProxyResponse> BroadcastMessageHandlerAsync(APIGatewayProxyRequest request,
+    public async Task<APIGatewayProxyResponse> SendHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
-        if (_broadcastMessageRoute == null)
-            throw new NullReferenceException("_broadcastMessageService is null");
+        if (_sendMessageRoute == null)
+            throw new NullReferenceException("_sendMessageRoute is null");
         
-        return await _broadcastMessageRoute.BroadcastAsync(request, context);
+        return await _sendMessageRoute.SendAsync(request, context);
     }
 }

@@ -7,6 +7,7 @@ using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Lambda;
+using Nuages.PubSub.Service;
 using Nuages.PubSub.Storage.Mongo;
 
 #endregion
@@ -49,7 +50,8 @@ public class Functions : PubSubFunction
         serviceCollection.AddSingleton(configuration);
             
         serviceCollection
-            .AddPubSubLambda()
+            .AddPubSubLambdaRoutes()
+            .AddPubSubService()
             .AddPubSubMongoStorage(configuration);
         
         var serviceProvider = serviceCollection.BuildServiceProvider();

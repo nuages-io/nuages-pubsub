@@ -86,7 +86,7 @@ class Program
             System.Console.WriteLine("WebSocket Connected");
             System.Console.WriteLine("Sending echo message...");
                 
-            var msg = new {message = "echo", data = ""};
+            var msg = new {type = "echo", data = ""};
             await SendMessageAsync(_webSocket, msg);
 
             await Task.WhenAll(Receive(_webSocket), Send(_webSocket));
@@ -122,7 +122,7 @@ class Program
                 }
             };
 
-            var msg = new {message = "broadcast", data = JsonSerializer.Serialize(o)};
+            var msg = new {type = "sendmessage", data = JsonSerializer.Serialize(o)};
 
             await SendMessageAsync(webSocket, msg);
         }
