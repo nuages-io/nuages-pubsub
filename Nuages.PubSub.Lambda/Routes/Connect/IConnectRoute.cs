@@ -1,12 +1,12 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub.Routes.Connect;
+namespace Nuages.PubSub.Lambda.Routes.Connect;
 
 public interface IConnectRoute
 {
     
-    Task<APIGatewayProxyResponse> Connect(APIGatewayProxyRequest request,
+    Task<APIGatewayProxyResponse> ConnectAsync(APIGatewayProxyRequest request,
         ILambdaContext context);
     
 }

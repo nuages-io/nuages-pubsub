@@ -1,10 +1,10 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub.Routes.Broadcast;
+namespace Nuages.PubSub.Lambda.Routes.Broadcast;
 
 public interface IBroadcastMessageRoute
 {
-    public  Task<APIGatewayProxyResponse> Broadcast(APIGatewayProxyRequest request,
+    public  Task<APIGatewayProxyResponse> BroadcastAsync(APIGatewayProxyRequest request,
         ILambdaContext context);
 }

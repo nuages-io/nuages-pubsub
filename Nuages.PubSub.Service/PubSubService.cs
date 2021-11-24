@@ -14,12 +14,8 @@ public class PubSubService : IPubSubService
             });
     }
 
-    // public async Task SendToAllAsync(string content)
-    // {
-    //     
-    // }
-}
-
-public interface IPubSubService
-{
+    public async Task SendToAllAsync(string content)
+    {
+        await Task.CompletedTask;
+    }
 }

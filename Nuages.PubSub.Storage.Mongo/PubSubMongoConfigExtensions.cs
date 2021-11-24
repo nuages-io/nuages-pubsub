@@ -1,9 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.MongoDB;
+using Nuages.PubSub.Lambda;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 
-namespace Nuages.PubSub.Storage;
+namespace Nuages.PubSub.Storage.Mongo;
 
 public static class PubSubMongoConfigExtensions
 {

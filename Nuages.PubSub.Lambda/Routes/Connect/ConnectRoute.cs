@@ -3,7 +3,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Storage;
 
-namespace Nuages.PubSub.Routes.Connect;
+namespace Nuages.PubSub.Lambda.Routes.Connect;
 
 // ReSharper disable once UnusedType.Global
 public class ConnectRoute : PubSubRouteBase, IConnectRoute
@@ -15,7 +15,7 @@ public class ConnectRoute : PubSubRouteBase, IConnectRoute
         _storage = storage;
     }
     
-    public async Task<APIGatewayProxyResponse> Connect(APIGatewayProxyRequest request, ILambdaContext context)
+    public async Task<APIGatewayProxyResponse> ConnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
     {
         var sub = request.RequestContext.Authorizer.SingleOrDefault(c => c.Key == "sub").Value.ToString();
 

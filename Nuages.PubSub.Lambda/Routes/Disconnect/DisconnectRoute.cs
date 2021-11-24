@@ -2,7 +2,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Storage;
 
-namespace Nuages.PubSub.Routes.Disconnect;
+namespace Nuages.PubSub.Lambda.Routes.Disconnect;
 
 // ReSharper disable once UnusedType.Global
 public class DisconnectRoute : PubSubRouteBase, IDisconnectRoute
@@ -14,7 +14,7 @@ public class DisconnectRoute : PubSubRouteBase, IDisconnectRoute
         _storage = storage;
     }
 
-    public async Task<APIGatewayProxyResponse> Disconnect(APIGatewayProxyRequest request, ILambdaContext context)
+    public async Task<APIGatewayProxyResponse> DisconnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
     {
         try
         {

@@ -1,15 +1,16 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub.Routes.Echo;
+namespace Nuages.PubSub.Lambda.Routes.Echo;
 
 // ReSharper disable once UnusedType.Global
 public class EchoRoute : PubSubRouteBase, IEchoRoute
 {
-    public async Task<APIGatewayProxyResponse> Echo(APIGatewayProxyRequest request,
+    public async Task<APIGatewayProxyResponse> EchoAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         try
@@ -34,8 +35,12 @@ public class EchoRoute : PubSubRouteBase, IEchoRoute
 
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)));
 
-            var apiClient = ApiGatewayManagementApiClientFactory(endpoint);
-
+            //var apiClient = ApiGatewayManagementApiClientFactory(endpoint);
+            using var apiClient = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
+            {
+                ServiceURL = endpoint
+            });
+            
             var postConnectionRequest = new PostToConnectionRequest
             {
                 ConnectionId = connectionId,

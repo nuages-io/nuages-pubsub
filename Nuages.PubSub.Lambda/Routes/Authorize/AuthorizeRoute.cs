@@ -4,7 +4,7 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Nuages.PubSub.Routes.Authorize;
+namespace Nuages.PubSub.Lambda.Routes.Authorize;
 
 // ReSharper disable once UnusedType.Global
 public class AuthorizeRoute : PubSubRouteBase, IAuthorizeRoute
@@ -16,7 +16,7 @@ public class AuthorizeRoute : PubSubRouteBase, IAuthorizeRoute
         _configuration = configuration;
     }
     
-    public async Task<APIGatewayCustomAuthorizerResponse> Authorize(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
+    public async Task<APIGatewayCustomAuthorizerResponse> AuthorizeAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
     {
         var architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
         var dotnetVersion = Environment.Version.ToString();

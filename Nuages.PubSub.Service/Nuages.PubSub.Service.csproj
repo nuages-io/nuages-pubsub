@@ -8,6 +8,11 @@
 
     <ItemGroup>
       <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.30" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nuages.PubSub.Storage\Nuages.PubSub.Storage.csproj" />
     </ItemGroup>
 
 </Project>

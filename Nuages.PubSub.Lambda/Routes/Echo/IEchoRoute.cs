@@ -1,12 +1,12 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub.Routes.Echo;
+namespace Nuages.PubSub.Lambda.Routes.Echo;
 
 public interface IEchoRoute
 {
     
-    Task<APIGatewayProxyResponse> Echo(APIGatewayProxyRequest request,
+    Task<APIGatewayProxyResponse> EchoAsync(APIGatewayProxyRequest request,
         ILambdaContext context);
     
 }

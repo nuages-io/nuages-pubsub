@@ -8,18 +8,18 @@ using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using Nuages.PubSub.Storage;
 
-namespace Nuages.PubSub.Routes.Broadcast;
+namespace Nuages.PubSub.Lambda.Routes.Broadcast;
 
 public class BroadcastMessageRoute : PubSubRouteBase, IBroadcastMessageRoute
 {
     private readonly IPubSubStorage _storage;
 
-    public BroadcastMessageRoute(IPubSubStorage storage, IAmazonApiGatewayManagementApi gatewayManagementApi)
+    public BroadcastMessageRoute(IPubSubStorage storage)
     {
         _storage = storage;
     }
 
-    public async Task<APIGatewayProxyResponse> Broadcast(APIGatewayProxyRequest request, ILambdaContext context)
+    public async Task<APIGatewayProxyResponse> BroadcastAsync(APIGatewayProxyRequest request, ILambdaContext context)
     {
         try
         {
@@ -47,8 +47,13 @@ public class BroadcastMessageRoute : PubSubRouteBase, IBroadcastMessageRoute
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(data!));
 
             // Construct the IAmazonApiGatewayManagementApi which will be used to send the message to.
-            var apiClient = ApiGatewayManagementApiClientFactory(endpoint);
-
+           // var apiClient = ApiGatewayManagementApiClientFactory(endpoint);
+            
+           using var apiClient = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
+           {
+               ServiceURL = endpoint
+           });
+           
             var items = _storage.GetAllConnectionIds();
 
             // Loop through all of the connections and broadcast the message out to the connections.
@@ -66,6 +71,7 @@ public class BroadcastMessageRoute : PubSubRouteBase, IBroadcastMessageRoute
                 {
                     context.Logger.LogLine($"Post to connection {count}: {postConnectionRequest.ConnectionId}");
                     stream.Position = 0;
+                    
                     await apiClient.PostToConnectionAsync(postConnectionRequest);
                     count++;
                 }
@@ -97,6 +103,7 @@ public class BroadcastMessageRoute : PubSubRouteBase, IBroadcastMessageRoute
         {
             context.Logger.LogLine("Error disconnecting: " + e.Message);
             context.Logger.LogLine(e.StackTrace);
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,

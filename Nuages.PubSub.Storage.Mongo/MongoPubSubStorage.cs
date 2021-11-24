@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 
-namespace Nuages.PubSub.Storage;
+namespace Nuages.PubSub.Storage.Mongo;
 
 public class MongoPubSubStorage : IPubSubStorage
 {

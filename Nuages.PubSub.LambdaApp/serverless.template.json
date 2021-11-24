@@ -96,7 +96,6 @@
         },
         "Environment": {
           "Variables": {
-
             "Nuages__Mongo__Connection": {
               "Ref": "MongoConnectionString"
             },

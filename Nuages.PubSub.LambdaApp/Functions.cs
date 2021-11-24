@@ -2,12 +2,12 @@
 
 using System;
 using System.IO;
-using Amazon.ApiGatewayManagementApi;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.Storage;
+using Nuages.PubSub.Lambda;
+using Nuages.PubSub.Storage.Mongo;
 
 #endregion
 
@@ -49,10 +49,8 @@ public class Functions : PubSubFunction
         serviceCollection.AddSingleton(configuration);
             
         serviceCollection
-            .AddPubSub()
+            .AddPubSubLambda()
             .AddPubSubMongoStorage(configuration);
-
-        serviceCollection.AddAWSService<IAmazonApiGatewayManagementApi>();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 

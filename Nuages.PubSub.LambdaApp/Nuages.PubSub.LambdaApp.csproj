@@ -11,7 +11,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub\Nuages.PubSub.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Lambda\Nuages.PubSub.Lambda.csproj" />
     </ItemGroup>
 
     <ItemGroup>

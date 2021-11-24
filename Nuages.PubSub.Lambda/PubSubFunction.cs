@@ -1,13 +1,13 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.Routes.Authorize;
-using Nuages.PubSub.Routes.Broadcast;
-using Nuages.PubSub.Routes.Connect;
-using Nuages.PubSub.Routes.Disconnect;
-using Nuages.PubSub.Routes.Echo;
+using Nuages.PubSub.Lambda.Routes.Authorize;
+using Nuages.PubSub.Lambda.Routes.Broadcast;
+using Nuages.PubSub.Lambda.Routes.Connect;
+using Nuages.PubSub.Lambda.Routes.Disconnect;
+using Nuages.PubSub.Lambda.Routes.Echo;
 
-namespace Nuages.PubSub;
+namespace Nuages.PubSub.Lambda;
 
 public class PubSubFunction
 {
@@ -33,7 +33,7 @@ public class PubSubFunction
         if (_echoRoute == null)
             throw new NullReferenceException("_echoService is null");
         
-        return await _echoRoute.Echo(request, context);
+        return await _echoRoute.EchoAsync(request, context);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -42,7 +42,7 @@ public class PubSubFunction
     {
         if (_disconnectRoute == null)
             throw new NullReferenceException("_disconnectService is null");
-        return await _disconnectRoute.Disconnect(request, context);
+        return await _disconnectRoute.DisconnectAsync(request, context);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -51,7 +51,7 @@ public class PubSubFunction
     {
         if (_connectRoute == null)
             throw new NullReferenceException("_connectService is null");
-        return await _connectRoute.Connect(request, context);
+        return await _connectRoute.ConnectAsync(request, context);
     }
         
     // ReSharper disable once UnusedMember.Global
@@ -60,7 +60,7 @@ public class PubSubFunction
         if (_authorizeRoute == null)
             throw new NullReferenceException("_authorizeService is null");
         
-        return await _authorizeRoute.Authorize(input, context);
+        return await _authorizeRoute.AuthorizeAsync(input, context);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -70,6 +70,6 @@ public class PubSubFunction
         if (_broadcastMessageRoute == null)
             throw new NullReferenceException("_broadcastMessageService is null");
         
-        return await _broadcastMessageRoute.Broadcast(request, context);
+        return await _broadcastMessageRoute.BroadcastAsync(request, context);
     }
 }

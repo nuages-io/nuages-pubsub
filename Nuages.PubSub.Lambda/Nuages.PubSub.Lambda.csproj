@@ -14,5 +14,9 @@
         <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.30" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.1" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nuages.PubSub.Service\Nuages.PubSub.Service.csproj" />
+    </ItemGroup>
    
 </Project>
