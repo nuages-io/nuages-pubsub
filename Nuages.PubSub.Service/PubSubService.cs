@@ -17,9 +17,9 @@ public class PubSubService : IPubSubService
         _pubSubStorage = pubSubStorage;
     }
     
-    public virtual async Task<APIGatewayProxyResponse> SendToOneAsync(string url, string connectionId, string content)
+    public virtual async Task<APIGatewayProxyResponse> SendToOneAsync(string url, string hub,  string connectionId, string content)
     {
-        await SendMessageAsync(url, new List<string>{ connectionId } , content);
+        await SendMessageAsync(url, hub, new List<string>{ connectionId } , content);
         
         return new APIGatewayProxyResponse
         {
@@ -29,7 +29,9 @@ public class PubSubService : IPubSubService
 
     public virtual async Task<APIGatewayProxyResponse> SendToAllAsync(string url, string hub, string content)
     {
-        await SendMessageAsync(url,_pubSubStorage.GetAllConnectionIds(),  content);
+        var ids = _pubSubStorage.GetAllConnectionIds(hub).ToList();
+        
+        await SendMessageAsync(url, hub, ids,  content);
         
         return new APIGatewayProxyResponse
         {
@@ -37,7 +39,9 @@ public class PubSubService : IPubSubService
         };
     }
 
-    protected virtual async Task SendMessageAsync(string url, IEnumerable<string> connectionIds,  string content)
+    
+
+    protected virtual async Task SendMessageAsync(string url, string hub, IEnumerable<string> connectionIds,  string content)
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content!));
         
@@ -68,7 +72,7 @@ public class PubSubService : IPubSubService
                 // from our collection.
                 if (e.StatusCode == HttpStatusCode.Gone)
                 {
-                    await _pubSubStorage.DeleteAsync(postConnectionRequest.ConnectionId);
+                    await _pubSubStorage.DeleteAsync(hub, postConnectionRequest.ConnectionId);
                 }
                
             }

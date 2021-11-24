@@ -26,7 +26,7 @@ public class ConnectRoute : PubSubRouteBase, IConnectRoute
 
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _storage.InsertAsync(connectionId, sub!);
+            await _storage.InsertAsync(request.RequestContext.ApiId, connectionId, sub!);
 
             return new APIGatewayProxyResponse
             {

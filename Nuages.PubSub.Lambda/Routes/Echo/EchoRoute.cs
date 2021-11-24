@@ -34,11 +34,11 @@ public class EchoRoute : PubSubRouteBase, IEchoRoute
                 target = "echo",
                 payload = new
                 {
-                    ConnectionId = connectionId
+                    connectionId
                 }
             };
 
-            return await _pubSubService.SendToOneAsync(endpoint, connectionId, JsonSerializer.Serialize(result) );
+            return await _pubSubService.SendToOneAsync(endpoint, request.RequestContext.ApiId,  connectionId, JsonSerializer.Serialize(result) );
             
         }
         catch (Exception e)

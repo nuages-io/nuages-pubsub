@@ -10,12 +10,12 @@ namespace Nuages.PubSub.Lambda.Routes.Send;
 
 public class SendRoute : PubSubRouteBase, ISendRoute
 {
-    private readonly IPubSubStorage _storage;
+    const string Target = "sendmessage";
+    
     private readonly IPubSubService _pubSubService;
 
-    public SendRoute(IPubSubStorage storage, IPubSubService pubSubService)
+    public SendRoute(IPubSubService pubSubService)
     {
-        _storage = storage;
         _pubSubService = pubSubService;
     }
 
@@ -30,7 +30,17 @@ public class SendRoute : PubSubRouteBase, ISendRoute
             if (message == null)
                 throw new NullReferenceException("message is null");
             
-            return await _pubSubService.SendToAllAsync(endpoint, message.hub!, message.data?.ToString() ?? "");
+            var result = new
+            {
+                target = Target,
+                payload = new
+                {
+                    message.data
+                }
+            };
+
+            
+            return await _pubSubService.SendToAllAsync(endpoint, request.RequestContext.ApiId, JsonSerializer.Serialize(result));
         }
         catch (Exception e)
         {
