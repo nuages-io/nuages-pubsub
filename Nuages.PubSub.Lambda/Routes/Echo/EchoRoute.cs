@@ -4,21 +4,26 @@ using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Nuages.PubSub.Service;
 
 namespace Nuages.PubSub.Lambda.Routes.Echo;
 
 // ReSharper disable once UnusedType.Global
 public class EchoRoute : PubSubRouteBase, IEchoRoute
 {
+    private readonly IPubSubService _pubSubService;
+
+    public EchoRoute(IPubSubService pubSubService)
+    {
+        _pubSubService = pubSubService;
+    }
+    
     public async Task<APIGatewayProxyResponse> EchoAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         try
         {
-            var domainName = request.RequestContext.DomainName;
-            var stage = request.RequestContext.Stage;
-
-            var endpoint = $"https://{domainName}/{stage}";
+            var endpoint = $"https://{request.RequestContext.DomainName}/{request.RequestContext.Stage}";
             context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
 
             var connectionId = request.RequestContext.ConnectionId;
@@ -33,27 +38,8 @@ public class EchoRoute : PubSubRouteBase, IEchoRoute
                 }
             };
 
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(result)));
-
-            //var apiClient = ApiGatewayManagementApiClientFactory(endpoint);
-            using var apiClient = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
-            {
-                ServiceURL = endpoint
-            });
+            return await _pubSubService.SendToOneAsync(endpoint, connectionId, JsonSerializer.Serialize(result) );
             
-            var postConnectionRequest = new PostToConnectionRequest
-            {
-                ConnectionId = connectionId,
-                Data = stream
-            };
-
-            await apiClient.PostToConnectionAsync(postConnectionRequest);
-
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 200,
-                Body = JsonSerializer.Serialize(result)
-            };
         }
         catch (Exception e)
         {

@@ -16,24 +16,41 @@ public class PubSubService : IPubSubService
     {
         _pubSubStorage = pubSubStorage;
     }
+    
+    public virtual async Task<APIGatewayProxyResponse> SendToOneAsync(string url, string connectionId, string content)
+    {
+        await SendMessageAsync(url, new List<string>{ connectionId } , content);
+        
+        return new APIGatewayProxyResponse
+        {
+            StatusCode = (int)HttpStatusCode.OK
+        };
+    }
 
-    public async Task<APIGatewayProxyResponse> SendToAllAsync(string url, string content)
+    public virtual async Task<APIGatewayProxyResponse> SendToAllAsync(string url, string hub, string content)
+    {
+        await SendMessageAsync(url,_pubSubStorage.GetAllConnectionIds(),  content);
+        
+        return new APIGatewayProxyResponse
+        {
+            StatusCode = (int)HttpStatusCode.OK
+        };
+    }
+
+    protected virtual async Task SendMessageAsync(string url, IEnumerable<string> connectionIds,  string content)
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content!));
         
-        var apiGateway = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
+        using var apiGateway = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
         {
             ServiceURL = url
         });
         
-        var items = _pubSubStorage.GetAllConnectionIds();
-
-        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var item in items)
+        foreach (var connectionId in connectionIds)
         {
             var postConnectionRequest = new PostToConnectionRequest
             {
-                ConnectionId = item,
+                ConnectionId = connectionId,
                 Data = stream
             };
 
@@ -57,9 +74,6 @@ public class PubSubService : IPubSubService
             }
         }
         
-        return new APIGatewayProxyResponse
-        {
-            StatusCode = (int)HttpStatusCode.OK
-        };
+       
     }
 }

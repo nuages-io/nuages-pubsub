@@ -1,8 +1,10 @@
+// ReSharper disable InconsistentNaming
 namespace Nuages.PubSub.Lambda.Model;
 
 public class SendModel
 {
-    public string type { get; set; } = default!;
-    public object data { get; set; } = default!;
+    public string type { get; set; } = null!;
+    public string? hub { get; set; }
+    public object? data { get; set; } 
 
 }

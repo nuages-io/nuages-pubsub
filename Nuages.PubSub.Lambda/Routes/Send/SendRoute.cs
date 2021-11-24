@@ -23,31 +23,14 @@ public class SendRoute : PubSubRouteBase, ISendRoute
     {
         try
         {
-            // Construct the API Gateway endpoint that incoming message will be broadcasted to.
-            var domainName = request.RequestContext.DomainName;
-            var stage = request.RequestContext.Stage;
-
-            var endpoint = $"https://{domainName}/{stage}";
+            var endpoint = $"https://{request.RequestContext.DomainName}/{request.RequestContext.Stage}";
             context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
-
-            context.Logger.LogLine($"Data: {request.Body}");
             
-            // The body will look something like this: {"type":"sendmessage", "data":"What are you doing?"}
             var message = JsonSerializer.Deserialize<SendModel>(request.Body);
-
-            context.Logger.LogLine($"Reserialized: {JsonSerializer.Serialize(message)}");
+            if (message == null)
+                throw new NullReferenceException("message is null");
             
-            // Grab the data from the JSON body which is the message to broadcasted.
-            // if (!message.RootElement.TryGetProperty("data", out var dataProperty))
-            // {
-            //     context.Logger.LogLine("Failed to find data element in JSON document");
-            //     return new APIGatewayProxyResponse
-            //     {
-            //         StatusCode = (int)HttpStatusCode.BadRequest
-            //     };
-            // }
-
-            return await _pubSubService.SendToAllAsync(endpoint, message!.data.ToString()!);
+            return await _pubSubService.SendToAllAsync(endpoint, message.hub!, message.data?.ToString() ?? "");
         }
         catch (Exception e)
         {
