@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Nuages.PubSub.API;
@@ -16,5 +17,13 @@ public class LocalEntryPoint
 
     private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                if (hostingContext.HostingEnvironment.IsDevelopment())
+                {
+                    config.AddJsonFile("appsettings.local.json", true, true);
+                }
+               
+            })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
 }

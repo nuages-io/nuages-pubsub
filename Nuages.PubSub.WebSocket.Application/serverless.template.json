@@ -238,10 +238,10 @@
         }
       }
     },
-    "NuagesPubSubLambdaApp": {
+    "NuagesPubSub": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
-        "Name": "NuagesPubSubLambdaApp",
+        "Name": "Nuages-PubSub",
         "ProtocolType": "WEBSOCKET",
         "RouteSelectionExpression": "$request.body.type"
       }
@@ -250,7 +250,7 @@
       "Type": "AWS::ApiGatewayV2::Authorizer",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "AuthorizerType": "REQUEST",
         "AuthorizerUri": {
@@ -286,7 +286,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "RouteKey": "$connect",
         "AuthorizationType": "CUSTOM",
@@ -311,7 +311,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -336,7 +336,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "RouteKey": "$disconnect",
         "AuthorizationType": "NONE",
@@ -358,7 +358,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -383,7 +383,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "RouteKey": "sendmessage",
         "AuthorizationType": "NONE",
@@ -405,7 +405,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -430,7 +430,7 @@
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "RouteKey": "echo",
         "AuthorizationType": "NONE",
@@ -452,7 +452,7 @@
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
@@ -482,7 +482,7 @@
       ],
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         }
       }
     },
@@ -490,7 +490,7 @@
       "Type": "AWS::ApiGatewayV2::Stage",
       "Properties": {
         "ApiId": {
-          "Ref": "NuagesPubSubLambdaApp"
+          "Ref": "NuagesPubSub"
         },
         "DeploymentId": {
           "Ref": "Deployment"
@@ -502,7 +502,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "OnConnectFunction",
-        "NuagesPubSubLambdaApp"
+        "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -516,7 +516,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "OnDisconnectFunction",
-        "NuagesPubSubLambdaApp"
+        "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -530,7 +530,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "SendFunction",
-        "NuagesPubSubLambdaApp"
+        "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -544,7 +544,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "EchoFunction",
-        "NuagesPubSubLambdaApp"
+        "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -558,7 +558,7 @@
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
         "OnAuthorizeFunction",
-        "NuagesPubSubLambdaApp"
+        "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -577,7 +577,7 @@
           [
             "wss://",
             {
-              "Ref": "NuagesPubSubLambdaApp"
+              "Ref": "NuagesPubSub"
             },
             ".execute-api.",
             {

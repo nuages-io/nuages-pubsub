@@ -31,7 +31,7 @@ public class PubSubService : IPubSubService
         };
     }
 
-    public string GenerateToken(string issuer, string audience, string userId, string[] roles, string secret, TimeSpan? expireDelay = null)
+    public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = null)
     {
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 

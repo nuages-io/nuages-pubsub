@@ -12,7 +12,7 @@
   "template": "serverless.template",
   "template-parameters": "",
   "s3-bucket": "build.nuages.org",
-  "stack-name": "Nuages-PubSub-API",
+  "stack-name": "NuagesPubSub-API",
   "framework": "net6.0",
   "msbuild-parameters": "--self-contained true"
 }
