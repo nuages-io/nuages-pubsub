@@ -1,15 +1,18 @@
 ﻿#region
 
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net.Http;
 using System.Net.WebSockets;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 #endregion
 
@@ -52,17 +55,13 @@ class Program
 
         System.Console.WriteLine("Getting Token...");
 
-        var token = await GetTokenAsync();
+        //var token = await GetTokenAsync();
             
-        LogData(token);
-           
-        // var t = new JwtSecurityTokenHandler()
-        //     .ReadJwtToken(token);
-        //
-        // var claims = t
-        //     .Claims
-        //     .ToDictionary(claim => claim.Type, claim => claim.Value);
+        //LogData(token);
 
+        var token = GenerateToken();
+        LogData(token);
+        
         System.Console.WriteLine("Try connect to Server with Uri");
         var url = string.Format(_configuration.GetSection("WebSocket:Url").Value, token);
 
@@ -178,11 +177,11 @@ class Program
     private static async Task<string> GetTokenAsync()
     {
         var client = new HttpClient();
-
+    
         var response = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
         {
             Address = $"{_authority}/oauth/token",
-
+    
             ClientId = _clientId,
             ClientSecret = _secret,
             Scope = "connect:pubsub",
@@ -193,7 +192,32 @@ class Program
                 { "audience", _audience}
             }
         });
-
+    
         return response.AccessToken;
+    }
+    
+    public static string GenerateToken(string userId = "auth0|619a95dfd84c9a0068fd57cd")
+    {
+        var mySecret = "PlmkbJEaT5rnHiT3pKHbpp76qsnNvjfm";
+        var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
+
+        var myIssuer = "https://nuages.auth0.com/";
+        var myAudience = "https://pubsub.nuages.org";
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new []
+            {
+                new Claim("sub", userId)
+            }),
+            Expires = DateTime.UtcNow.AddDays(7),
+            Issuer = myIssuer,
+            Audience = myAudience,
+            SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 }

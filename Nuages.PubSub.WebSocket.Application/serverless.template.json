@@ -172,10 +172,10 @@
             "Nuages__Auth__Audiences": {
               "Ref": "Audiences"
             },
-            "Nuages_Auth_Secret": {
+            "Nuages__Auth__Secret": {
               "Ref": "Secret"
             },
-            "Nuages_Auth_JsonWebKeySetUrlPath": {
+            "Nuages__Auth__JsonWebKeySetUrlPath": {
               "Ref": "JsonWebKeySetUrlPath"
             },
             "Nuages__Auth_DisableSslCheck": {

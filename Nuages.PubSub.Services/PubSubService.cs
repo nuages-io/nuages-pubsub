@@ -1,9 +1,12 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
 using System.Text;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Runtime;
+using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Storage;
 
 namespace Nuages.PubSub.Services;
@@ -26,6 +29,32 @@ public class PubSubService : IPubSubService
         {
             StatusCode = (int)HttpStatusCode.OK
         };
+    }
+
+    public string GenerateToken(string issuer, string audience, string userId, string[] roles, string secret, TimeSpan? expireDelay = null)
+    {
+        var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new []
+            {
+                new Claim("sub", userId)
+            }),
+            Expires = DateTime.UtcNow.Add(expireDelay ?? new TimeSpan(7,0,0)),
+            Issuer = issuer,
+            Audience = audience,
+            SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        foreach (var role in roles)
+        {
+            tokenDescriptor.Claims.Add(new KeyValuePair<string, object>(role, "true"));
+        }
+        
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 
     public virtual async Task<APIGatewayProxyResponse> SendToAllAsync(string url, string hub, string content)

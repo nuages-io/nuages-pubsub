@@ -7,4 +7,6 @@ public interface IPubSubStorage
 
     IEnumerable<string> GetAllConnectionIds(string hub);
     IEnumerable<string> GetAllConnectionForGroup(string hub, string group);
+
+    Task Initialize();
 }

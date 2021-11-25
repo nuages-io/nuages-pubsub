@@ -33,10 +33,15 @@ public class AuthorizeRoute : IAuthorizeRoute
         if (string.IsNullOrEmpty(token))
             return CreateResponse(false, input.MethodArn);
 
-        var claimDict = GetClaims(token);
-
-        context.Logger.LogLine($"iss: {claimDict["iss"]}");
-            
+        var jwtToken = new JwtSecurityTokenHandler()
+            .ReadJwtToken(token);
+        
+        var claimDict = GetClaims(jwtToken);
+        
+        context.Logger.LogLine($"Issuer: {jwtToken.Issuer}");
+        context.Logger.LogLine($"Alg: {jwtToken.SignatureAlgorithm}");
+        context.Logger.LogLine($"Aud: {claimDict["aud"]}");
+        
         context.Logger.LogLine($"Valid issuers : {_pubSubAuthOptions.Issuers}");
         context.Logger.LogLine($"Valid audiences : {_pubSubAuthOptions.Audiences}");
             
@@ -46,20 +51,26 @@ public class AuthorizeRoute : IAuthorizeRoute
         List<SecurityKey> keys = new List<SecurityKey>();
         
         var secret = _pubSubAuthOptions.Secret;
-        if (!string.IsNullOrEmpty(secret))
+        switch (jwtToken.SignatureAlgorithm)
         {
-            var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
-            keys = new List<SecurityKey> { mySecurityKey };
+            case "RS256":
+            {
+                keys.AddRange(await GetSigningKeys(jwtToken.Issuer, context));
+                break;
+            }
+            default:
+            {
+                if (string.IsNullOrEmpty(secret))
+                    throw new NullReferenceException("secret was not provided");
+                
+                var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+                keys = new List<SecurityKey> { mySecurityKey };
             
-            context.Logger.LogLine($"Secret : {secret}");
-
+                context.Logger.LogLine($"Secret : {secret}");
+                break;
+            }
         }
-        else
-        {
-            keys.AddRange(await GetSigningKeys(claimDict["iss"], context));
-        }
-
-        try
+       try
         {
             new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
             {
@@ -111,14 +122,10 @@ public class AuthorizeRoute : IAuthorizeRoute
         return keys;
     }
 
-    private static Dictionary<string, string> GetClaims(string token)
+    private static Dictionary<string, string> GetClaims(JwtSecurityToken token)
     {
-        var claims = new JwtSecurityTokenHandler()
-            .ReadJwtToken(token)
-            .Claims;
-
         var claimDict = new Dictionary<string, string>();
-        foreach (var c in claims)
+        foreach (var c in token.Claims)
             if (!claimDict.ContainsKey(c.Type))
                 claimDict.Add(c.Type, c.Value);
             else

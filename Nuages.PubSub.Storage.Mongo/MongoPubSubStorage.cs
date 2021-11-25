@@ -45,4 +45,13 @@ public class MongoPubSubStorage : IPubSubStorage
     {
         throw new NotImplementedException();
     }
+
+    public async Task Initialize()
+    {
+        await Task.Run(() =>
+        {
+            _webSocketRepository.InitializeIndexes();
+            ;
+        });
+    }
 }
