@@ -9,7 +9,7 @@
         <PackageReference Include="Nuages.MongoDB" Version="0.0.10-preview" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Nuages.PubSub.Lambda\Nuages.PubSub.Lambda.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.WebSocket\Nuages.PubSub.WebSocket.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage\Nuages.PubSub.Storage.csproj" />
     </ItemGroup>
 </Project>

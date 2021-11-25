@@ -1,18 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.LambdaApp", "Nuages.PubSub.LambdaApp\Nuages.PubSub.LambdaApp.csproj", "{113A1ED3-E35B-44E8-9D28-DFEC19280D58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Application", "Nuages.PubSub.WebSocket.Application\Nuages.PubSub.WebSocket.Application.csproj", "{113A1ED3-E35B-44E8-9D28-DFEC19280D58}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Samples.Console", "Nuages.PubSub.Samples.Console\Nuages.PubSub.Samples.Console.csproj", "{90032C05-C7FF-4AD6-B7D5-1CF271AD9A29}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E97A975A-2951-452E-8080-891F5D6D9347}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Lambda", "Nuages.PubSub.Lambda\Nuages.PubSub.Lambda.csproj", "{71D52B82-5113-46EF-A8BA-64FE0B8A6ECC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket", "Nuages.PubSub.WebSocket\Nuages.PubSub.WebSocket.csproj", "{71D52B82-5113-46EF-A8BA-64FE0B8A6ECC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.Mongo", "Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj", "{B13D2D4B-4BA4-43B0-95FB-BBEE1052531C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Service", "Nuages.PubSub.Service\Nuages.PubSub.Service.csproj", "{61122EDB-AFF1-4A5B-A952-E895EEE86389}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services", "Nuages.PubSub.Services\Nuages.PubSub.Services.csproj", "{61122EDB-AFF1-4A5B-A952-E895EEE86389}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage", "Nuages.PubSub.Storage\Nuages.PubSub.Storage.csproj", "{6F4B8761-F57D-4850-B56A-C1830E26AF69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API", "Nuages.PubSub.API\Nuages.PubSub.API.csproj", "{2DEC1481-B2AB-47CF-8DF0-B34F4453401E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{6F4B8761-F57D-4850-B56A-C1830E26AF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F4B8761-F57D-4850-B56A-C1830E26AF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F4B8761-F57D-4850-B56A-C1830E26AF69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DEC1481-B2AB-47CF-8DF0-B34F4453401E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DEC1481-B2AB-47CF-8DF0-B34F4453401E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DEC1481-B2AB-47CF-8DF0-B34F4453401E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DEC1481-B2AB-47CF-8DF0-B34F4453401E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{90032C05-C7FF-4AD6-B7D5-1CF271AD9A29} = {E97A975A-2951-452E-8080-891F5D6D9347}

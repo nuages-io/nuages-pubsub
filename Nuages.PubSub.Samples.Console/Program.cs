@@ -36,9 +36,9 @@ class Program
     // ReSharper disable once UnusedParameter.Local
     private static async Task Main(string[] args)
     {
-        System.Console.WriteLine("Starting WebSocket Console!");
+        System.Console.WriteLine("Starting Nuages.PubSub.WebSocket Console!");
         _configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
             .AddJsonFile("appsettings.json", false)
             .AddJsonFile("appsettings.local.json", true)
             .Build();
@@ -64,7 +64,7 @@ class Program
         //     .ToDictionary(claim => claim.Type, claim => claim.Value);
 
         System.Console.WriteLine("Try connect to Server with Uri");
-        var url = string.Format(_configuration.GetSection("WebSocket:Url").Value, token);
+        var url = string.Format(_configuration.GetSection("Nuages.PubSub.WebSocket:Url").Value, token);
 
         LogData(url);
             
@@ -83,7 +83,7 @@ class Program
             _webSocket = new ClientWebSocket();
             await _webSocket.ConnectAsync(new Uri(uri), CancellationToken.None);
 
-            System.Console.WriteLine("WebSocket Connected");
+            System.Console.WriteLine("Nuages.PubSub.WebSocket Connected");
             System.Console.WriteLine("Sending echo message...");
                 
             var msg = new {type = "echo", data = ""};
@@ -103,7 +103,7 @@ class Program
             lock (ConsoleLock)
             {
                 System.Console.ForegroundColor = ConsoleColor.Red;
-                System.Console.WriteLine("WebSocket closed.");
+                System.Console.WriteLine("Nuages.PubSub.WebSocket closed.");
                 System.Console.ResetColor();
             }
         }
