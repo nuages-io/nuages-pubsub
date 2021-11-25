@@ -5,6 +5,7 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Nuages.PubSub.Services;
 using Nuages.PubSub.WebSocket.Model;
 
 namespace Nuages.PubSub.WebSocket.Routes.Authorize;

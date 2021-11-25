@@ -13,12 +13,9 @@ using Routes.Echo;
 
 public static class PubSubLambdaConfigExtension
 {
-    public static IPubSubBuilder AddPubSubLambdaRoutes(this ServiceCollection serviceCollection, IConfiguration configuration, Action<PubSubAuthOptions>? configureOptions = null)
+    public static IPubSubBuilder AddPubSubLambdaRoutes(this ServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.Configure<PubSubAuthOptions>(configuration.GetSection("Nuages:Auth"));
-
-        if (configureOptions != null)
-            serviceCollection.Configure(configureOptions);
+    
         
         serviceCollection.AddScoped<IAuthorizeRoute, AuthorizeRoute>();
         serviceCollection.AddScoped<IConnectRoute, ConnectRoute>();

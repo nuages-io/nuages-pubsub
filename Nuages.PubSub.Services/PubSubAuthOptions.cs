@@ -1,4 +1,4 @@
-namespace Nuages.PubSub.WebSocket.Model;
+namespace Nuages.PubSub.Services;
 
 public class PubSubAuthOptions
 {

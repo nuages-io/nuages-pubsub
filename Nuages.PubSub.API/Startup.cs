@@ -25,12 +25,7 @@ public class Startup
             
         services
             .AddPubSubService(_configuration)
-            .AddPubSubMongoStorage(config =>
-            {
-                config.Connection =
-                    "mongodb+srv://nuages:wCFwlSoX4qK200E1@nuages-dev-2.qxak3.mongodb.net/admin?replicaSet=atlas-jugbu4-shard-0&readPreference=primary&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1";
-            });
-
+            .AddPubSubMongoStorage();
         
         services.AddControllers();
     }
