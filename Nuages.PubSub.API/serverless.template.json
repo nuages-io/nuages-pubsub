@@ -8,9 +8,13 @@
         "Type": "String",
         "Description": "Mongo ConnectionString"
       },
-      "Issuers": {
+      "Issuer": {
         "Type": "String",
-        "Description": "List of valid issuers"
+        "Description": "Issuer used when emitting token"
+      },
+      "Secret": {
+        "Type": "String",
+        "Description": "Secret used when signing token"
       },
       "ConfigurationManagerPath": {
         "Type": "String",
@@ -38,7 +42,10 @@
               "Ref": "ConfigurationManagerPath"
             },
             "Nuages__Auth__Issuer": {
-              "Ref": "Issuers"
+              "Ref": "Issuer"
+            },
+            "Nuages__Auth__Secret": {
+              "Ref": "Secret"
             }
           }
         },
