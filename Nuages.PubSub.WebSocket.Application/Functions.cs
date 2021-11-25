@@ -6,7 +6,6 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.WebSocket;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Mongo;
 

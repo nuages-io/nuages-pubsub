@@ -3,14 +3,13 @@ using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Storage;
 using Nuages.PubSub.WebSocket.Model;
 
 namespace Nuages.PubSub.WebSocket.Routes.Send;
 
 public class SendRoute : ISendRoute
 {
-    const string Target = "sendmessage";
+    private const string Target = "sendmessage";
     
     private readonly IPubSubService _pubSubService;
 

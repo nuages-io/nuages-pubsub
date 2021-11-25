@@ -41,7 +41,7 @@ public class MongoPubSubStorage : IPubSubStorage
         return _webSocketRepository.AsQueryable().Where(c => c.Hub == hub).Select(c => c.ConnectionId);
     }
 
-    public IEnumerable<string> GetAllConnectionForGroup(string hub, string @group)
+    public IEnumerable<string> GetAllConnectionForGroup(string hub, string group)
     {
         throw new NotImplementedException();
     }

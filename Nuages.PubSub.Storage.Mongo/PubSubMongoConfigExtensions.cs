@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.MongoDB;
-using Nuages.PubSub.WebSocket;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 

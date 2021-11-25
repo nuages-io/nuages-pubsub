@@ -10,11 +10,11 @@ public class ValuesController : ControllerBase
     [HttpGet]
     public IEnumerable<string> Get()
     {
-        return new string[] { "value1", "value2" };
+        return new [] { "value1", "value2" };
     }
 
     // GET api/values/5
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public string Get(int id)
     {
         return "value";
@@ -27,13 +27,13 @@ public class ValuesController : ControllerBase
     }
 
     // PUT api/values/5
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public void Put(int id, [FromBody] string value)
     {
     }
 
     // DELETE api/values/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public void Delete(int id)
     {
     }

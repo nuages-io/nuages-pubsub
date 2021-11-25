@@ -1,7 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
-using Amazon.ApiGatewayManagementApi;
-using Amazon.ApiGatewayManagementApi.Model;
+﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;

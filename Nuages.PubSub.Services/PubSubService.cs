@@ -8,6 +8,7 @@ using Nuages.PubSub.Storage;
 
 namespace Nuages.PubSub.Services;
 
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class PubSubService : IPubSubService
 {
     private readonly IPubSubStorage _pubSubStorage;
