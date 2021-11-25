@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nuages.PubSub.Services;
+using Nuages.PubSub.Storage.Mongo;
 
 namespace Nuages.PubSub.API;
 
@@ -11,14 +13,21 @@ public class Startup
 {
     public Startup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        _configuration = configuration;
     }
 
-    private static IConfiguration Configuration { get; set; }
+    private static IConfiguration _configuration;
 
     // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton(_configuration);
+            
+        services
+            .AddPubSubService()
+            .AddPubSubMongoStorage(_configuration);
+
+        
         services.AddControllers();
     }
 

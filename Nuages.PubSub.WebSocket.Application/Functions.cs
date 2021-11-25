@@ -20,7 +20,7 @@ namespace Nuages.PubSub.WebSocket.Application;
 // ReSharper disable once UnusedType.Global
 public class Functions : PubSubFunction
 {
-    public Functions()
+    public Functions() 
     {
         var configManager = new ConfigurationManager();
 

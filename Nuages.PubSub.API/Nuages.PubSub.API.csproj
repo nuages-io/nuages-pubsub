@@ -7,6 +7,10 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="6.0.3"/>
+        <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="6.0.3" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj" />
     </ItemGroup>
 </Project>
