@@ -1,8 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Nuages.PubSub.WebSocket.Model;
 
 namespace Nuages.PubSub.WebSocket.Routes.Authorize;
 
@@ -10,19 +13,21 @@ namespace Nuages.PubSub.WebSocket.Routes.Authorize;
 public class AuthorizeRoute : IAuthorizeRoute
 {
     private readonly IConfiguration _configuration;
+    private readonly PubSubAuthOptions _pubSubAuthOptions;
 
-    public AuthorizeRoute(IConfiguration configuration)
+    public AuthorizeRoute(IConfiguration configuration, IOptions<PubSubAuthOptions> pubSubAuthOptions)
     {
         _configuration = configuration;
+        _pubSubAuthOptions = pubSubAuthOptions.Value;
     }
     
     public async Task<APIGatewayCustomAuthorizerResponse> AuthorizeAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
     {
+        
         var architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
         var dotnetVersion = Environment.Version.ToString();
         context.Logger.LogLine(
             $"Architecture: {architecture}, .NET Version: {dotnetVersion}");
-
             
         var token = input.QueryStringParameters["access_token"];
         if (string.IsNullOrEmpty(token))
@@ -30,25 +35,40 @@ public class AuthorizeRoute : IAuthorizeRoute
 
         var claimDict = GetClaims(token);
 
-        var keys = await GetSigningKeys(claimDict["iss"], context);
-
         context.Logger.LogLine($"iss: {claimDict["iss"]}");
             
-        context.Logger.LogLine($"Valid issuers : {_configuration.GetSection("Nuages:Auth:Issuers").Value}");
-        context.Logger.LogLine($"Valid audiences : {_configuration.GetSection("Nuages:Auth:Audiences").Value}");
+        context.Logger.LogLine($"Valid issuers : {_pubSubAuthOptions.Issuers}");
+        context.Logger.LogLine($"Valid audiences : {_pubSubAuthOptions.Audiences}");
             
-        var validIssuers = _configuration.GetSection("Nuages:Auth:Issuers").Value.Split(",");
-        var validAudiences = _configuration.GetSection("Nuages:Auth:Audiences").Value.Split(",");
+        var validIssuers = _pubSubAuthOptions.Issuers.Split(",");
+        var validAudiences = _pubSubAuthOptions.Audiences?.Split(",");
+
+        List<SecurityKey> keys = new List<SecurityKey>();
+        
+        var secret = _pubSubAuthOptions.Secret;
+        if (!string.IsNullOrEmpty(secret))
+        {
+            var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+            keys = new List<SecurityKey> { mySecurityKey };
+            
+            context.Logger.LogLine($"Secret : {secret}");
+
+        }
+        else
+        {
+            keys.AddRange(await GetSigningKeys(claimDict["iss"], context));
+        }
 
         try
         {
             new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
             {
+                ValidateIssuerSigningKey = true,
                 IssuerSigningKeys = keys,
                 ValidIssuers = validIssuers,
                 ValidateIssuer = true,
                 ValidAudiences = validAudiences,
-                ValidateAudience = true
+                ValidateAudience = validAudiences?.Any() ?? false
             }, out _);
 
             return CreateResponse(true, input.MethodArn, claimDict);
@@ -73,17 +93,13 @@ public class AuthorizeRoute : IAuthorizeRoute
 
     private async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
     {
-        var endpoint = GetEndpoint(issuer);
-
-        var jsonWebKeySetUrl =  $"{endpoint}.well-known/jwks.json";
+        var jsonWebKeySetUrl =  $"{GetEndpoint(issuer)}{_pubSubAuthOptions.JsonWebKeySetUrlPath}";
             
         context.Logger.LogLine(jsonWebKeySetUrl);
             
-        var disableSslCheck = Convert.ToBoolean(_configuration.GetSection("Nuages:DisableSslCheck").Value) ;
-
         using var handler = new HttpClientHandler();
 
-        if (disableSslCheck)
+        if (_pubSubAuthOptions.DisableSslCheck)
             handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
         using var httpClient = new HttpClient(handler);

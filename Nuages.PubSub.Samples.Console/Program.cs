@@ -64,7 +64,7 @@ class Program
         //     .ToDictionary(claim => claim.Type, claim => claim.Value);
 
         System.Console.WriteLine("Try connect to Server with Uri");
-        var url = string.Format(_configuration.GetSection("Nuages.PubSub.WebSocket:Url").Value, token);
+        var url = string.Format(_configuration.GetSection("WebSocket:Url").Value, token);
 
         LogData(url);
             
@@ -122,7 +122,7 @@ class Program
                 }
             };
 
-            var msg = new {type = "sendmessage", data = JsonSerializer.Serialize(o)};
+            var msg = new {type = "sendmessage", data = o};
 
             await SendMessageAsync(webSocket, msg);
         }

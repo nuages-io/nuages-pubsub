@@ -24,8 +24,8 @@ public class Startup
         services.AddSingleton(_configuration);
             
         services
-            .AddPubSubService()
-            .AddPubSubMongoStorage(_configuration);
+            .AddPubSubService(_configuration)
+            .AddPubSubMongoStorage();
 
         
         services.AddControllers();

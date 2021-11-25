@@ -49,9 +49,9 @@ public class Functions : PubSubFunction
         serviceCollection.AddSingleton(configuration);
             
         serviceCollection
-            .AddPubSubLambdaRoutes()
+            .AddPubSubLambdaRoutes(configuration)
             .AddPubSubService()
-            .AddPubSubMongoStorage(configuration);
+            .AddPubSubMongoStorage();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 

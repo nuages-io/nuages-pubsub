@@ -14,7 +14,8 @@
     },
     "Audiences": {
       "Type": "String",
-      "Description": "List of valid audiences"
+      "Description": "List of valid audiences. Leave blank if you do not want to validate",
+      "Default" : ""
     },
     "DisableSslCheck": {
       "Type": "String",
@@ -22,7 +23,18 @@
     },
     "ConfigurationManagerPath": {
       "Type": "String",
-      "Description": "Path of the COnfiguration Manager section to load into the configuration"
+      "Description": "Path of the Configuration Manager section to load into the configuration",
+      "Default" : ""
+    },
+    "Secret": {
+      "Type": "String",
+      "Description": "Secret ket used when signing the JWT. LEave blank to use ",
+      "Default" : ""
+    },
+    "JsonWebKeySetUrlPath": {
+      "Type": "String",
+      "Description": "Url used to retrieve signing key when no secret is provided ",
+      "Default" : ".well-known/jwks.json"
     }
   },
   "Resources": {
@@ -99,17 +111,8 @@
             "Nuages__Mongo__Connection": {
               "Ref": "MongoConnectionString"
             },
-            "Nuages__Auth__Issuers": {
-              "Ref": "Issuers"
-            },
-            "Nuages__Auth__Audiences": {
-              "Ref": "Audiences"
-            },
-            "Nuages__DisableSslCheck": {
-              "Ref": "DisableSslCheck"
-            },
             "Nuages__ConfigurationManagerPath": {
-              "Ref": "MongoConnectionString"
+              "Ref": "ConfigurationManagerPath"
             }
           }
         }
@@ -134,17 +137,8 @@
             "Nuages__Mongo__Connection": {
               "Ref": "MongoConnectionString"
             },
-            "Nuages__Auth__Issuers": {
-              "Ref": "Issuers"
-            },
-            "Nuages__Auth__Audiences": {
-              "Ref": "Audiences"
-            },
-            "Nuages__DisableSslCheck": {
-              "Ref": "DisableSslCheck"
-            },
             "Nuages__ConfigurationManagerPath": {
-              "Ref": "MongoConnectionString"
+              "Ref": "ConfigurationManagerPath"
             }
           }
         }
@@ -169,17 +163,23 @@
             "Nuages__Mongo__Connection": {
               "Ref": "MongoConnectionString"
             },
+            "Nuages__ConfigurationManagerPath": {
+              "Ref": "ConfigurationManagerPath"
+            },
             "Nuages__Auth__Issuers": {
               "Ref": "Issuers"
             },
             "Nuages__Auth__Audiences": {
               "Ref": "Audiences"
             },
-            "Nuages__DisableSslCheck": {
-              "Ref": "DisableSslCheck"
+            "Nuages_Auth_Secret": {
+              "Ref": "Secret"
             },
-            "Nuages__ConfigurationManagerPath": {
-              "Ref": "MongoConnectionString"
+            "Nuages_Auth_JsonWebKeySetUrlPath": {
+              "Ref": "JsonWebKeySetUrlPath"
+            },
+            "Nuages__Auth_DisableSslCheck": {
+              "Ref": "DisableSslCheck"
             }
           }
         }
@@ -205,17 +205,8 @@
             "Nuages__Mongo__Connection": {
               "Ref": "MongoConnectionString"
             },
-            "Nuages__Auth__Issuers": {
-              "Ref": "Issuers"
-            },
-            "Nuages__Auth__Audiences": {
-              "Ref": "Audiences"
-            },
-            "Nuages__DisableSslCheck": {
-              "Ref": "DisableSslCheck"
-            },
             "Nuages__ConfigurationManagerPath": {
-              "Ref": "MongoConnectionString"
+              "Ref": "ConfigurationManagerPath"
             }
           }
         }
@@ -240,17 +231,8 @@
             "Nuages__Mongo__Connection": {
               "Ref": "MongoConnectionString"
             },
-            "Nuages__Auth__Issuers": {
-              "Ref": "Issuers"
-            },
-            "Nuages__Auth__Audiences": {
-              "Ref": "Audiences"
-            },
-            "Nuages__DisableSslCheck": {
-              "Ref": "DisableSslCheck"
-            },
             "Nuages__ConfigurationManagerPath": {
-              "Ref": "MongoConnectionString"
+              "Ref": "ConfigurationManagerPath"
             }
           }
         }
