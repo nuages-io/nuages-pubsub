@@ -8,11 +8,11 @@
       "Type": "String",
       "Description": "Mongo ConnectionString"
     },
-    "Issuers": {
+    "ValidIssuers": {
       "Type": "String",
       "Description": "List of valid issuers"
     },
-    "Audiences": {
+    "ValidAudiences": {
       "Type": "String",
       "Description": "List of valid audiences. Leave blank if you do not want to validate",
       "Default" : ""
@@ -166,11 +166,11 @@
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
-            "Nuages__Auth__Issuers": {
-              "Ref": "Issuers"
+            "Nuages__Auth__ValidIssuers": {
+              "Ref": "ValidIssuers"
             },
-            "Nuages__Auth__Audiences": {
-              "Ref": "Audiences"
+            "Nuages__Auth__ValidAudiences": {
+              "Ref": "ValidAudiences"
             },
             "Nuages__Auth__Secret": {
               "Ref": "Secret"

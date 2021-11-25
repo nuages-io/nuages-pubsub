@@ -201,8 +201,8 @@ class Program
         var mySecret = "PlmkbJEaT5rnHiT3pKHbpp76qsnNvjfm";
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
 
-        var myIssuer = "https://nuages.auth0.com/";
-        var myAudience = "https://pubsub.nuages.org";
+        var myIssuer = "https://pubsub.nuages.org";
+        var myAudience = "7f1jsfe4sb";
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor

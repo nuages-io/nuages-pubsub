@@ -42,12 +42,21 @@ public class AuthorizeRoute : IAuthorizeRoute
         context.Logger.LogLine($"Alg: {jwtToken.SignatureAlgorithm}");
         context.Logger.LogLine($"Aud: {claimDict["aud"]}");
         
-        context.Logger.LogLine($"Valid issuers : {_pubSubAuthOptions.Issuers}");
-        context.Logger.LogLine($"Valid audiences : {_pubSubAuthOptions.Audiences}");
+        context.Logger.LogLine($"Valid issuers : {_pubSubAuthOptions.ValidIssuers}");
+        context.Logger.LogLine($"Valid audiences : {_pubSubAuthOptions.ValidAudiences}");
             
-        var validIssuers = _pubSubAuthOptions.Issuers.Split(",");
-        var validAudiences = _pubSubAuthOptions.Audiences?.Split(",");
+        var validIssuers = _pubSubAuthOptions.ValidIssuers.Split(",");
+        var validAudiences = _pubSubAuthOptions.ValidAudiences?.Split(",").ToList();
 
+        if (validAudiences == null)
+        {
+            validAudiences = new List<string> { input.RequestContext.ApiId };
+        }
+        else
+        {
+            validAudiences.Add(input.RequestContext.ApiId );
+        }
+        
         List<SecurityKey> keys = new List<SecurityKey>();
         
         var secret = _pubSubAuthOptions.Secret;
