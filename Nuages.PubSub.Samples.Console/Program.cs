@@ -202,7 +202,7 @@ class Program
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
 
         var myIssuer = "https://pubsub.nuages.org";
-        var myAudience = "7f1jsfe4sb";
+        var myAudience = "PubSubAudience";
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
