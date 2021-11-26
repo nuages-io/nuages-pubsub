@@ -5,7 +5,6 @@ using System.Text;
 using Amazon;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Runtime;
 using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Storage;

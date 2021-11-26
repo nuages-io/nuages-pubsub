@@ -6,10 +6,15 @@ namespace Nuages.PubSub.Storage.Mongo;
 public class MongoPubSubStorage : IPubSubStorage
 {
     private readonly IWebSocketConnectionRepository _webSocketConnectionRepository;
+    private readonly IWebSocketGroupConnectionRepository _webSocketGroupConnectionRepository;
+    private readonly IWebSocketGroupUserRepository _webSocketGroupUserRepository;
 
-    public MongoPubSubStorage(IWebSocketConnectionRepository webSocketConnectionRepository)
+    public MongoPubSubStorage(IWebSocketConnectionRepository webSocketConnectionRepository, 
+        IWebSocketGroupConnectionRepository webSocketGroupConnectionRepository, IWebSocketGroupUserRepository webSocketGroupUserRepository)
     {
         _webSocketConnectionRepository = webSocketConnectionRepository;
+        _webSocketGroupConnectionRepository = webSocketGroupConnectionRepository;
+        _webSocketGroupUserRepository = webSocketGroupUserRepository;
     }
 
     public async Task InsertAsync(string audience, string connectionid, string sub, TimeSpan? expireDelay = null)
@@ -42,14 +47,16 @@ public class MongoPubSubStorage : IPubSubStorage
             .Select(c => c.ConnectionId));
     }
 
-    public async Task<IEnumerable<string>> GetConnectionIdsForGroupAsync(string audience, string @group)
+    public async Task<IEnumerable<string>> GetConnectionIdsForGroupAsync(string audience, string group)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(_webSocketGroupConnectionRepository.AsQueryable()
+            .Where(c => c.Hub == audience && c.Group == group).Select(c => c.ConnectionId));
     }
     
-    public async Task<bool> GroupHasConnectionsAsync(string audience, string @group)
+    public async Task<bool> GroupHasConnectionsAsync(string audience, string group)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(_webSocketGroupConnectionRepository.AsQueryable()
+            .Any(c => c.Hub == audience && c.Group == group));
     }
 
     public async Task<IEnumerable<string>> GetConnectionIdsForUserAsync(string audience, string userId)
@@ -74,6 +81,8 @@ public class MongoPubSubStorage : IPubSubStorage
         await Task.Run(() =>
         {
             _webSocketConnectionRepository.InitializeIndexes();
+            _webSocketGroupConnectionRepository.InitializeIndexes();
+            _webSocketGroupUserRepository.InitializeIndexes();
         });
     }
 }

@@ -14,4 +14,6 @@ public class WebSocketConnection : MongoDocument
     public DateTime CreatedOn { get; set; }
     public DateTime? ExpireOn { get; set; }
     public string Hub { get; set; } = "";
+
+    public List<string>? Permissions { get; set; } 
 }

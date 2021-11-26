@@ -9,57 +9,60 @@ using Nuages.MongoDB.Repository;
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
 // ReSharper disable once UnusedType.Global
-public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection>, IWebSocketConnectionRepository
+public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>, IWebSocketGroupUserRepository
 {
-    protected WebSocketConnectionRepository(IMongoDatabase db) : base(db)
+    protected WebSocketGroupUserRepository(IMongoDatabase db) : base(db)
     {
     }
 
     // ReSharper disable once UnusedMember.Global
-    public WebSocketConnectionRepository(IMongoDatabaseProvider provider) : base(provider)
+    public WebSocketGroupUserRepository(IMongoDatabaseProvider provider) : base(provider)
     {
     }
 
     public void InitializeIndexes()
     {
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketConnection>(
-                Builders<WebSocketConnection>.IndexKeys
+            new CreateIndexModel<WebSocketGroupUser>(
+                Builders<WebSocketGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
-                    .Ascending(p => p.ConnectionId)
+                    .Ascending(p => p.Group)
+                    .Ascending(p => p.Sub)
                 , new CreateIndexOptions
                 {
-                    Name = "UK_Id",
+                    Name = "UK_HubGroupId",
                     Unique = true
                 })
         );
         
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketConnection>(
-                Builders<WebSocketConnection>.IndexKeys
+            new CreateIndexModel<WebSocketGroupUser>(
+                Builders<WebSocketGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
+                    .Ascending(p => p.Group)
                 , new CreateIndexOptions
                 {
-                    Name = "IX_Hub",
+                    Name = "IX_HubGroup",
                     Unique = false
                 })
         );
         
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketConnection>(
-                Builders<WebSocketConnection>.IndexKeys
+            new CreateIndexModel<WebSocketGroupUser>(
+                Builders<WebSocketGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Sub)
                 , new CreateIndexOptions
                 {
-                    Name = "IX_Sub",
+                    Name = "IX_HubUser",
                     Unique = false
                 })
         );
+        
     }
 }
 
-public interface IWebSocketConnectionRepository : IMongoRepository<WebSocketConnection>
+public interface IWebSocketGroupUserRepository : IMongoRepository<WebSocketGroupUser>
 {
     void InitializeIndexes();
 }

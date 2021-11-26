@@ -6,9 +6,9 @@ public partial class PubSubServiceClient
     private readonly string _apiKey;
     private readonly string _audience;
 
-    private HttpClient? _httpClient = null;
+    private HttpClient? _httpClient;
 
-    HttpClient HttpClient
+    private HttpClient HttpClient
     {
         get { return _httpClient ??= new HttpClient(); }
     }
