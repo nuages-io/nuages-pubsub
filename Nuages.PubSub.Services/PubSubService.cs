@@ -22,7 +22,7 @@ public class PubSubService : IPubSubService
         _pubSubStorage = pubSubStorage;
     }
     
-    public virtual async Task<APIGatewayProxyResponse> SendToOneAsync(string url, string hub,  string connectionId, string content)
+    public virtual async Task<APIGatewayProxyResponse> SendToConnectionAsync(string url, string hub,  string connectionId, string content)
     {
         await SendMessageAsync(url, hub, new List<string>{ connectionId } , content);
         
@@ -30,6 +30,16 @@ public class PubSubService : IPubSubService
         {
             StatusCode = (int)HttpStatusCode.OK
         };
+    }
+
+    public Task<APIGatewayProxyResponse> SendToGroupAsync(string url, string hub, string @group, string content)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<APIGatewayProxyResponse> SendToUserAsync(string url, string hub, string userId, string content)
+    {
+        throw new NotImplementedException();
     }
 
     public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = null)
@@ -68,7 +78,7 @@ public class PubSubService : IPubSubService
 
     public virtual async Task<APIGatewayProxyResponse> SendToAllAsync(string url, string hub, string content)
     {
-        var ids = _pubSubStorage.GetAllConnectionIds(hub).ToList();
+        var ids = _pubSubStorage.GetAllConnectionIds(hub);
         
         await SendMessageAsync(url, hub, ids,  content);
         

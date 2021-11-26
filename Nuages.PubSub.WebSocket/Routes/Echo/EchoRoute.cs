@@ -39,7 +39,7 @@ public class EchoRoute : IEchoRoute
                 }
             };
 
-            return await _pubSubService.SendToOneAsync(endpoint, request.RequestContext.ApiId,  connectionId, JsonSerializer.Serialize(result) );
+            return await _pubSubService.SendToConnectionAsync(endpoint, request.RequestContext.ApiId,  connectionId, JsonSerializer.Serialize(result) );
             
         }
         catch (Exception e)
