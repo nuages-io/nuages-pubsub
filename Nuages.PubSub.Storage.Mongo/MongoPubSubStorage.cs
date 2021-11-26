@@ -12,14 +12,14 @@ public class MongoPubSubStorage : IPubSubStorage
         _webSocketRepository = webSocketRepository;
     }
 
-    public async Task InsertAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay = null)
+    public async Task InsertAsync(string audience, string connectionid, string sub, TimeSpan? expireDelay = null)
     {
         var conn = new WebSocketConnection
         {
             Id = ObjectId.GenerateNewId().ToString(),
             ConnectionId = connectionid,
             Sub = sub,
-            Hub = hub,
+            Hub = audience,
             CreatedOn = DateTime.UtcNow
         };
 
@@ -31,22 +31,45 @@ public class MongoPubSubStorage : IPubSubStorage
         await _webSocketRepository.InsertOneAsync(conn);
     }
 
-    public async Task DeleteAsync(string hub, string connectionId)
+    public async Task DeleteAsync(string audience, string connectionId)
     {
-        await _webSocketRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
+        await _webSocketRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == audience);
     }
 
-    public IEnumerable<string> GetAllConnectionIds(string hub)
+    public async Task<IEnumerable<string>> GetAllConnectionIdsAsync(string audience)
     {
-        return _webSocketRepository.AsQueryable().Where(c => c.Hub == hub).Select(c => c.ConnectionId);
+        return await Task.FromResult(_webSocketRepository.AsQueryable().Where(h => h.Hub == audience)
+            .Select(c => c.ConnectionId));
     }
 
-    public IEnumerable<string> GetAllConnectionForGroup(string hub, string group)
+    public async Task<IEnumerable<string>> GetConnectionIdsForGroupAsync(string audience, string @group)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public async Task<bool> GroupHasConnectionsAsync(string audience, string @group)
     {
         throw new NotImplementedException();
     }
 
-    public async Task Initialize()
+    public async Task<IEnumerable<string>> GetConnectionIdsForUserAsync(string audience, string userId)
+    {
+        return await Task.FromResult(_webSocketRepository.AsQueryable().Where(h => h.Hub == audience && h.Sub == userId).Select(c => c.ConnectionId));
+    }
+
+    public async Task<bool> UserHasConnectionsAsync(string audience, string userId)
+    {
+        return await Task.FromResult(_webSocketRepository.AsQueryable().Any(h => h.Hub == audience && h.Sub == userId));
+    }
+    
+    public async Task<bool> ConnectionExistsAsync(string connectionId, string audience)
+    {
+        return await Task.FromResult(
+            _webSocketRepository.AsQueryable().Any(c => c.Hub == audience &&  c.ConnectionId == connectionId)
+        );
+    }
+
+    public async Task InitializeAsync()
     {
         await Task.Run(() =>
         {

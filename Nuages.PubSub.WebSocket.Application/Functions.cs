@@ -59,6 +59,6 @@ public class Functions : PubSubFunction
         GetRequiredServices(serviceProvider);
 
         var pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
-        pubSubStorage.Initialize();
+        pubSubStorage.InitializeAsync();
     }
 }

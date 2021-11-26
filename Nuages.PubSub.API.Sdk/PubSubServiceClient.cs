@@ -1,11 +1,17 @@
 ﻿namespace Nuages.PubSub.API.Sdk;
 
-public class PubSubServiceClient
+public partial class PubSubServiceClient
 {
     private readonly string _url;
     private readonly string _apiKey;
     private readonly string _audience;
-    
+
+    private HttpClient? _httpClient = null;
+
+    HttpClient HttpClient
+    {
+        get { return _httpClient ??= new HttpClient(); }
+    }
     public PubSubServiceClient(string url, string apiKey, string audience)
     {
         _url = url;
@@ -13,27 +19,13 @@ public class PubSubServiceClient
         _audience = audience;
     }
     
-    public async Task<string> GetClientAccessToken(string userId, TimeSpan? expiresAfter = null, IEnumerable<string>? roles = null)
+    public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = null, IEnumerable<string>? roles = null)
     {
-        var httpClient = new HttpClient();
-    
-        var webService = new AuthClient(httpClient)
+        var webService = new AuthClient(HttpClient)
         {
             BaseUrl = _url
         };
     
         return await webService.GetClientAccessTokenAsync(userId, _audience, expiresAfter, roles);
-    }
-
-    public async Task SendToAll(string message)
-    {
-        var httpClient = new HttpClient();
-    
-        var webService = new AuthClient(httpClient)
-        {
-            BaseUrl = _url
-        };
-    
-        await webService.SendToAllAsync(_url, _audience, message);
     }
 }

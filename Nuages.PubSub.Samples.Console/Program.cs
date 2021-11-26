@@ -69,7 +69,7 @@ class Program
     
     private static string GenerateToken(string userId = "auth0|619a95dfd84c9a0068fd57cd")
     {
-        return _pubSubClient.GetClientAccessToken(userId, TimeSpan.FromDays(7), new List<string>
+        return _pubSubClient.GetClientAccessTokenAsync(userId, TimeSpan.FromDays(7), new List<string>
         {
             "pubsub.sendToGroup"
         }).Result;

@@ -13,7 +13,7 @@ using Nuages.PubSub.Storage;
 namespace Nuages.PubSub.Services;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public class PubSubService : IPubSubService
+public partial class PubSubService : IPubSubService
 {
     private readonly IPubSubStorage _pubSubStorage;
 
@@ -22,24 +22,13 @@ public class PubSubService : IPubSubService
         _pubSubStorage = pubSubStorage;
     }
     
-    public virtual async Task<APIGatewayProxyResponse> SendToConnectionAsync(string url, string hub,  string connectionId, string content)
+    private static AmazonApiGatewayManagementApiClient CreateApiGateway(string url)
     {
-        await SendMessageAsync(url, hub, new List<string>{ connectionId } , content);
-        
-        return new APIGatewayProxyResponse
+        return new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
         {
-            StatusCode = (int)HttpStatusCode.OK
-        };
-    }
-
-    public Task<APIGatewayProxyResponse> SendToGroupAsync(string url, string hub, string @group, string content)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<APIGatewayProxyResponse> SendToUserAsync(string url, string hub, string userId, string content)
-    {
-        throw new NotImplementedException();
+            AuthenticationRegion = RegionEndpoint.CACentral1.SystemName,
+            ServiceURL = url
+        });
     }
 
     public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = null)
@@ -70,35 +59,16 @@ public class PubSubService : IPubSubService
                 tokenDescriptor.Claims.Add(new KeyValuePair<string, object>(role, "true"));
             }
         }
-        
-        
+
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
 
-    public virtual async Task<APIGatewayProxyResponse> SendToAllAsync(string url, string hub, string content)
-    {
-        var ids = _pubSubStorage.GetAllConnectionIds(hub);
-        
-        await SendMessageAsync(url, hub, ids,  content);
-        
-        return new APIGatewayProxyResponse
-        {
-            StatusCode = (int)HttpStatusCode.OK
-        };
-    }
-
-    
-
-    protected virtual async Task SendMessageAsync(string url, string hub, IEnumerable<string> connectionIds,  string content)
+    protected virtual async Task SendMessageAsync(string url, string audience, IEnumerable<string> connectionIds,  string content)
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-        
-        using var apiGateway = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
-        {
-            AuthenticationRegion = RegionEndpoint.CACentral1.SystemName,
-            ServiceURL = url
-        });
+
+        using var apiGateway = CreateApiGateway(url);
         
         foreach (var connectionId in connectionIds)
         {
@@ -113,7 +83,6 @@ public class PubSubService : IPubSubService
                 stream.Position = 0;
                     
                 await apiGateway.PostToConnectionAsync(postConnectionRequest);
-
             }
             catch (AmazonServiceException e)
             {
@@ -123,12 +92,25 @@ public class PubSubService : IPubSubService
                 // from our collection.
                 if (e.StatusCode == HttpStatusCode.Gone)
                 {
-                    await _pubSubStorage.DeleteAsync(hub, postConnectionRequest.ConnectionId);
+                    await _pubSubStorage.DeleteAsync(audience, postConnectionRequest.ConnectionId);
                 }
-               
             }
         }
-        
-       
+    }
+    
+    private async Task CloseConnectionsAsync(string url, string audience, IEnumerable<string> connectionIds)
+    {
+        var api = CreateApiGateway(url);
+
+        foreach (var connectionId in connectionIds)
+        {
+            await api.DeleteConnectionAsync(new DeleteConnectionRequest
+            {
+                ConnectionId = connectionId
+            });
+
+            await _pubSubStorage.DeleteAsync(audience, connectionId);
+        }
+   
     }
 }
