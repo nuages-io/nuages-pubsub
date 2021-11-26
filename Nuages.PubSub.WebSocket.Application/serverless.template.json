@@ -35,9 +35,69 @@
       "Type": "String",
       "Description": "Url used to retrieve signing key when no secret is provided ",
       "Default" : ".well-known/jwks.json"
+    },
+    "DomainName": {
+      "Type": "String",
+      "Description": "Public DomainName"
+    },
+    "CertificateArn": {
+      "Type": "String",
+      "Description": "Certificate associated with endpoint"
+    },
+    "HostedZoneId":
+    {
+      "Type": "String",
+      "Description": "Route53 zone id"
     }
   },
   "Resources": {
+    "NuagesDomainName": {
+      "Type": "AWS::ApiGatewayV2::DomainName",
+      "Properties": {
+        "DomainName": {
+          "Ref": "DomainName"
+        },
+        "DomainNameConfigurations": [
+          {
+            "EndpointType": "REGIONAL",
+            "CertificateArn": {
+              "Ref": "CertificateArn"
+            }
+          }
+        ]
+      }
+    },
+    "Route53RecordSetGroup":
+    {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" :
+      {
+        "Name" :{
+          "Ref": "NuagesDomainName"
+        },
+        "Type" : "A",
+        "HostedZoneId" : {"Ref" : "HostedZoneId"},
+        "AliasTarget" :
+        {
+          "DNSName" :  { "Fn::GetAtt" : [ "NuagesDomainName", "RegionalDomainName" ] },
+          "HostedZoneId" : { "Fn::GetAtt" : [ "NuagesDomainName", "RegionalHostedZoneId" ] }
+        }
+      }
+    },
+    "NuagesApiMapping": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "DomainName": {
+          "Ref": "NuagesDomainName"
+        },
+        "ApiId": {
+          "Ref": "NuagesPubSub"
+        },
+        "Stage": {
+          "Ref" : "Stage"
+        }
+      }
+    },
     "NuagesPubSubRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {

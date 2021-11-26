@@ -51,7 +51,6 @@ public class MongoPubSubStorage : IPubSubStorage
         await Task.Run(() =>
         {
             _webSocketRepository.InitializeIndexes();
-            ;
         });
     }
 }

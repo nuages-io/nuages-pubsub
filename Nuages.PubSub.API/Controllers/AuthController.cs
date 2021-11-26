@@ -20,8 +20,8 @@ public class AuthController : Controller
     }
     
     // GET
-    [HttpGet("GetClientAccessUri")]
-    public async Task<ActionResult<string>> GetClientAccessUri(
+    [HttpGet("GetClientAccessToken")]
+    public async Task<ActionResult<string>> GetClientAccessToken(
         string userId, string audience,
         TimeSpan? expiresAfter = null, IEnumerable<string>? roles = null)
     {
@@ -35,8 +35,6 @@ public class AuthController : Controller
         
         var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret, expiresAfter);
 
-        var webSocketUrl = $"{audience}/Prod?access_token={token}";
-
-        return await Task.FromResult(webSocketUrl);
+        return await Task.FromResult(token);
     }
 }

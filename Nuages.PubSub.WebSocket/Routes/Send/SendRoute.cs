@@ -22,7 +22,9 @@ public class SendRoute : ISendRoute
     {
         try
         {
-            var endpoint = $"https://{request.RequestContext.DomainName}/{request.RequestContext.Stage}";
+            var endpoint = $"https://{request.RequestContext.DomainName}";
+            if (endpoint.ToLower().EndsWith("amazonaws.com"))
+                endpoint += $"/{request.RequestContext.Stage}";
             context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
             
             var message = JsonSerializer.Deserialize<SendModel>(request.Body);

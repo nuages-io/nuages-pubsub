@@ -20,12 +20,16 @@ public class EchoRoute : IEchoRoute
     {
         try
         {
-            var endpoint = $"https://{request.RequestContext.DomainName}/{request.RequestContext.Stage}";
+            var endpoint = $"https://{request.RequestContext.DomainName}";
+            if (endpoint.ToLower().EndsWith("amazonaws.com"))
+                endpoint += $"/{request.RequestContext.Stage}";
+            
             context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
 
             var connectionId = request.RequestContext.ConnectionId;
             context.Logger.LogLine($"ECHO ConnectionId: {connectionId}");
-
+            context.Logger.LogLine($"AppId: {request.RequestContext.ApiId}");
+            
             var result = new
             {
                 target = "echo",

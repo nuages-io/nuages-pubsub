@@ -2,23 +2,19 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.WebSocket.Model;
 
 namespace Nuages.PubSub.WebSocket.Routes.Authorize;
 
 // ReSharper disable once UnusedType.Global
 public class AuthorizeRoute : IAuthorizeRoute
 {
-    private readonly IConfiguration _configuration;
     private readonly PubSubAuthOptions _pubSubAuthOptions;
 
-    public AuthorizeRoute(IConfiguration configuration, IOptions<PubSubAuthOptions> pubSubAuthOptions)
+    public AuthorizeRoute(IOptions<PubSubAuthOptions> pubSubAuthOptions)
     {
-        _configuration = configuration;
         _pubSubAuthOptions = pubSubAuthOptions.Value;
     }
     
@@ -58,7 +54,7 @@ public class AuthorizeRoute : IAuthorizeRoute
             validAudiences.Add(input.RequestContext.ApiId );
         }
         
-        List<SecurityKey> keys = new List<SecurityKey>();
+        var keys = new List<SecurityKey>();
         
         var secret = _pubSubAuthOptions.Secret;
         switch (jwtToken.SignatureAlgorithm)
@@ -89,7 +85,7 @@ public class AuthorizeRoute : IAuthorizeRoute
                 ValidIssuers = validIssuers,
                 ValidateIssuer = true,
                 ValidAudiences = validAudiences,
-                ValidateAudience = validAudiences?.Any() ?? false
+                ValidateAudience = true
             }, out _);
 
             return CreateResponse(true, input.MethodArn, claimDict);

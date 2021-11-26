@@ -2,6 +2,7 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using Amazon;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
@@ -77,6 +78,7 @@ public class PubSubService : IPubSubService
         
         using var apiGateway = new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
         {
+            AuthenticationRegion = RegionEndpoint.CACentral1.SystemName,
             ServiceURL = url
         });
         
@@ -97,6 +99,7 @@ public class PubSubService : IPubSubService
             }
             catch (AmazonServiceException e)
             {
+                Console.WriteLine(e.Message);
                 // API Gateway returns a status of 410 GONE then the connection is no
                 // longer available. If this happens, delete the identifier
                 // from our collection.

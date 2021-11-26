@@ -20,13 +20,73 @@
         "Type": "String",
         "Description": "Path of the Configuration Manager section to load into the configuration",
         "Default" : ""
+      },
+      "DomainName": {
+        "Type": "String",
+        "Description": "Public DomainName"
+      },
+      "CertificateArn": {
+        "Type": "String",
+        "Description": "Certificate associated with endpoint"
+      },
+      "HostedZoneId":
+      {
+        "Type": "String",
+        "Description": "Route53 zone id"
       }
     },
   "Conditions": {},
   "Resources": {
+    
+    "NuagesApiDomainName": {
+      "Type": "AWS::ApiGatewayV2::DomainName",
+      "Properties": {
+        "DomainName": {
+          "Ref": "DomainName"
+        },
+        "DomainNameConfigurations": [
+          {
+            "EndpointType": "REGIONAL",
+            "CertificateArn": {
+              "Ref": "CertificateArn"
+            }
+          }
+        ]
+      }
+    },
+    "NuagesApiMapping": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "DomainName": {
+          "Ref": "NuagesApiDomainName"
+        },
+        "ApiId": {
+          "Ref": "ServerlessRestApi"
+        },
+        "Stage": {"Ref" : "ServerlessRestApiProdStage"}
+      }
+    },
+    "Route53RecordSetGroup":
+    {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" :
+      {
+        "Name" :{
+          "Ref": "NuagesApiDomainName"
+        },
+        "Type" : "A",
+        "HostedZoneId" : {"Ref" : "HostedZoneId"},
+        "AliasTarget" :
+        {
+          "DNSName" :  { "Fn::GetAtt" : [ "NuagesApiDomainName", "RegionalDomainName" ] },
+          "HostedZoneId" : { "Fn::GetAtt" : [ "NuagesApiDomainName", "RegionalHostedZoneId" ] }
+        }
+      }
+    },
     "AspNetCoreFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
+        
         "Handler": "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
