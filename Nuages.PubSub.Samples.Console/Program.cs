@@ -130,9 +130,9 @@ class Program
             System.Console.WriteLine("Sending echo message...");
                 
             var msg = new {type = "echo", data = ""};
-            await SendMessageAsync(_webSocket, msg);
+            await SendMessageToSocketAsync(_webSocket, msg);
 
-            await Task.WhenAll(Receive(_webSocket), Send(_webSocket));
+            await Task.WhenAll(ReceiveFromSocket(_webSocket), SendToSocket(_webSocket));
         }
         catch (Exception ex)
         {
@@ -152,7 +152,7 @@ class Program
         }
     }
 
-    private static async Task Send(WebSocket webSocket)
+    private static async Task SendToSocket(WebSocket webSocket)
     {
         while (webSocket.State == WebSocketState.Open)
         {
@@ -167,19 +167,20 @@ class Program
 
             var msg = new {type = "sendmessage", data = o};
 
-            await SendMessageAsync(webSocket, msg);
+            await SendMessageToSocketAsync(webSocket, msg);
         }
     }
 
-    private static async Task SendMessageAsync(WebSocket webSocket, object msg)
+    private static async Task SendMessageToSocketAsync(WebSocket webSocket, object msg)
     {
         var data = JsonSerializer.Serialize(msg);
         LogData($"Sending message {data}");
         var dataToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes(data));
+        
         await webSocket.SendAsync(dataToSend, WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
-    private static async Task Receive(WebSocket webSocket)
+    private static async Task ReceiveFromSocket(WebSocket webSocket)
     {
         var buffer = new byte[1024];
         while (webSocket.State == WebSocketState.Open)

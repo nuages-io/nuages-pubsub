@@ -16,14 +16,24 @@ public class PubSubServiceClient
     public async Task<string> GetClientAccessToken(string userId, TimeSpan? expiresAfter = null, IEnumerable<string>? roles = null)
     {
         var httpClient = new HttpClient();
-
+    
         var webService = new AuthClient(httpClient)
         {
             BaseUrl = _url
         };
-
+    
         return await webService.GetClientAccessTokenAsync(userId, _audience, expiresAfter, roles);
-        
+    }
 
+    public async Task SendToAll(string message)
+    {
+        var httpClient = new HttpClient();
+    
+        var webService = new AuthClient(httpClient)
+        {
+            BaseUrl = _url
+        };
+    
+        await webService.SendToAllAsync(_url, _audience, message);
     }
 }

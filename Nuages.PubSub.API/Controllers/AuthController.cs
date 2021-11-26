@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Controllers;
@@ -36,5 +37,11 @@ public class AuthController : Controller
         var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret, expiresAfter);
 
         return await Task.FromResult(token);
+    }
+
+    [HttpPost("SendToAll")]
+    public async Task SendToAll(string url, string audience, string message)
+    {
+        await _pubSubService.SendToAllAsync(url, audience, message);
     }
 }
