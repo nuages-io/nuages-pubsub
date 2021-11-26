@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Mongo;
 
@@ -30,11 +29,34 @@ public class Startup
         
         services.AddControllers();
 
-        services.AddMvc();
-        services.AddSwaggerGen(c =>
+        services.AddSwaggerDocument(config =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            config.PostProcess = document =>
+            {
+                document.Info.Version = "v1";
+                document.Info.Title = "Nuages WebSocket Service";
+                //document.Info.Description = "A simple ASP.NET Core web API";
+                //document.Info.TermsOfService = "None";
+                document.Info.Contact = new NSwag.OpenApiContact
+                {
+                    Name = "Nuages.io",
+                    Email = string.Empty,
+                    Url = "https://github.com/nuages-io/nuages-pubsub"
+                };
+                document.Info.License = new NSwag.OpenApiLicense
+                {
+                    Name = "Use under LICENCE",
+                    Url = "http://www.apache.org/licenses/LICENSE-2.0"
+                };
+            };
         });
+        
+        //services.AddMvc();
+        
+         // services.AddSwaggerGen(c =>
+        // {
+        //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Nuages WebSocket Service API", Version = "v1" });
+        // });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -60,14 +82,20 @@ public class Startup
                 {
                     await context.Response.WriteAsync("Welcome to running ASP.NET Core on AWS Lambda");
                 });
-            endpoints.MapSwagger();
+            //endpoints.MapSwagger();
+            
         });
         
-        app.UseSwagger();
+        app.UseOpenApi();
+        app.UseSwaggerUi3();
+
+        //app.UseMvc();
         
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("v1/swagger.json", "My API V1");
-        });
+        // app.UseSwagger();
+        //
+        // app.UseSwaggerUI(c =>
+        // {
+        //     c.SwaggerEndpoint("v1/swagger.json", "My API V1");
+        // });
     }
 }

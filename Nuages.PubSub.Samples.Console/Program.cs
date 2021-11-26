@@ -1,18 +1,15 @@
 ﻿#region
 
 using System;
-using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Net.WebSockets;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityModel.Client;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+using Nuages.PubSub.API.Sdk;
 
 #endregion
 
@@ -24,17 +21,15 @@ class Program
 {
     private static readonly object ConsoleLock = new();
 
-
-    private static string _email;
-    private static string _password;
-    private static string _clientId;
-    private static string _secret;
-    private static string _authority;
     private static string _audience;
 
     private static ClientWebSocket _webSocket;
 
     private static IConfigurationRoot _configuration;
+    private static string _wssUrl;
+    private static string _apiUrl;
+    private static string _apiKey;
+    private static PubSubServiceClient _pubSubClient;
 
     // ReSharper disable once UnusedParameter.Local
     private static async Task Main(string[] args)
@@ -46,24 +41,20 @@ class Program
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 
-        _email = _configuration.GetSection("Auth:UserName").Value;
-        _password = _configuration.GetSection("Auth:Password").Value;
-        _clientId = _configuration.GetSection("Auth:ClientId").Value;
-        _secret = _configuration.GetSection("Auth:Secret").Value;
-        _authority = _configuration.GetSection("Auth:Authority").Value;
         _audience = _configuration.GetSection("Auth:Audience").Value;
-
+        _wssUrl = _configuration.GetSection("WebSocket:Url").Value;
+        _apiUrl = _configuration.GetSection("WebSocket:ApiUrl").Value;
+        _apiKey = _configuration.GetSection("WebSocket:ApiKey").Value;
+        
+        _pubSubClient = new PubSubServiceClient(_apiUrl, _apiKey, _audience);
+        
         System.Console.WriteLine("Getting Token...");
-
-        //var token = await GetTokenAsync();
-            
-        //LogData(token);
 
         var token = GenerateToken();
         LogData(token);
         
         System.Console.WriteLine("Try connect to Server with Uri");
-        var url = string.Format(_configuration.GetSection("WebSocket:Url").Value, token);
+        var url = string.Format(_wssUrl, token);
 
         LogData(url);
             
@@ -75,6 +66,59 @@ class Program
         System.Console.WriteLine("----------------------------");
     }
 
+    
+    private static string GenerateToken(string userId = "auth0|619a95dfd84c9a0068fd57cd")
+    {
+        return _pubSubClient.GetClientAccessToken(userId, TimeSpan.FromDays(7), new List<string>
+        {
+            "pubsub.sendToGroup"
+        }).Result;
+        
+        // var mySecret = "";
+        // var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
+        //
+        // var myIssuer = "https://pubsub.nuages.org";
+        // var myAudience = "PubSubAudience";
+        //
+        // var tokenHandler = new JwtSecurityTokenHandler();
+        // var tokenDescriptor = new SecurityTokenDescriptor
+        // {
+        //     Subject = new ClaimsIdentity(new []
+        //     {
+        //         new Claim("sub", userId)
+        //     }),
+        //     Expires = DateTime.UtcNow.AddDays(7),
+        //     Issuer = myIssuer,
+        //     Audience = myAudience,
+        //     SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
+        // };
+        //
+        // var token = tokenHandler.CreateToken(tokenDescriptor);
+        // return tokenHandler.WriteToken(token);
+    }
+    
+    // private static async Task<string> GetTokenAsync()
+    // {
+    //     var client = new HttpClient();
+    //
+    //     var response = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+    //     {
+    //         Address = $"{_authority}/oauth/token",
+    //
+    //         ClientId = _clientId,
+    //         ClientSecret = _secret,
+    //         Scope = "connect:pubsub",
+    //         UserName = _email,
+    //         Password = _password,
+    //         Parameters =
+    //         {
+    //             { "audience", _audience}
+    //         }
+    //     });
+    //
+    //     return response.AccessToken;
+    // }
+    
     private static async Task Connect(string uri)
     {
         try
@@ -155,9 +199,7 @@ class Program
         {
             System.Console.ForegroundColor = receiving ? ConsoleColor.Green : ConsoleColor.Gray;
             System.Console.WriteLine("{0} {1} bytes... ", receiving ? "Received" : "Sent", length);
-
             System.Console.WriteLine(Encoding.UTF8.GetString(buffer, 0, length));
-
             System.Console.ResetColor();
         }
     }
@@ -174,50 +216,4 @@ class Program
         }
     }
 
-    private static async Task<string> GetTokenAsync()
-    {
-        var client = new HttpClient();
-    
-        var response = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
-        {
-            Address = $"{_authority}/oauth/token",
-    
-            ClientId = _clientId,
-            ClientSecret = _secret,
-            Scope = "connect:pubsub",
-            UserName = _email,
-            Password = _password,
-            Parameters =
-            {
-                { "audience", _audience}
-            }
-        });
-    
-        return response.AccessToken;
-    }
-    
-    public static string GenerateToken(string userId = "auth0|619a95dfd84c9a0068fd57cd")
-    {
-        var mySecret = "PlmkbJEaT5rnHiT3pKHbpp76qsnNvjfm";
-        var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
-
-        var myIssuer = "https://pubsub.nuages.org";
-        var myAudience = "PubSubAudience";
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new []
-            {
-                new Claim("sub", userId)
-            }),
-            Expires = DateTime.UtcNow.AddDays(7),
-            Issuer = myIssuer,
-            Audience = myAudience,
-            SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
-        };
-
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
 }

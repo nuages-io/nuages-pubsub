@@ -49,10 +49,18 @@ public class PubSubService : IPubSubService
             SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
         };
 
-        foreach (var role in roles)
+        var roleList = roles.ToList();
+        
+        if (roleList.Any())
         {
-            tokenDescriptor.Claims.Add(new KeyValuePair<string, object>(role, "true"));
+            tokenDescriptor.Claims ??= new Dictionary<string, object>();
+
+            foreach (var role in roleList)
+            {
+                tokenDescriptor.Claims.Add(new KeyValuePair<string, object>(role, "true"));
+            }
         }
+        
         
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
