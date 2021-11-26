@@ -9,14 +9,14 @@ using Nuages.MongoDB.Repository;
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
 // ReSharper disable once UnusedType.Global
-public class WebSocketRepository : MongoRepository<WebSocketConnection>, IWebSocketRepository
+public class WebSocketConnectionConnectionRepository : MongoRepository<WebSocketConnection>, IWebSocketConnectionRepository
 {
-    protected WebSocketRepository(IMongoDatabase db) : base(db)
+    protected WebSocketConnectionConnectionRepository(IMongoDatabase db) : base(db)
     {
     }
 
     // ReSharper disable once UnusedMember.Global
-    public WebSocketRepository(IMongoDatabaseProvider provider) : base(provider)
+    public WebSocketConnectionConnectionRepository(IMongoDatabaseProvider provider) : base(provider)
     {
     }
 
@@ -59,7 +59,7 @@ public class WebSocketRepository : MongoRepository<WebSocketConnection>, IWebSoc
     }
 }
 
-public interface IWebSocketRepository : IMongoRepository<WebSocketConnection>
+public interface IWebSocketConnectionRepository : IMongoRepository<WebSocketConnection>
 {
     void InitializeIndexes();
 }

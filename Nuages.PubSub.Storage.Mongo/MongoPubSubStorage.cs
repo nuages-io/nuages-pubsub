@@ -5,11 +5,11 @@ namespace Nuages.PubSub.Storage.Mongo;
 
 public class MongoPubSubStorage : IPubSubStorage
 {
-    private readonly IWebSocketRepository _webSocketRepository;
+    private readonly IWebSocketConnectionRepository _webSocketConnectionRepository;
 
-    public MongoPubSubStorage(IWebSocketRepository webSocketRepository)
+    public MongoPubSubStorage(IWebSocketConnectionRepository webSocketConnectionRepository)
     {
-        _webSocketRepository = webSocketRepository;
+        _webSocketConnectionRepository = webSocketConnectionRepository;
     }
 
     public async Task InsertAsync(string audience, string connectionid, string sub, TimeSpan? expireDelay = null)
@@ -28,17 +28,17 @@ public class MongoPubSubStorage : IPubSubStorage
             conn.ExpireOn = conn.CreatedOn.Add(expireDelay.Value);
         }
         
-        await _webSocketRepository.InsertOneAsync(conn);
+        await _webSocketConnectionRepository.InsertOneAsync(conn);
     }
 
     public async Task DeleteAsync(string audience, string connectionId)
     {
-        await _webSocketRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == audience);
+        await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == audience);
     }
 
     public async Task<IEnumerable<string>> GetAllConnectionIdsAsync(string audience)
     {
-        return await Task.FromResult(_webSocketRepository.AsQueryable().Where(h => h.Hub == audience)
+        return await Task.FromResult(_webSocketConnectionRepository.AsQueryable().Where(h => h.Hub == audience)
             .Select(c => c.ConnectionId));
     }
 
@@ -54,18 +54,18 @@ public class MongoPubSubStorage : IPubSubStorage
 
     public async Task<IEnumerable<string>> GetConnectionIdsForUserAsync(string audience, string userId)
     {
-        return await Task.FromResult(_webSocketRepository.AsQueryable().Where(h => h.Hub == audience && h.Sub == userId).Select(c => c.ConnectionId));
+        return await Task.FromResult(_webSocketConnectionRepository.AsQueryable().Where(h => h.Hub == audience && h.Sub == userId).Select(c => c.ConnectionId));
     }
 
     public async Task<bool> UserHasConnectionsAsync(string audience, string userId)
     {
-        return await Task.FromResult(_webSocketRepository.AsQueryable().Any(h => h.Hub == audience && h.Sub == userId));
+        return await Task.FromResult(_webSocketConnectionRepository.AsQueryable().Any(h => h.Hub == audience && h.Sub == userId));
     }
     
     public async Task<bool> ConnectionExistsAsync(string connectionId, string audience)
     {
         return await Task.FromResult(
-            _webSocketRepository.AsQueryable().Any(c => c.Hub == audience &&  c.ConnectionId == connectionId)
+            _webSocketConnectionRepository.AsQueryable().Any(c => c.Hub == audience &&  c.ConnectionId == connectionId)
         );
     }
 
@@ -73,7 +73,7 @@ public class MongoPubSubStorage : IPubSubStorage
     {
         await Task.Run(() =>
         {
-            _webSocketRepository.InitializeIndexes();
+            _webSocketConnectionRepository.InitializeIndexes();
         });
     }
 }

@@ -10,7 +10,7 @@ public static class PubSubMongoConfigExtensions
     // ReSharper disable once UnusedMember.Global
     public static void AddPubSubMongoStorage(this IPubSubBuilder builder, Action<MongoOptions>? configure = null)
     {
-        builder.Services.AddScoped<IWebSocketRepository, WebSocketRepository>();
+        builder.Services.AddScoped<IWebSocketConnectionRepository, WebSocketConnectionConnectionRepository>();
         builder.Services.AddScoped<IPubSubStorage, MongoPubSubStorage>();
         builder.Services.AddNuagesMongoDb(builder.Configuration, configure);
     }
