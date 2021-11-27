@@ -14,13 +14,13 @@ public class AllController
     }
     
     [HttpPost("Send")]
-    public async Task Send(string url, string audience, string message)
+    public async Task SendAsync(string url, string audience, string message)
     {
         await _pubSubService.SendToAllAsync(url, audience, message);
     }
     
     [HttpDelete("Close")]
-    public async Task Close(string url, string audience)
+    public async Task CloseAsync(string url, string audience)
     {
         await _pubSubService.CloseAllConnectionsAsync(url, audience);
     }

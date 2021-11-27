@@ -2,7 +2,7 @@ namespace Nuages.PubSub.Storage;
 
 public interface IPubSubStorage
 {
-    Task InsertAsync(string audience, string connectionid, string sub,  TimeSpan? expireDelay = null);
+    Task InsertAsync(string audience, string connectionid, string sub,  TimeSpan? expireDelay = default);
     Task DeleteAsync(string audience, string connectionId);
 
     Task<IEnumerable<string>> GetAllConnectionIdsAsync(string audience);
@@ -13,7 +13,7 @@ public interface IPubSubStorage
     Task<IEnumerable<string>> GetConnectionIdsForUserAsync(string audience, string userId);
     Task<bool> UserHasConnectionsAsync(string audience, string group);
     
-    Task<bool> ConnectionExistsAsync(string connectionId, string audience);
+    Task<bool> ConnectionExistsAsync(string audience, string connectionid);
     
     Task InitializeAsync();
 

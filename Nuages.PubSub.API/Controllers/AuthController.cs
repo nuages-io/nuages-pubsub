@@ -20,7 +20,7 @@ public class AuthController : Controller
     [HttpGet("GetClientAccessToken")]
     public async Task<ActionResult<string>> GetClientAccessTokenAsync(
         string userId, string audience,
-        TimeSpan? expiresAfter = null, IEnumerable<string>? roles = null)
+        TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
     {
         var secret = _options.Secret;
         if (string.IsNullOrEmpty(secret))

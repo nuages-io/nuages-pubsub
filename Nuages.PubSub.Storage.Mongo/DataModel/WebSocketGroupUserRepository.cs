@@ -60,9 +60,13 @@ public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>,
         );
         
     }
+
+    
 }
 
 public interface IWebSocketGroupUserRepository : IMongoRepository<WebSocketGroupUser>
 {
     void InitializeIndexes();
+    
+    
 }

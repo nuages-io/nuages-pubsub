@@ -48,9 +48,23 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
         );
         
     }
+    
+    public IEnumerable<string> GetConnectionsForGroup(string audience, string group)
+    {
+        return AsQueryable()
+            .Where(c => c.Hub == audience && c.Group == group).Select(c => c.ConnectionId);
+    }
+
+    public bool GroupHasConnections(string audience, string @group)
+    {
+        return AsQueryable()
+            .Any(c => c.Hub == audience && c.Group == group);
+    }
 }
 
 public interface IWebSocketGroupConnectionRepository : IMongoRepository<WebSocketGroupConnection>
 {
     void InitializeIndexes();
+    IEnumerable<string> GetConnectionsForGroup(string audience, string group);
+    bool GroupHasConnections(string audience, string group);
 }

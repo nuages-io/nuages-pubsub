@@ -57,9 +57,37 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
                 })
         );
     }
+
+    public IEnumerable<string> GetAllConnectionForAudience(string audience)
+    {
+        return AsQueryable().Where(h => h.Hub == audience)
+            .Select(c => c.ConnectionId);
+    }
+    public IEnumerable<string> GetConnectionsForUser(string audience, string userId)
+    {
+        return AsQueryable().Where(h => h.Hub == audience && h.Sub == userId)
+            .Select(c => c.ConnectionId);
+    }
+
+    public bool UserHasConnections(string audience, string userId)
+    {
+        return AsQueryable().Any(h => h.Hub == audience && h.Sub == userId);
+    }
+
+    public bool ConnectionExists(string audience, string connectionId)
+    {
+        return AsQueryable()
+            .Any(c => c.Hub == audience && c.ConnectionId == connectionId);
+    }
 }
 
 public interface IWebSocketConnectionRepository : IMongoRepository<WebSocketConnection>
 {
     void InitializeIndexes();
+    IEnumerable<string> GetAllConnectionForAudience(string audience);
+    
+    IEnumerable<string> GetConnectionsForUser(string audience, string userId);
+    bool UserHasConnections(string audience, string userId);
+    bool ConnectionExists(string audience, string connectionId);
+
 }

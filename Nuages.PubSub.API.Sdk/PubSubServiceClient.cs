@@ -19,7 +19,7 @@ public partial class PubSubServiceClient
         _audience = audience;
     }
     
-    public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = null, IEnumerable<string>? roles = null)
+    public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
     {
         var webService = new AuthClient(HttpClient)
         {

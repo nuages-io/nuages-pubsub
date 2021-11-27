@@ -17,7 +17,7 @@ public class MongoPubSubStorage : IPubSubStorage
         _webSocketGroupUserRepository = webSocketGroupUserRepository;
     }
 
-    public async Task InsertAsync(string audience, string connectionid, string sub, TimeSpan? expireDelay = null)
+    public async Task InsertAsync(string audience, string connectionid, string sub, TimeSpan? expireDelay = default)
     {
         var conn = new WebSocketConnection
         {
@@ -43,36 +43,33 @@ public class MongoPubSubStorage : IPubSubStorage
 
     public async Task<IEnumerable<string>> GetAllConnectionIdsAsync(string audience)
     {
-        return await Task.FromResult(_webSocketConnectionRepository.AsQueryable().Where(h => h.Hub == audience)
-            .Select(c => c.ConnectionId));
+        return await Task.FromResult(_webSocketConnectionRepository.GetAllConnectionForAudience(audience));
     }
 
     public async Task<IEnumerable<string>> GetConnectionIdsForGroupAsync(string audience, string group)
     {
-        return await Task.FromResult(_webSocketGroupConnectionRepository.AsQueryable()
-            .Where(c => c.Hub == audience && c.Group == group).Select(c => c.ConnectionId));
+        return await Task.FromResult(_webSocketGroupConnectionRepository.GetConnectionsForGroup(audience, group));
     }
     
     public async Task<bool> GroupHasConnectionsAsync(string audience, string group)
     {
-        return await Task.FromResult(_webSocketGroupConnectionRepository.AsQueryable()
-            .Any(c => c.Hub == audience && c.Group == group));
+        return await Task.FromResult(_webSocketGroupConnectionRepository.GroupHasConnections(audience, group));
     }
 
     public async Task<IEnumerable<string>> GetConnectionIdsForUserAsync(string audience, string userId)
     {
-        return await Task.FromResult(_webSocketConnectionRepository.AsQueryable().Where(h => h.Hub == audience && h.Sub == userId).Select(c => c.ConnectionId));
+        return await Task.FromResult( _webSocketConnectionRepository.GetConnectionsForUser(audience, userId));
     }
 
     public async Task<bool> UserHasConnectionsAsync(string audience, string userId)
     {
-        return await Task.FromResult(_webSocketConnectionRepository.AsQueryable().Any(h => h.Hub == audience && h.Sub == userId));
+        return await Task.FromResult(_webSocketConnectionRepository.UserHasConnections(audience, userId));
     }
     
-    public async Task<bool> ConnectionExistsAsync(string connectionId, string audience)
+    public async Task<bool> ConnectionExistsAsync(string audience, string connectionId)
     {
         return await Task.FromResult(
-            _webSocketConnectionRepository.AsQueryable().Any(c => c.Hub == audience &&  c.ConnectionId == connectionId)
+            _webSocketConnectionRepository.ConnectionExists(audience, connectionId)
         );
     }
 

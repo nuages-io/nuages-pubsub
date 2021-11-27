@@ -30,7 +30,7 @@ public partial class PubSubService : IPubSubService
         });
     }
 
-    public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = null)
+    public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
     {
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
@@ -41,7 +41,7 @@ public partial class PubSubService : IPubSubService
             {
                 new Claim("sub", userId)
             }),
-            Expires = DateTime.UtcNow.Add(expireDelay ?? new TimeSpan(7,0,0)),
+            Expires = DateTime.UtcNow.Add(expireDelay ?? TimeSpan.FromDays(1)),
             Issuer = issuer,
             Audience = audience,
             SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
@@ -53,10 +53,7 @@ public partial class PubSubService : IPubSubService
         {
             tokenDescriptor.Claims ??= new Dictionary<string, object>();
 
-            foreach (var role in roleList)
-            {
-                tokenDescriptor.Claims.Add(new KeyValuePair<string, object>(role, "true"));
-            }
+            tokenDescriptor.Claims.Add(new KeyValuePair<string, object>("roles", roleList));
         }
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
