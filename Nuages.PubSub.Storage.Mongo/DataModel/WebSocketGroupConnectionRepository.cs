@@ -55,7 +55,7 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
             .Where(c => c.Hub == audience && c.Group == group).Select(c => c.ConnectionId);
     }
 
-    public bool GroupHasConnections(string audience, string @group)
+    public bool GroupHasConnections(string audience, string group)
     {
         return AsQueryable()
             .Any(c => c.Hub == audience && c.Group == group);

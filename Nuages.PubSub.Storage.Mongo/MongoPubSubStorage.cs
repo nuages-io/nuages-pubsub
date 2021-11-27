@@ -82,4 +82,44 @@ public class MongoPubSubStorage : IPubSubStorage
             _webSocketGroupUserRepository.InitializeIndexes();
         });
     }
+
+    public Task AddPermissionAsync(string audience, string permissionString, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task RemovePermissionAsync(string audience, string permissionString, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> HasPermissionAsync(string audience, string permissionString, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddConnectionToGroupAsync(string audience, string group, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task RemoveConnectionFromGroupAsync(string audience, string group, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddUserToGroupAsync(string audience, string group, string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task RemoveUserFromGroupAsync(string audience, string group, string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task RemoveUserFromAllGroupsAsync(string audience, string userId)
+    {
+        throw new NotImplementedException();
+    }
 }

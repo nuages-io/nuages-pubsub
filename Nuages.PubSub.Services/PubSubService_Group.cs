@@ -28,4 +28,29 @@ public partial class PubSubService
     {
         return await _pubSubStorage.GroupHasConnectionsAsync(audience, group);
     }
+
+    public async Task AddConnectionToGroupAsync(string audience, string group, string connectionId)
+    {
+        await _pubSubStorage.AddConnectionToGroupAsync(audience, group, connectionId);
+    }
+
+    public async Task RemoveConnectionFromGroupAsync(string audience, string group, string connectionId)
+    {
+        await _pubSubStorage.RemoveConnectionFromGroupAsync(audience, group, connectionId);
+    }
+
+    public async Task AddUserToGroupAsync(string audience, string group, string userId)
+    {
+        await _pubSubStorage.AddUserToGroupAsync(audience, group, userId);
+    }
+
+    public async Task RemoveUserFromGroupAsync(string audience, string group, string userId)
+    {
+        await _pubSubStorage.RemoveUserFromGroupAsync(audience, group, userId);
+    }
+
+    public async Task RemoveUserFromAllGroupsAsync(string audience, string userId)
+    {
+        await _pubSubStorage.RemoveUserFromAllGroupsAsync(audience, userId);
+    }
 }

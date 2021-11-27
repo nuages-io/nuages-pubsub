@@ -60,6 +60,35 @@ public partial class PubSubService : IPubSubService
         return tokenHandler.WriteToken(token);
     }
 
+    public async Task GrantPermissionAsync(string audience, PubSubPermission permission, string connectionId, string? target = null)
+    {
+        var permissionString = GetPermissionString(permission, target);
+
+        await _pubSubStorage.AddPermissionAsync(audience, permissionString, connectionId);
+    }
+
+    private static string GetPermissionString(PubSubPermission permission, string? target)
+    {
+        var permissionString = permission.ToString();
+        if (!string.IsNullOrEmpty(target))
+            permissionString += $".{target}";
+        return permissionString;
+    }
+
+    public async Task RevokePermissionAsync(string audience, PubSubPermission permission, string connectionId, string? target = null)
+    {
+        var permissionString = GetPermissionString(permission, target);
+
+        await _pubSubStorage.RemovePermissionAsync(audience, permissionString, connectionId);
+    }
+
+    public async Task<bool> CheckPermissionAsync(string audience, PubSubPermission permission, string connectionId, string? target = null)
+    {
+        var permissionString = GetPermissionString(permission, target);
+
+        return await _pubSubStorage.HasPermissionAsync(audience ,permissionString, connectionId);
+    }
+
     protected virtual async Task SendMessageAsync(string url, string audience, IEnumerable<string> connectionIds,  string content)
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));

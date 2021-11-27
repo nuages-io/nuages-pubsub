@@ -17,5 +17,13 @@ public interface IPubSubStorage
     
     Task InitializeAsync();
 
-   
+
+    Task AddPermissionAsync(string audience,string permissionString, string connectionId);
+    Task RemovePermissionAsync(string audience,string permissionString, string connectionId);
+    Task<bool> HasPermissionAsync(string audience,string permissionString, string connectionId);
+    Task AddConnectionToGroupAsync(string audience, string group, string connectionId);
+    Task RemoveConnectionFromGroupAsync(string audience, string group, string connectionId);
+    Task AddUserToGroupAsync(string audience, string group, string userId);
+    Task RemoveUserFromGroupAsync(string audience, string group, string userId);
+    Task RemoveUserFromAllGroupsAsync(string audience, string userId);
 }
