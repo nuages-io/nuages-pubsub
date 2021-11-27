@@ -173,6 +173,22 @@
             },
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "NuagesPubSub"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "/Prod"
+                ]
+              ]
             }
           }
         }
@@ -199,6 +215,22 @@
             },
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "NuagesPubSub"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "/Prod"
+                ]
+              ]
             }
           }
         }
@@ -226,16 +258,16 @@
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
-            "Nuages__Auth__ValidIssuers": {
+            "Nuages__PubSub__ValidIssuers": {
               "Ref": "ValidIssuers"
             },
-            "Nuages__Auth__ValidAudiences": {
+            "Nuages__PubSub__ValidAudiences": {
               "Ref": "ValidAudiences"
             },
-            "Nuages__Auth__Secret": {
+            "Nuages__PubSub__Secret": {
               "Ref": "Secret"
             },
-            "Nuages__Auth__JsonWebKeySetUrlPath": {
+            "Nuages__PubSub__JsonWebKeySetUrlPath": {
               "Ref": "JsonWebKeySetUrlPath"
             },
             "Nuages__Auth_DisableSslCheck": {
@@ -267,6 +299,22 @@
             },
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "NuagesPubSub"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "/Prod"
+                ]
+              ]
             }
           }
         }
@@ -293,6 +341,22 @@
             },
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "NuagesPubSub"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "/Prod"
+                ]
+              ]
             }
           }
         }

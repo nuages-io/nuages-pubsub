@@ -25,7 +25,8 @@ public class EchoRoute : IEchoRoute
                 endpoint += $"/{request.RequestContext.Stage}";
             
             context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
-
+            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
+            
             var connectionId = request.RequestContext.ConnectionId;
             context.Logger.LogLine($"ECHO ConnectionId: {connectionId}");
             context.Logger.LogLine($"AppId: {request.RequestContext.ApiId}");
@@ -39,7 +40,7 @@ public class EchoRoute : IEchoRoute
                 }
             };
 
-            return await _pubSubService.SendToConnectionAsync(endpoint, request.RequestContext.ApiId,  connectionId, JsonSerializer.Serialize(result) );
+            return await _pubSubService.SendToConnectionAsync(request.GetHub(),  connectionId, JsonSerializer.Serialize(result) );
             
         }
         catch (Exception e)

@@ -9,7 +9,7 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        await webService.SendAsync(_url, _audience, message);
+        await webService.SendAsync(_hub, message);
     }
     
     public async Task CloseAllConnectionsAsync()
@@ -19,6 +19,6 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        await webService.CloseAsync(_url, _audience);
+        await webService.CloseAsync(_hub);
     }
 }

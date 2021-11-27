@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Controllers;
@@ -14,20 +15,20 @@ public class GroupController
     }
     
     [HttpPost("Send")]
-    public async Task SendAsync(string url, string audience, string group, string message)
+    public async Task SendAsync(string hub, string group, string message)
     {
-        await _pubSubService.SendToGroupAsync(url, audience,  group, message);
+        await _pubSubService.SendToGroupAsync( hub,  group, message);
     }
     
     [HttpDelete("Close")]
-    public async Task CloseAsync(string url, string audience, string group)
+    public async Task CloseAsync(string hub, string group)
     {
-        await _pubSubService.CloseGroupConnectionsAsync(url, audience,  group);
+        await _pubSubService.CloseGroupConnectionsAsync( hub,  group);
     }
     
     [HttpGet("Exists")]
-    public async Task<bool> ExistsAsync(string audience, string group)
+    public async Task<bool> ExistsAsync(string hub, string group)
     {
-        return await _pubSubService.GroupExistsAsync(audience,  group);
+        return await _pubSubService.GroupExistsAsync(hub,  group);
     }
 }

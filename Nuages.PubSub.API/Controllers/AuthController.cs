@@ -8,9 +8,9 @@ namespace Nuages.PubSub.API.Controllers;
 public class AuthController : Controller
 {
     private readonly IPubSubService _pubSubService;
-    private readonly PubSubAuthOptions _options;
+    private readonly PubSubOptions _options;
 
-    public AuthController(IPubSubService pubSubService, IOptions<PubSubAuthOptions> options)
+    public AuthController(IPubSubService pubSubService, IOptions<PubSubOptions> options)
     {
         _pubSubService = pubSubService;
         _options = options.Value;

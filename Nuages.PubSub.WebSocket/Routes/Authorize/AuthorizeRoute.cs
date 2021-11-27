@@ -11,11 +11,11 @@ namespace Nuages.PubSub.WebSocket.Routes.Authorize;
 // ReSharper disable once UnusedType.Global
 public class AuthorizeRoute : IAuthorizeRoute
 {
-    private readonly PubSubAuthOptions _pubSubAuthOptions;
+    private readonly PubSubOptions _pubSubOptions;
 
-    public AuthorizeRoute(IOptions<PubSubAuthOptions> pubSubAuthOptions)
+    public AuthorizeRoute(IOptions<PubSubOptions> pubSubAuthOptions)
     {
-        _pubSubAuthOptions = pubSubAuthOptions.Value;
+        _pubSubOptions = pubSubAuthOptions.Value;
     }
     
     public async Task<APIGatewayCustomAuthorizerResponse> AuthorizeAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
@@ -28,35 +28,40 @@ public class AuthorizeRoute : IAuthorizeRoute
             
         var token = input.QueryStringParameters["access_token"];
         if (string.IsNullOrEmpty(token))
+        {
+            context.Logger.LogLine("Token (access_token query parameter) was not provided. Exiting.");
             return CreateResponse(false, input.MethodArn);
+        }
+            
+
+        var hub = input.QueryStringParameters["hub"];
+
+        if (string.IsNullOrEmpty(hub))
+        {
+            context.Logger.LogLine($"Hub (hub query parameter) ws not provided. Exiting.");
+            return CreateResponse(false, input.MethodArn);
+        }
 
         var jwtToken = new JwtSecurityTokenHandler()
             .ReadJwtToken(token);
         
         var claimDict = GetClaims(jwtToken);
+
+        claimDict.Add("nuageshub", hub);
         
         context.Logger.LogLine($"Issuer: {jwtToken.Issuer}");
         context.Logger.LogLine($"Alg: {jwtToken.SignatureAlgorithm}");
         context.Logger.LogLine($"Aud: {claimDict["aud"]}");
         
-        context.Logger.LogLine($"Valid issuers : {_pubSubAuthOptions.ValidIssuers}");
-        context.Logger.LogLine($"Valid audiences : {_pubSubAuthOptions.ValidAudiences}");
+        context.Logger.LogLine($"Valid issuers : {_pubSubOptions.ValidIssuers}");
+        context.Logger.LogLine($"Valid audiences : {_pubSubOptions.ValidAudiences}");
             
-        var validIssuers = _pubSubAuthOptions.ValidIssuers.Split(",");
-        var validAudiences = _pubSubAuthOptions.ValidAudiences?.Split(",").ToList();
+        var validIssuers = _pubSubOptions.ValidIssuers.Split(",");
+        var validAudiences = _pubSubOptions.ValidAudiences?.Split(",").ToList();
 
-        if (validAudiences == null)
-        {
-            validAudiences = new List<string> { input.RequestContext.ApiId };
-        }
-        else
-        {
-            validAudiences.Add(input.RequestContext.ApiId );
-        }
-        
         var keys = new List<SecurityKey>();
         
-        var secret = _pubSubAuthOptions.Secret;
+        var secret = _pubSubOptions.Secret;
         switch (jwtToken.SignatureAlgorithm)
         {
             case "RS256":
@@ -85,7 +90,7 @@ public class AuthorizeRoute : IAuthorizeRoute
                 ValidIssuers = validIssuers,
                 ValidateIssuer = true,
                 ValidAudiences = validAudiences,
-                ValidateAudience = true
+                ValidateAudience = validAudiences != null && validAudiences.Any()
             }, out _);
 
             return CreateResponse(true, input.MethodArn, claimDict);
@@ -110,13 +115,13 @@ public class AuthorizeRoute : IAuthorizeRoute
 
     private async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
     {
-        var jsonWebKeySetUrl =  $"{GetEndpoint(issuer)}{_pubSubAuthOptions.JsonWebKeySetUrlPath}";
+        var jsonWebKeySetUrl =  $"{GetEndpoint(issuer)}{_pubSubOptions.JsonWebKeySetUrlPath}";
             
         context.Logger.LogLine(jsonWebKeySetUrl);
             
         using var handler = new HttpClientHandler();
 
-        if (_pubSubAuthOptions.DisableSslCheck)
+        if (_pubSubOptions.DisableSslCheck)
             handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
         using var httpClient = new HttpClient(handler);

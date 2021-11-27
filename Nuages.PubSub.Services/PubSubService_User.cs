@@ -5,11 +5,11 @@ namespace Nuages.PubSub.Services;
 
 public partial class PubSubService
 {
-    public async Task<APIGatewayProxyResponse> SendToUserAsync(string url, string audience, string userId, string content)
+    public async Task<APIGatewayProxyResponse> SendToUserAsync(string hub, string userId, string content)
     {
-        var ids = await _pubSubStorage.GetConnectionIdsForUserAsync(audience, userId);
+        var ids = await _pubSubStorage.GetConnectionIdsForUserAsync(hub, userId);
         
-        await SendMessageAsync(url, audience, ids,  content);
+        await SendMessageAsync(hub, ids,  content);
         
         return new APIGatewayProxyResponse
         {
@@ -17,15 +17,15 @@ public partial class PubSubService
         };
     }
     
-    public async Task CloseUserConnectionsAsync(string url, string audience, string userId)
+    public async Task CloseUserConnectionsAsync(string hub, string userId)
     {
-        var ids = await _pubSubStorage.GetConnectionIdsForUserAsync(audience, userId);
+        var ids = await _pubSubStorage.GetConnectionIdsForUserAsync(hub, userId);
 
-        await CloseConnectionsAsync(url, audience, ids);
+        await CloseConnectionsAsync(hub, ids);
     }
     
-    public async Task<bool> UserExistsAsync(string audience, string userId)
+    public async Task<bool> UserExistsAsync(string hub, string userId)
     {
-        return await _pubSubStorage.UserHasConnectionsAsync(audience, userId);
+        return await _pubSubStorage.UserHasConnectionsAsync(hub, userId);
     }
 }

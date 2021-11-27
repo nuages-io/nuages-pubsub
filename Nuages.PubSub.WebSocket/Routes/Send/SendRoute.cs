@@ -40,8 +40,7 @@ public class SendRoute : ISendRoute
                 }
             };
 
-            
-            return await _pubSubService.SendToAllAsync(endpoint, request.RequestContext.ApiId, JsonSerializer.Serialize(result));
+            return await _pubSubService.SendToAllAsync(request.GetHub(), JsonSerializer.Serialize(result));
         }
         catch (Exception e)
         {

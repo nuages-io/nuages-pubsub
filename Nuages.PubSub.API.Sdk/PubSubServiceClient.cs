@@ -4,7 +4,7 @@ public partial class PubSubServiceClient
 {
     private readonly string _url;
     private readonly string _apiKey;
-    private readonly string _audience;
+    private readonly string _hub;
 
     private HttpClient? _httpClient;
 
@@ -12,11 +12,11 @@ public partial class PubSubServiceClient
     {
         get { return _httpClient ??= new HttpClient(); }
     }
-    public PubSubServiceClient(string url, string apiKey, string audience)
+    public PubSubServiceClient(string url, string apiKey, string hub)
     {
         _url = url;
         _apiKey = apiKey;
-        _audience = audience;
+        _hub = hub;
     }
     
     public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
@@ -26,6 +26,6 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        return await webService.GetClientAccessTokenAsync(userId, _audience, expiresAfter, roles);
+        return await webService.GetClientAccessTokenAsync(userId, _hub, expiresAfter, roles);
     }
 }

@@ -9,7 +9,7 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        await webService.SendAsync(_url, _audience, group, message);
+        await webService.SendAsync( _hub, group, message);
     }
     
     public async Task CloseGroupConnectionsAsync(string groupId)
@@ -19,7 +19,7 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        await webService.CloseAsync(_url, _audience, groupId);
+        await webService.CloseAsync( _hub, groupId);
     }
     
     public async Task<bool> GroupExistsAsync(string connectionId)
@@ -29,6 +29,6 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        return await webService.ExistsAsync(_audience, connectionId);
+        return await webService.ExistsAsync(_hub, connectionId);
     }
 }

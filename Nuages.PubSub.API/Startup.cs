@@ -17,6 +17,8 @@ public class Startup
     {
         services.AddSingleton(_configuration);
             
+        services.Configure<WebSocketOptions>(_configuration.GetSection("Nuages:WebSocket"));
+        
         services
             .AddPubSubService(_configuration)
             .AddPubSubMongoStorage();

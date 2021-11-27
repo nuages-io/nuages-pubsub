@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Controllers;
@@ -14,14 +15,14 @@ public class AllController
     }
     
     [HttpPost("Send")]
-    public async Task SendAsync(string url, string audience, string message)
+    public async Task SendAsync(string hub, string message)
     {
-        await _pubSubService.SendToAllAsync(url, audience, message);
+        await _pubSubService.SendToAllAsync(hub, message);
     }
     
     [HttpDelete("Close")]
-    public async Task CloseAsync(string url, string audience)
+    public async Task CloseAsync(string hub)
     {
-        await _pubSubService.CloseAllConnectionsAsync(url, audience);
+        await _pubSubService.CloseAllConnectionsAsync( hub);
     }
 }

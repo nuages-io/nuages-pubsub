@@ -5,11 +5,11 @@ namespace Nuages.PubSub.Services;
 
 public partial class PubSubService
 {
-    public async Task<APIGatewayProxyResponse> SendToGroupAsync(string url, string audience, string group, string content)
+    public async Task<APIGatewayProxyResponse> SendToGroupAsync(string hub, string group, string content)
     {
-        var ids = await _pubSubStorage.GetConnectionIdsForGroupAsync(audience, group);
+        var ids = await _pubSubStorage.GetConnectionIdsForGroupAsync(hub, group);
         
-        await SendMessageAsync(url, audience, ids,  content);
+        await SendMessageAsync(hub, ids,  content);
         
         return new APIGatewayProxyResponse
         {
@@ -17,40 +17,40 @@ public partial class PubSubService
         };
     }
 
-    public async Task CloseGroupConnectionsAsync(string url, string audience, string group)
+    public async Task CloseGroupConnectionsAsync(string hub, string group)
     {
-        var ids = await _pubSubStorage.GetConnectionIdsForGroupAsync(audience, group);
+        var ids = await _pubSubStorage.GetConnectionIdsForGroupAsync(hub, group);
 
-        await CloseConnectionsAsync(url, audience, ids);
+        await CloseConnectionsAsync(hub, ids);
     }
 
-    public async Task<bool> GroupExistsAsync(string audience, string group)
+    public async Task<bool> GroupExistsAsync(string hub, string group)
     {
-        return await _pubSubStorage.GroupHasConnectionsAsync(audience, group);
+        return await _pubSubStorage.GroupHasConnectionsAsync(hub, group);
     }
 
-    public async Task AddConnectionToGroupAsync(string audience, string group, string connectionId)
+    public async Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
     {
-        await _pubSubStorage.AddConnectionToGroupAsync(audience, group, connectionId);
+        await _pubSubStorage.AddConnectionToGroupAsync(hub, group, connectionId);
     }
 
-    public async Task RemoveConnectionFromGroupAsync(string audience, string group, string connectionId)
+    public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
     {
-        await _pubSubStorage.RemoveConnectionFromGroupAsync(audience, group, connectionId);
+        await _pubSubStorage.RemoveConnectionFromGroupAsync(hub, group, connectionId);
     }
 
-    public async Task AddUserToGroupAsync(string audience, string group, string userId)
+    public async Task AddUserToGroupAsync(string hub, string group, string userId)
     {
-        await _pubSubStorage.AddUserToGroupAsync(audience, group, userId);
+        await _pubSubStorage.AddUserToGroupAsync(hub, group, userId);
     }
 
-    public async Task RemoveUserFromGroupAsync(string audience, string group, string userId)
+    public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
-        await _pubSubStorage.RemoveUserFromGroupAsync(audience, group, userId);
+        await _pubSubStorage.RemoveUserFromGroupAsync(hub, group, userId);
     }
 
-    public async Task RemoveUserFromAllGroupsAsync(string audience, string userId)
+    public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
-        await _pubSubStorage.RemoveUserFromAllGroupsAsync(audience, userId);
+        await _pubSubStorage.RemoveUserFromAllGroupsAsync(hub, userId);
     }
 }

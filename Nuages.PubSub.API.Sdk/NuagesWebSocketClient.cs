@@ -51,24 +51,20 @@ namespace Nuages.PubSub.API.Sdk
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task SendAsync(string url, string audience, string message)
+        public System.Threading.Tasks.Task SendAsync(string hub, string message)
         {
-            return SendAsync(url, audience, message, System.Threading.CancellationToken.None);
+            return SendAsync(hub, message, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task SendAsync(string url, string audience, string message, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task SendAsync(string hub, string message, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/All/Send?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (message != null)
             {
@@ -131,24 +127,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CloseAsync(string url, string audience)
+        public System.Threading.Tasks.Task CloseAsync(string hub)
         {
-            return CloseAsync(url, audience, System.Threading.CancellationToken.None);
+            return CloseAsync(hub, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CloseAsync(string url, string audience, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CloseAsync(string hub, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/All/Close?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
     
@@ -563,24 +555,20 @@ namespace Nuages.PubSub.API.Sdk
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task SendAsync(string url, string audience, string connectionId, string message)
+        public System.Threading.Tasks.Task SendAsync(string hub, string connectionId, string message)
         {
-            return SendAsync(url, audience, connectionId, message, System.Threading.CancellationToken.None);
+            return SendAsync(hub, connectionId, message, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task SendAsync(string url, string audience, string connectionId, string message, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task SendAsync(string hub, string connectionId, string message, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Connection/Send?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (connectionId != null)
             {
@@ -647,24 +635,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CloseAsync(string url, string audience, string connectionId)
+        public System.Threading.Tasks.Task CloseAsync(string hub, string connectionId)
         {
-            return CloseAsync(url, audience, connectionId, System.Threading.CancellationToken.None);
+            return CloseAsync(hub, connectionId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CloseAsync(string url, string audience, string connectionId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CloseAsync(string hub, string connectionId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Connection/Close?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (connectionId != null)
             {
@@ -726,20 +710,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<bool> ExistsAsync(string audience, string connectionId)
+        public System.Threading.Tasks.Task<bool> ExistsAsync(string hub, string connectionId)
         {
-            return ExistsAsync(audience, connectionId, System.Threading.CancellationToken.None);
+            return ExistsAsync(hub, connectionId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<bool> ExistsAsync(string audience, string connectionId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<bool> ExistsAsync(string hub, string connectionId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Connection/Exists?");
-            if (audience != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (connectionId != null)
             {
@@ -941,24 +925,20 @@ namespace Nuages.PubSub.API.Sdk
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task SendAsync(string url, string audience, string group, string message)
+        public System.Threading.Tasks.Task SendAsync(string hub, string group, string message)
         {
-            return SendAsync(url, audience, group, message, System.Threading.CancellationToken.None);
+            return SendAsync(hub, group, message, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task SendAsync(string url, string audience, string group, string message, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task SendAsync(string hub, string group, string message, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Group/Send?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (group != null)
             {
@@ -1025,24 +1005,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CloseAsync(string url, string audience, string group)
+        public System.Threading.Tasks.Task CloseAsync(string hub, string group)
         {
-            return CloseAsync(url, audience, group, System.Threading.CancellationToken.None);
+            return CloseAsync(hub, group, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CloseAsync(string url, string audience, string group, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CloseAsync(string hub, string group, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Group/Close?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (group != null)
             {
@@ -1104,20 +1080,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<bool> ExistsAsync(string audience, string group)
+        public System.Threading.Tasks.Task<bool> ExistsAsync(string hub, string group)
         {
-            return ExistsAsync(audience, group, System.Threading.CancellationToken.None);
+            return ExistsAsync(hub, group, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<bool> ExistsAsync(string audience, string group, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<bool> ExistsAsync(string hub, string group, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/Group/Exists?");
-            if (audience != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (group != null)
             {
@@ -1319,24 +1295,20 @@ namespace Nuages.PubSub.API.Sdk
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task SendAsync(string url, string audience, string userId, string message)
+        public System.Threading.Tasks.Task SendAsync(string hub, string userId, string message)
         {
-            return SendAsync(url, audience, userId, message, System.Threading.CancellationToken.None);
+            return SendAsync(hub, userId, message, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task SendAsync(string url, string audience, string userId, string message, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task SendAsync(string hub, string userId, string message, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/User/Send?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (userId != null)
             {
@@ -1403,24 +1375,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CloseAsync(string url, string audience, string userId)
+        public System.Threading.Tasks.Task CloseAsync(string hub, string userId)
         {
-            return CloseAsync(url, audience, userId, System.Threading.CancellationToken.None);
+            return CloseAsync(hub, userId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CloseAsync(string url, string audience, string userId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CloseAsync(string hub, string userId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/User/Close?");
-            if (url != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (userId != null)
             {
@@ -1482,20 +1450,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<bool> ExistsAsync(string audience, string userId)
+        public System.Threading.Tasks.Task<bool> ExistsAsync(string hub, string userId)
         {
-            return ExistsAsync(audience, userId, System.Threading.CancellationToken.None);
+            return ExistsAsync(hub, userId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<bool> ExistsAsync(string audience, string userId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<bool> ExistsAsync(string hub, string userId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/User/Exists?");
-            if (audience != null)
+            if (hub != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (userId != null)
             {

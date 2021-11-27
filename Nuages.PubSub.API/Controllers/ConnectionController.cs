@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Controllers;
@@ -14,20 +15,20 @@ public class ConnectionController
     }
     
     [HttpPost("Send")]
-    public async Task SendAsync(string url, string audience, string connectionId, string message)
+    public async Task SendAsync( string hub, string connectionId, string message)
     {
-        await _pubSubService.SendToConnectionAsync(url, audience,  connectionId, message);
+        await _pubSubService.SendToConnectionAsync(hub,  connectionId, message);
     }
     
     [HttpDelete("Close")]
-    public async Task CloseAsync(string url, string audience, string connectionId)
+    public async Task CloseAsync( string hub, string connectionId)
     {
-        await _pubSubService.CloseConnectionAsync(url, audience,  connectionId);
+        await _pubSubService.CloseConnectionAsync(hub,  connectionId);
     }
     
     [HttpGet("Exists")]
-    public async Task<bool> ExistsAsync(string audience, string connectionId)
+    public async Task<bool> ExistsAsync(string hub, string connectionId)
     {
-        return await _pubSubService.ConnectionExistsAsync(audience,  connectionId);
+        return await _pubSubService.ConnectionExistsAsync(hub,  connectionId);
     }
 }

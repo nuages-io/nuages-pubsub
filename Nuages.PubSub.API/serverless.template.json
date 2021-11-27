@@ -101,10 +101,10 @@
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
-            "Nuages__Auth__Issuer": {
+            "Nuages__PubSub__Issuer": {
               "Ref": "Issuer"
             },
-            "Nuages__Auth__Secret": {
+            "Nuages__PubSub__Secret": {
               "Ref": "Secret"
             }
           }

@@ -21,7 +21,7 @@ public class DisconnectRoute : IDisconnectRoute
             var connectionId = request.RequestContext.ConnectionId;
             context.Logger.LogLine($"ConnectionId: {connectionId}");
 
-            await _storage.DeleteAsync(request.RequestContext.ApiId, connectionId);
+            await _storage.DeleteAsync(request.GetHub(), connectionId);
 
             return new APIGatewayProxyResponse
             {

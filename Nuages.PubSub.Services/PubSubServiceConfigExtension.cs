@@ -6,15 +6,15 @@ namespace Nuages.PubSub.Services;
 public static class PubSubServiceConfigExtension
 {
     // ReSharper disable once UnusedMember.Global
-    public static IPubSubBuilder AddPubSubService(this IPubSubBuilder builder, Action<PubSubAuthOptions>? configureOptions = null)
+    public static IPubSubBuilder AddPubSubService(this IPubSubBuilder builder, Action<PubSubOptions>? configureOptions = null)
     {
         return AddPubSubService(builder.Services, builder.Configuration, configureOptions);
     }
     
     // ReSharper disable once UnusedMember.Global
-    public static IPubSubBuilder AddPubSubService(this IServiceCollection services, IConfiguration configuration, Action<PubSubAuthOptions>? configureOptions = null)
+    public static IPubSubBuilder AddPubSubService(this IServiceCollection services, IConfiguration configuration, Action<PubSubOptions>? configureOptions = null)
     {
-        services.Configure<PubSubAuthOptions>(configuration.GetSection("Nuages:Auth"));
+        services.Configure<PubSubOptions>(configuration.GetSection("Nuages:PubSub"));
 
         if (configureOptions != null)
             services.Configure(configureOptions);

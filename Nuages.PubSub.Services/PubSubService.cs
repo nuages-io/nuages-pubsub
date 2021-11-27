@@ -6,6 +6,7 @@ using Amazon;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Runtime;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Storage;
 
@@ -15,10 +16,12 @@ namespace Nuages.PubSub.Services;
 public partial class PubSubService : IPubSubService
 {
     private readonly IPubSubStorage _pubSubStorage;
+    private readonly PubSubOptions _pubSubOptions;
 
-    public PubSubService(IPubSubStorage pubSubStorage)
+    public PubSubService(IPubSubStorage pubSubStorage, IOptions<PubSubOptions> pubSubOptions)
     {
         _pubSubStorage = pubSubStorage;
+        _pubSubOptions = pubSubOptions.Value;
     }
     
     private static AmazonApiGatewayManagementApiClient CreateApiGateway(string url)
@@ -30,7 +33,7 @@ public partial class PubSubService : IPubSubService
         });
     }
 
-    public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
+    public string GenerateToken(string issuer, string hub, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
     {
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
@@ -43,7 +46,7 @@ public partial class PubSubService : IPubSubService
             }),
             Expires = DateTime.UtcNow.Add(expireDelay ?? TimeSpan.FromDays(1)),
             Issuer = issuer,
-            Audience = audience,
+            Audience = hub,
             SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
         };
 
@@ -60,11 +63,11 @@ public partial class PubSubService : IPubSubService
         return tokenHandler.WriteToken(token);
     }
 
-    public async Task GrantPermissionAsync(string audience, PubSubPermission permission, string connectionId, string? target = null)
+    public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
 
-        await _pubSubStorage.AddPermissionAsync(audience, permissionString, connectionId);
+        await _pubSubStorage.AddPermissionAsync(hub, permissionString, connectionId);
     }
 
     private static string GetPermissionString(PubSubPermission permission, string? target)
@@ -75,25 +78,25 @@ public partial class PubSubService : IPubSubService
         return permissionString;
     }
 
-    public async Task RevokePermissionAsync(string audience, PubSubPermission permission, string connectionId, string? target = null)
+    public async Task RevokePermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
 
-        await _pubSubStorage.RemovePermissionAsync(audience, permissionString, connectionId);
+        await _pubSubStorage.RemovePermissionAsync(hub, permissionString, connectionId);
     }
 
-    public async Task<bool> CheckPermissionAsync(string audience, PubSubPermission permission, string connectionId, string? target = null)
+    public async Task<bool> CheckPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
 
-        return await _pubSubStorage.HasPermissionAsync(audience ,permissionString, connectionId);
+        return await _pubSubStorage.HasPermissionAsync(hub ,permissionString, connectionId);
     }
 
-    protected virtual async Task SendMessageAsync(string url, string audience, IEnumerable<string> connectionIds,  string content)
+    protected virtual async Task SendMessageAsync(string audience, IEnumerable<string> connectionIds,  string content)
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
-        using var apiGateway = CreateApiGateway(url);
+        using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
         
         foreach (var connectionId in connectionIds)
         {
@@ -123,9 +126,9 @@ public partial class PubSubService : IPubSubService
         }
     }
     
-    private async Task CloseConnectionsAsync(string url, string audience, IEnumerable<string> connectionIds)
+    private async Task CloseConnectionsAsync(string audience, IEnumerable<string> connectionIds)
     {
-        var api = CreateApiGateway(url);
+        var api = CreateApiGateway(_pubSubOptions.Uri!);
 
         foreach (var connectionId in connectionIds)
         {
