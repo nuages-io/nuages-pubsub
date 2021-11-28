@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Controllers;

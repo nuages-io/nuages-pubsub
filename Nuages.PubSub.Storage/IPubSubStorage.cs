@@ -4,8 +4,9 @@ public interface IPubSubStorage
 {
     Task InsertAsync(string hub, string connectionid, string sub,  TimeSpan? expireDelay = default);
     Task DeleteAsync(string hub, string connectionId);
-
+    
     Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub);
+    Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId);
     
     Task<IEnumerable<IWebSocketConnection>> GetConnectionsForGroupAsync(string hub, string group);
     Task<bool> GroupHasConnectionsAsync(string hub, string group);
@@ -17,10 +18,11 @@ public interface IPubSubStorage
     
     Task InitializeAsync();
 
-
-    Task AddPermissionAsync(string hub,string permissionString, string connectionId);
-    Task RemovePermissionAsync(string hub,string permissionString, string connectionId);
-    Task<bool> HasPermissionAsync(string hub,string permissionString, string connectionId);
+    Task AddPermissionAsync(string hub, string connectionId, string permissionString);
+    Task RemovePermissionAsync(string hub, string connectionId, string permissionString);
+    
+    Task<bool> HasPermissionAsync(string hub, string connectionId, string permissionString);
+    
     Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
     Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId);
     Task AddUserToGroupAsync(string hub, string group, string userId);

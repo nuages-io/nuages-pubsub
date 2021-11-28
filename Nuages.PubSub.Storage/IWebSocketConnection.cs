@@ -10,3 +10,15 @@ public interface IWebSocketConnection
 
     public List<string>? Permissions { get; set; }
 }
+
+public static class WebSocketConnectionExtensions
+{
+    public static bool IsExpired(this IWebSocketConnection webSocketConnection)
+    {
+        if (!webSocketConnection.ExpireOn.HasValue)
+            return false;
+
+        return webSocketConnection.ExpireOn < DateTime.UtcNow;
+    }
+
+}

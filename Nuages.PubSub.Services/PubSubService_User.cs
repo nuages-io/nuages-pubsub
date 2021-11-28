@@ -14,7 +14,7 @@ public partial class PubSubService
             connections = connections.Where(c => !excludedIds.Contains(c.ConnectionId));
         }
 
-        connections = connections.Where(c => !IsExpired(c));
+        connections = connections.Where(c => !c.IsExpired());
         
         await SendMessageAsync(hub, connections.Select(c => c.ConnectionId),  content);
         
@@ -24,14 +24,7 @@ public partial class PubSubService
         };
     }
 
-    private bool IsExpired(IWebSocketConnection webSocketConnection)
-    {
-        if (!webSocketConnection.ExpireOn.HasValue)
-            return false;
-
-        return webSocketConnection.ExpireOn < DateTime.UtcNow;
-    }
-
+    
     public async Task CloseUserConnectionsAsync(string hub, string userId)
     {
         var connections = await _pubSubStorage.GetConnectionsForUserAsync(hub, userId);

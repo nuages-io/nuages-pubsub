@@ -1,5 +1,6 @@
 using System.Net;
 using Amazon.Lambda.APIGatewayEvents;
+using Nuages.PubSub.Storage;
 
 namespace Nuages.PubSub.Services;
 
@@ -14,7 +15,7 @@ public partial class PubSubService
             connections = connections.Where(c => !excludedIds.Contains(c.ConnectionId));
         }
 
-        connections = connections.Where(c => !IsExpired(c));
+        connections = connections.Where(c => !c.IsExpired());
         
         await SendMessageAsync(hub, connections.Select(c => c.ConnectionId),  content);
         

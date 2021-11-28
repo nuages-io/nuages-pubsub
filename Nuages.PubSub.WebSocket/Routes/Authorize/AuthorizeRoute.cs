@@ -38,7 +38,7 @@ public class AuthorizeRoute : IAuthorizeRoute
 
         if (string.IsNullOrEmpty(hub))
         {
-            context.Logger.LogLine($"Hub (hub query parameter) ws not provided. Exiting.");
+            context.Logger.LogLine("Hub (hub query parameter) ws not provided. Exiting.");
             return CreateResponse(false, input.MethodArn);
         }
 
