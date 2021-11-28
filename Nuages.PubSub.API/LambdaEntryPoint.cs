@@ -1,5 +1,4 @@
 namespace Nuages.PubSub.API;
-
 /// <summary>
 /// This class extends from APIGatewayProxyFunction which contains the method FunctionHandlerAsync which is the 
 /// actual Lambda function entry point. The Lambda handler field should be set to
@@ -28,8 +27,7 @@ public class LambdaEntryPoint :
     /// <param name="builder"></param>
     protected override void Init(IWebHostBuilder builder)
     {
-        builder
-            .UseStartup<Startup>();
+        builder.UseStartup<Startup>();
     }
 
     /// <summary>
@@ -41,5 +39,22 @@ public class LambdaEntryPoint :
     /// <param name="builder"></param>
     protected override void Init(IHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((context, configBuilder) =>
+        {
+            var configurationRoot = configBuilder.Build();
+
+            var configurationManagerPath = configurationRoot.GetValue<string>("Nuages:ConfigurationManagerPath");
+
+            if (!string.IsNullOrEmpty(configurationManagerPath))
+            {
+                configBuilder.AddSystemsManager(configureSource =>
+                {
+                    configureSource.Path = configurationManagerPath;
+                    configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
+                    configureSource.Optional = true;
+                });
+            }
+            
+        });
     }
 }

@@ -20,6 +20,7 @@ public class LocalEntryPoint
                     config.AddJsonFile("appsettings.local.json", true, true);
                 }
                
+               
             })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
 }
