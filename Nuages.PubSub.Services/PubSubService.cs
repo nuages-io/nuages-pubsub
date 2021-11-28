@@ -92,7 +92,7 @@ public partial class PubSubService : IPubSubService
         return await _pubSubStorage.HasPermissionAsync(hub ,permissionString, connectionId);
     }
 
-    protected virtual async Task SendMessageAsync(string audience, IEnumerable<string> connectionIds,  string content)
+    protected virtual async Task SendMessageAsync(string hub, IEnumerable<string> connectionIds,  string content)
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
@@ -120,13 +120,13 @@ public partial class PubSubService : IPubSubService
                 // from our collection.
                 if (e.StatusCode == HttpStatusCode.Gone)
                 {
-                    await _pubSubStorage.DeleteAsync(audience, postConnectionRequest.ConnectionId);
+                    await _pubSubStorage.DeleteAsync(hub, postConnectionRequest.ConnectionId);
                 }
             }
         }
     }
     
-    private async Task CloseConnectionsAsync(string audience, IEnumerable<string> connectionIds)
+    private async Task CloseConnectionsAsync(string hub, IEnumerable<string> connectionIds)
     {
         var api = CreateApiGateway(_pubSubOptions.Uri!);
 
@@ -137,7 +137,7 @@ public partial class PubSubService : IPubSubService
                 ConnectionId = connectionId
             });
 
-            await _pubSubStorage.DeleteAsync(audience, connectionId);
+            await _pubSubStorage.DeleteAsync(hub, connectionId);
         }
    
     }

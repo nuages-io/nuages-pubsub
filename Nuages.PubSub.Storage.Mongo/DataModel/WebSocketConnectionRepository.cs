@@ -58,36 +58,34 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
         );
     }
 
-    public IEnumerable<string> GetAllConnectionForAudience(string audience)
+    public IEnumerable<IWebSocketConnection> GetAllConnectionForHub(string hub)
     {
-        return AsQueryable().Where(h => h.Hub == audience)
-            .Select(c => c.ConnectionId);
+        return AsQueryable().Where(h => h.Hub == hub);
     }
-    public IEnumerable<string> GetConnectionsForUser(string audience, string userId)
+    public IEnumerable<IWebSocketConnection> GetConnectionsForUser(string hub, string userId)
     {
-        return AsQueryable().Where(h => h.Hub == audience && h.Sub == userId)
-            .Select(c => c.ConnectionId);
+        return AsQueryable().Where(h => h.Hub == hub && h.Sub == userId);
     }
 
-    public bool UserHasConnections(string audience, string userId)
+    public bool UserHasConnections(string hub, string userId)
     {
-        return AsQueryable().Any(h => h.Hub == audience && h.Sub == userId);
+        return AsQueryable().Any(h => h.Hub == hub && h.Sub == userId);
     }
 
-    public bool ConnectionExists(string audience, string connectionId)
+    public bool ConnectionExists(string hub, string connectionId)
     {
         return AsQueryable()
-            .Any(c => c.Hub == audience && c.ConnectionId == connectionId);
+            .Any(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
 }
 
 public interface IWebSocketConnectionRepository : IMongoRepository<WebSocketConnection>
 {
     void InitializeIndexes();
-    IEnumerable<string> GetAllConnectionForAudience(string audience);
+    IEnumerable<IWebSocketConnection> GetAllConnectionForHub(string hub);
     
-    IEnumerable<string> GetConnectionsForUser(string audience, string userId);
-    bool UserHasConnections(string audience, string userId);
-    bool ConnectionExists(string audience, string connectionId);
+    IEnumerable<IWebSocketConnection> GetConnectionsForUser(string hub, string userId);
+    bool UserHasConnections(string hub, string userId);
+    bool ConnectionExists(string hub, string connectionId);
 
 }

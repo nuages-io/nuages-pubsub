@@ -5,11 +5,18 @@ namespace Nuages.PubSub.Services;
 
 public partial class PubSubService
 {
-    public async Task<APIGatewayProxyResponse> SendToGroupAsync(string hub, string group, string content)
+    public async Task<APIGatewayProxyResponse> SendToGroupAsync(string hub, string group, string content, List<string>? excludedIds = null)
     {
-        var ids = await _pubSubStorage.GetConnectionIdsForGroupAsync(hub, group);
+        var connections = await _pubSubStorage.GetConnectionsForGroupAsync(hub, group);
+
+        if (excludedIds != null)
+        {
+            connections = connections.Where(i => !excludedIds.Contains(i.ConnectionId));
+        }
+
+        connections = connections.Where(c => !IsExpired(c));
         
-        await SendMessageAsync(hub, ids,  content);
+        await SendMessageAsync(hub, connections.Select(c => c.ConnectionId),  content);
         
         return new APIGatewayProxyResponse
         {
@@ -19,9 +26,9 @@ public partial class PubSubService
 
     public async Task CloseGroupConnectionsAsync(string hub, string group)
     {
-        var ids = await _pubSubStorage.GetConnectionIdsForGroupAsync(hub, group);
+        var connections = await _pubSubStorage.GetConnectionsForGroupAsync(hub, group);
 
-        await CloseConnectionsAsync(hub, ids);
+        await CloseConnectionsAsync(hub, connections.Select(c => c.ConnectionId));
     }
 
     public async Task<bool> GroupExistsAsync(string hub, string group)

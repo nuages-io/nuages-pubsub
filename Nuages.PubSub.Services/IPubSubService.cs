@@ -5,7 +5,7 @@ namespace Nuages.PubSub.Services;
 public interface IPubSubService
 {
     //All
-    Task<APIGatewayProxyResponse> SendToAllAsync(string hub, string content);
+    Task<APIGatewayProxyResponse> SendToAllAsync(string hub, string content, List<string>? excludedIds = null);
     Task CloseAllConnectionsAsync(string hub);
     
     //Connection
@@ -14,7 +14,7 @@ public interface IPubSubService
     Task<bool> ConnectionExistsAsync(string hub, string connectionId);
     
     //Group
-    Task<APIGatewayProxyResponse> SendToGroupAsync(string hub, string group, string content);
+    Task<APIGatewayProxyResponse> SendToGroupAsync(string hub, string group, string content, List<string>? excludedIds = null);
     Task CloseGroupConnectionsAsync(string hub, string group);
     Task<bool> GroupExistsAsync(string hub, string group);
 
@@ -26,7 +26,7 @@ public interface IPubSubService
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);
     
     //User
-    Task<APIGatewayProxyResponse> SendToUserAsync( string hub, string userId, string content);
+    Task<APIGatewayProxyResponse> SendToUserAsync( string hub, string userId, string content, List<string>? excludedIds = null);
     Task CloseUserConnectionsAsync(string hub, string userId);
     Task<bool> UserExistsAsync(string hub, string userId);
     

@@ -17,14 +17,14 @@ public class MongoPubSubStorage : IPubSubStorage
         _webSocketGroupUserRepository = webSocketGroupUserRepository;
     }
 
-    public async Task InsertAsync(string audience, string connectionid, string sub, TimeSpan? expireDelay = default)
+    public async Task InsertAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
     {
         var conn = new WebSocketConnection
         {
             Id = ObjectId.GenerateNewId().ToString(),
             ConnectionId = connectionid,
             Sub = sub,
-            Hub = audience,
+            Hub = hub,
             CreatedOn = DateTime.UtcNow
         };
 
@@ -36,40 +36,43 @@ public class MongoPubSubStorage : IPubSubStorage
         await _webSocketConnectionRepository.InsertOneAsync(conn);
     }
 
-    public async Task DeleteAsync(string audience, string connectionId)
+    public async Task DeleteAsync(string hub, string connectionId)
     {
-        await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == audience);
+        await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
     }
 
-    public async Task<IEnumerable<string>> GetAllConnectionIdsAsync(string audience)
+    public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
     {
-        return await Task.FromResult(_webSocketConnectionRepository.GetAllConnectionForAudience(audience));
+        return await Task.FromResult(_webSocketConnectionRepository.GetAllConnectionForHub(hub));
     }
 
-    public async Task<IEnumerable<string>> GetConnectionIdsForGroupAsync(string audience, string group)
+    public async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForGroupAsync(string hub, string group)
     {
-        return await Task.FromResult(_webSocketGroupConnectionRepository.GetConnectionsForGroup(audience, group));
+        var query = _webSocketGroupConnectionRepository.GetConnectionsForGroup(hub, group);
+        var connections = _webSocketConnectionRepository.AsQueryable().Where(c => query.Contains(c.ConnectionId) && c.Hub == hub);
+        
+        return await Task.FromResult(connections);
     }
     
-    public async Task<bool> GroupHasConnectionsAsync(string audience, string group)
+    public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
     {
-        return await Task.FromResult(_webSocketGroupConnectionRepository.GroupHasConnections(audience, group));
+        return await Task.FromResult(_webSocketGroupConnectionRepository.GroupHasConnections(hub, group));
     }
 
-    public async Task<IEnumerable<string>> GetConnectionIdsForUserAsync(string audience, string userId)
+    public async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
-        return await Task.FromResult( _webSocketConnectionRepository.GetConnectionsForUser(audience, userId));
+        return await Task.FromResult( _webSocketConnectionRepository.GetConnectionsForUser(hub, userId));
     }
 
-    public async Task<bool> UserHasConnectionsAsync(string audience, string userId)
+    public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
     {
-        return await Task.FromResult(_webSocketConnectionRepository.UserHasConnections(audience, userId));
+        return await Task.FromResult(_webSocketConnectionRepository.UserHasConnections(hub, userId));
     }
     
-    public async Task<bool> ConnectionExistsAsync(string audience, string connectionId)
+    public async Task<bool> ConnectionExistsAsync(string hub, string connectionId)
     {
         return await Task.FromResult(
-            _webSocketConnectionRepository.ConnectionExists(audience, connectionId)
+            _webSocketConnectionRepository.ConnectionExists(hub, connectionId)
         );
     }
 
@@ -83,42 +86,42 @@ public class MongoPubSubStorage : IPubSubStorage
         });
     }
 
-    public Task AddPermissionAsync(string audience, string permissionString, string connectionId)
+    public Task AddPermissionAsync(string hub, string permissionString, string connectionId)
     {
         throw new NotImplementedException();
     }
 
-    public Task RemovePermissionAsync(string audience, string permissionString, string connectionId)
+    public Task RemovePermissionAsync(string hub, string permissionString, string connectionId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> HasPermissionAsync(string audience, string permissionString, string connectionId)
+    public Task<bool> HasPermissionAsync(string hub, string permissionString, string connectionId)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddConnectionToGroupAsync(string audience, string group, string connectionId)
+    public Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
     {
         throw new NotImplementedException();
     }
 
-    public Task RemoveConnectionFromGroupAsync(string audience, string group, string connectionId)
+    public Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddUserToGroupAsync(string audience, string group, string userId)
+    public Task AddUserToGroupAsync(string hub, string group, string userId)
     {
         throw new NotImplementedException();
     }
 
-    public Task RemoveUserFromGroupAsync(string audience, string group, string userId)
+    public Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
         throw new NotImplementedException();
     }
 
-    public Task RemoveUserFromAllGroupsAsync(string audience, string userId)
+    public Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
         throw new NotImplementedException();
     }
