@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Nuages.PubSub.Services;
 

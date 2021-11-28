@@ -46,7 +46,7 @@ public class MongoPubSubStorage : IPubSubStorage
     {
         await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
 
-        await _webSocketGroupConnectionRepository.DeleteManyAsync(C => C.ConnectionId == connectionId);
+        await _webSocketGroupConnectionRepository.DeleteManyAsync( c => c.ConnectionId == connectionId);
     }
 
     public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
@@ -112,9 +112,8 @@ public class MongoPubSubStorage : IPubSubStorage
 
         if (!await HasPermissionAsync(connection, permissionString))
         {
-            connection.Permissions ??= new List<string>();
-            
-            connection.Permissions.Add(permissionString);
+           
+            connection.AddPermission(permissionString);
             
             await UpdateAsync(connection);
         }
@@ -141,10 +140,7 @@ public class MongoPubSubStorage : IPubSubStorage
     
     public async Task<bool> HasPermissionAsync(IWebSocketConnection? connection, string permissionString)
     {
-        if (connection == null)
-            return false;
-        
-        if (connection.Permissions == null)
+        if (connection?.Permissions == null)
             return false;
         
         var list = new List<string> { permissionString };

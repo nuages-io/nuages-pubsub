@@ -70,6 +70,7 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
             ConnectionId = connectionid,
             Group = group,
             CreatedOn = DateTime.UtcNow,
+            Hub = hub
             
         });
     }
