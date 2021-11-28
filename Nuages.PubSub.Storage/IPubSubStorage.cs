@@ -2,8 +2,8 @@ namespace Nuages.PubSub.Storage;
 
 public interface IPubSubStorage
 {
-    Task InsertAsync(string hub, string connectionid, string sub,  TimeSpan? expireDelay = default);
-    Task DeleteAsync(string hub, string connectionId);
+    Task Connect(string hub, string connectionid, string sub,  TimeSpan? expireDelay = default);
+    Task Disconnect(string hub, string connectionId);
     
     Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub);
     Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId);

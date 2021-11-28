@@ -26,7 +26,7 @@ public partial class PubSubService
             ConnectionId = connectionId
         });
 
-        await _pubSubStorage.DeleteAsync(hub, connectionId);
+        await _pubSubStorage.Disconnect(hub, connectionId);
     }
 
     public async Task<bool> ConnectionExistsAsync(string hub, string connectionId)

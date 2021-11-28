@@ -120,7 +120,7 @@ public partial class PubSubService : IPubSubService
                 // from our collection.
                 if (e.StatusCode == HttpStatusCode.Gone)
                 {
-                    await _pubSubStorage.DeleteAsync(hub, postConnectionRequest.ConnectionId);
+                    await _pubSubStorage.Disconnect(hub, postConnectionRequest.ConnectionId);
                 }
             }
         }
@@ -137,7 +137,7 @@ public partial class PubSubService : IPubSubService
                 ConnectionId = connectionId
             });
 
-            await _pubSubStorage.DeleteAsync(hub, connectionId);
+            await _pubSubStorage.Disconnect(hub, connectionId);
         }
    
     }

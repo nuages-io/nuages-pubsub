@@ -61,12 +61,17 @@ public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>,
         
     }
 
-    
+    public async Task<IEnumerable<WebSocketGroupUser>> GetUserGroupForUser(string hub, string sub)
+    {
+        var groups = AsQueryable().Where(c => c.Hub == hub && c.Sub == sub);
+
+        return await Task.FromResult(groups);
+    }
 }
 
 public interface IWebSocketGroupUserRepository : IMongoRepository<WebSocketGroupUser>
 {
     void InitializeIndexes();
-    
-    
+
+    Task<IEnumerable<WebSocketGroupUser>> GetUserGroupForUser(string hub, string sub);
 }

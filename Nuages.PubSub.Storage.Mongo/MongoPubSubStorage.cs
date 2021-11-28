@@ -17,7 +17,7 @@ public class MongoPubSubStorage : IPubSubStorage
         _webSocketGroupUserRepository = webSocketGroupUserRepository;
     }
 
-    public async Task InsertAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
+    public async Task Connect(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
     {
         var conn = new WebSocketConnection
         {
@@ -34,11 +34,19 @@ public class MongoPubSubStorage : IPubSubStorage
         }
         
         await _webSocketConnectionRepository.InsertOneAsync(conn);
+
+        var groups = await _webSocketGroupUserRepository.GetUserGroupForUser(hub, sub);
+        foreach (var g in groups)
+        {
+            await _webSocketGroupConnectionRepository.AddConnetionToGroupAsync(hub, g.Group, connectionid);
+        }
     }
 
-    public async Task DeleteAsync(string hub, string connectionId)
+    public async Task Disconnect(string hub, string connectionId)
     {
         await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
+
+        await _webSocketGroupConnectionRepository.DeleteManyAsync(C => C.ConnectionId == connectionId);
     }
 
     public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
@@ -160,7 +168,8 @@ public class MongoPubSubStorage : IPubSubStorage
                 Id = ObjectId.GenerateNewId().ToString(),
                 ConnectionId = connectionId,
                 Group = group,
-                Hub = hub
+                Hub = hub,
+                CreatedOn = DateTime.UtcNow
             };
 
             await _webSocketGroupConnectionRepository.InsertOneAsync(groupConnection);
@@ -184,10 +193,26 @@ public class MongoPubSubStorage : IPubSubStorage
                 Id = ObjectId.GenerateNewId().ToString(),
                 Sub = userId,
                 Group = group,
-                Hub = hub
+                Hub = hub,
+                CreatedOn = DateTime.Now
             };
 
             await _webSocketGroupUserRepository.InsertOneAsync(userConnection);
+        }
+
+        await AddConnectionToGroupFromUserGroups(hub, group, userId);
+    }
+
+    private async Task AddConnectionToGroupFromUserGroups(string hub, string group, string userId)
+    {
+        var connections = await GetConnectionsForUserAsync(hub, userId);
+        foreach (var conn in connections)
+        {
+            if (!_webSocketGroupConnectionRepository.AsQueryable().Any(c =>
+                    c.Hub == hub && c.Group == group && c.ConnectionId == conn.ConnectionId))
+            {
+                await _webSocketGroupConnectionRepository.AddConnetionToGroupAsync(hub, group, conn.ConnectionId);
+            }
         }
     }
 
