@@ -37,6 +37,8 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
     public async Task DeleteConnectionAsync(string hub, string connectionId)
     {
         await _webSocketConnectionRepository.DeleteByConnectionIdAsync(hub, connectionId);
+        
+        await DeleteConnectionFromGroupsAsync(hub, connectionId);
     }
 
     public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
@@ -46,7 +48,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
 
     public async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForGroupAsync(string hub, string group)
     {
-        var query = _webSocketGroupConnectionRepository.GetConnectionsForGroup(hub, group);
+        var query = _webSocketGroupConnectionRepository.GetConnectionsForGroup(hub, group).ToList();
         var connections = _webSocketConnectionRepository.AsQueryable().Where(c => query.Contains(c.ConnectionId) && c.Hub == hub);
         
         return await Task.FromResult(connections);

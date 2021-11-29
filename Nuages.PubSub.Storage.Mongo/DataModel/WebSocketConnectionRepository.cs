@@ -1,5 +1,6 @@
 #region
 
+using System.Diagnostics.CodeAnalysis;
 using MongoDB.Driver;
 using Nuages.MongoDB.DatabaseProvider;
 using Nuages.MongoDB.Repository;
@@ -12,6 +13,7 @@ namespace Nuages.PubSub.Storage.Mongo.DataModel;
 // ReSharper disable once UnusedType.Global
 public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection>, IWebSocketConnectionRepository
 {
+    [ExcludeFromCodeCoverage]
     protected WebSocketConnectionRepository(IMongoDatabase db) : base(db)
     {
     }

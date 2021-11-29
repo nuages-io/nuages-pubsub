@@ -79,7 +79,6 @@ public partial class PubSubService : IPubSubService
     public async Task Disconnect(string hub, string connectionId)
     {
         await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
-        await _pubSubStorage.DeleteConnectionFromGroupsAsync(hub, connectionId);
     }
     
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)

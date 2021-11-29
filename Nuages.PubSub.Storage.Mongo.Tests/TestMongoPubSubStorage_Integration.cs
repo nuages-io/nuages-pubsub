@@ -1,8 +1,11 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Moq;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Nuages.MongoDB;
+using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 using Xunit;
 
@@ -13,37 +16,45 @@ public class TestInMemoryPubSubStorage
     private readonly IPubSubStorage _pubSubStorage;
     private readonly string _hub;
     private readonly string _sub;
-    private readonly Mock<IWebSocketConnectionRepository> _webSocketConnectionRepository;
-    private readonly Mock<IWebSocketGroupConnectionRepository> _webSocketGroupConnectionRepository;
-    private readonly Mock<IWebSocketGroupUserRepository> _webSocketGroupUserRepository;
 
     public TestInMemoryPubSubStorage()
     {
-        _webSocketConnectionRepository = new Mock<IWebSocketConnectionRepository>();
-        _webSocketGroupConnectionRepository = new Mock<IWebSocketGroupConnectionRepository>();
-        _webSocketGroupUserRepository = new Mock<IWebSocketGroupUserRepository>();
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .AddJsonFile("appsettings.local.json", false)
+            .Build();
+
+        var serviceCollection = new ServiceCollection();
+
+        serviceCollection.AddSingleton<IConfiguration>(configuration);
+            
+        serviceCollection
+            .AddPubSubService(configuration)
+            .AddPubSubMongoStorage();
         
-        _pubSubStorage = new MongoPubSubStorage(_webSocketConnectionRepository.Object, _webSocketGroupConnectionRepository.Object, _webSocketGroupUserRepository.Object);
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        
+        _pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
+        _pubSubStorage.InitializeAsync();
         
         _hub = "Hub";
         _sub = "sub-test";
+
+        var clientProvider = serviceProvider.GetRequiredService<IMongoClientProvider>();
+        var client = clientProvider.CreateClient<WebSocketConnection>();
+
+        var dbName = configuration.GetSection("Nuages:DbName").Value;
+        
+        client.DropDatabase(dbName);
     }
     
     [Fact]
     public async Task ShouldAddConnection()
     {
-        var connectionId = Guid.NewGuid().ToString();   
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
-        
-        
-        _webSocketConnectionRepository.Setup(w => w.ConnectionExists(_hub, connectionId)).Returns(true);
-        _webSocketConnectionRepository.Setup(w => w.GetAllConnectionForHub(_hub))
-            .Returns(new List<IWebSocketConnection> {connection });
+        var connectionId = Guid.NewGuid().ToString();
 
-        _webSocketConnectionRepository.Setup(w => w.GetConnectionsForUser(_hub, _sub))
-            .Returns(new List<IWebSocketConnection> { connection });
-        _webSocketConnectionRepository.Setup(w => w.UserHasConnections(_hub, _sub)) .Returns(true);
-            
+        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+
         Assert.False(connection.IsExpired());
         
         await _pubSubStorage.InsertAsync(connection);
@@ -78,12 +89,6 @@ public class TestInMemoryPubSubStorage
 
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
-        _webSocketConnectionRepository.Setup(w => w.GetConnectionByConnectionId(_hub, connectionId)).Returns(connection);
-        _webSocketConnectionRepository.Setup(w => w.DeleteByConnectionIdAsync(_hub, connectionId)).Callback(() =>
-        {
-            _webSocketConnectionRepository.Setup(w => w.GetConnectionByConnectionId(_hub, connectionId)).Returns((IWebSocketConnection?) null);
-        });
-        
         await _pubSubStorage.InsertAsync(connection);
 
         var existing = await _pubSubStorage.GetConnectionAsync(_hub, connectionId);
@@ -108,23 +113,6 @@ public class TestInMemoryPubSubStorage
 
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, TimeSpan.FromDays(1));
 
-        _webSocketGroupConnectionRepository.Setup(c => c.GroupHasConnections(_hub, group)).Returns(true);
-        _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(
-            new List<WebSocketGroupUser>
-            {
-                new()
-                {
-                    Group = group,
-                    Sub = _sub,
-                    Hub = _hub
-                }
-            });
-        
-        _webSocketGroupConnectionRepository.Setup(c => c.DeleteConnectionFromGroupAsync(_hub, group, connectionId)).Callback(() =>
-        {
-            _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(new List<WebSocketGroupUser>());
-        });
-        
         Assert.False(connection.IsExpired());
         
         await _pubSubStorage.InsertAsync(connection);
@@ -133,8 +121,6 @@ public class TestInMemoryPubSubStorage
 
         Assert.False(await _pubSubStorage.GroupHasConnectionsAsync("Bad_hub", group));
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
-        
-        Assert.Single(await _pubSubStorage.GetGroupsForUser(_hub, _sub));
         
         await _pubSubStorage.RemoveConnectionFromGroupAsync("Bad_hub", group, connectionId);
         await _pubSubStorage.RemoveConnectionFromGroupAsync(_hub, group, connectionId);
@@ -166,6 +152,9 @@ public class TestInMemoryPubSubStorage
 
         var coll = await _pubSubStorage.GetConnectionsForGroupAsync(_hub, group);
         Assert.Empty(coll);
+
+        
+     
     }
     
     
@@ -177,32 +166,10 @@ public class TestInMemoryPubSubStorage
 
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
-        
         await _pubSubStorage.InsertAsync(connection);
-      
 
-        _webSocketGroupConnectionRepository.Setup(c => c.GroupHasConnections(_hub, group)).Returns(true);
-
-        _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(
-            new List<WebSocketGroupUser>
-            {
-                new ()
-                {
-                    Group = group,
-                    Sub = _sub,
-                    Hub = _hub
-                }
-            });
-
-        _webSocketGroupUserRepository.Setup(c => c.DeleteUserFromGroupAsync(_hub, group, _sub)).Callback(() =>
-        {
-            _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(
-                new List<WebSocketGroupUser>
-                {
-                });
-        });
-            
         await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
+
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
 
         var groups = await _pubSubStorage.GetGroupsForUser(_hub, _sub);
@@ -230,8 +197,6 @@ public class TestInMemoryPubSubStorage
 
         await _pubSubStorage.InsertAsync(connection);
 
-        _webSocketConnectionRepository.Setup(w => w.GetConnectionByConnectionId(_hub, connectionId)).Returns(connection);
-        
         await _pubSubStorage.AddPermissionAsync(_hub, connectionId, permissionId);
         
         Assert.True(await _pubSubStorage.HasPermissionAsync(_hub, connectionId, permissionId));
