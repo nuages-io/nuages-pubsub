@@ -23,8 +23,9 @@ public static class PubSubServiceConfigExtension
         if (configureOptions != null)
             services.Configure(configureOptions);
         
+        services.AddScoped<IAmazonApiGatewayManagementApiClientProvider, AmazonApiGatewayManagementApiClientProvider>();
         services.AddScoped<IPubSubService, PubSubService>();
-
+        
         return new PubSubBuilder(services, configuration);
     }
 }

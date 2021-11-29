@@ -57,8 +57,6 @@ public class TestInMemoryPubSubStorage
 
         Assert.False(connection.IsExpired());
         
-        await _pubSubStorage.InsertAsync(connection);
-
         var exists = await _pubSubStorage.ConnectionExistsAsync(_hub, connectionId);
         Assert.True(exists);
 
@@ -89,8 +87,6 @@ public class TestInMemoryPubSubStorage
 
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
-        await _pubSubStorage.InsertAsync(connection);
-
         var existing = await _pubSubStorage.GetConnectionAsync(_hub, connectionId);
         Assert.NotNull(existing);
 
@@ -115,8 +111,6 @@ public class TestInMemoryPubSubStorage
 
         Assert.False(connection.IsExpired());
         
-        await _pubSubStorage.InsertAsync(connection);
-
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
 
         Assert.False(await _pubSubStorage.GroupHasConnectionsAsync("Bad_hub", group));
@@ -136,8 +130,6 @@ public class TestInMemoryPubSubStorage
         var connectionId = Guid.NewGuid().ToString();
 
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
-
-        await _pubSubStorage.InsertAsync(connection);
 
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
 
@@ -166,8 +158,6 @@ public class TestInMemoryPubSubStorage
 
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
-        await _pubSubStorage.InsertAsync(connection);
-
         await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
 
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
@@ -194,8 +184,6 @@ public class TestInMemoryPubSubStorage
         var connectionId = Guid.NewGuid().ToString();
         const string permissionId = "Permission";
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
-
-        await _pubSubStorage.InsertAsync(connection);
 
         await _pubSubStorage.AddPermissionAsync(_hub, connectionId, permissionId);
         

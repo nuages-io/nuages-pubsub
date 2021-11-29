@@ -16,21 +16,19 @@ namespace Nuages.PubSub.Services;
 public partial class PubSubService : IPubSubService 
 {
     private readonly IPubSubStorage _pubSubStorage;
+    private readonly IAmazonApiGatewayManagementApiClientProvider _apiClientientProvider;
     private readonly PubSubOptions _pubSubOptions;
 
-    public PubSubService(IPubSubStorage pubSubStorage, IOptions<PubSubOptions> pubSubOptions)
+    public PubSubService(IPubSubStorage pubSubStorage, IOptions<PubSubOptions> pubSubOptions, IAmazonApiGatewayManagementApiClientProvider apiClientientProvider)
     {
         _pubSubStorage = pubSubStorage;
+        _apiClientientProvider = apiClientientProvider;
         _pubSubOptions = pubSubOptions.Value;
     }
     
-    private static AmazonApiGatewayManagementApiClient CreateApiGateway(string url)
+    private IAmazonApiGatewayManagementApi CreateApiGateway(string url)
     {
-        return new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
-        {
-            AuthenticationRegion = RegionEndpoint.CACentral1.SystemName,
-            ServiceURL = url
-        });
+        return _apiClientientProvider.Create(url, RegionEndpoint.CACentral1.SystemName);
     }
 
     public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
@@ -67,7 +65,7 @@ public partial class PubSubService : IPubSubService
     {
         var conn = await _pubSubStorage.CreateConnectionAsync(hub, connectionid, sub, expireDelay);
 
-        await  _pubSubStorage.InsertAsync(conn);
+        
         
         var groups = await  _pubSubStorage.GetGroupsForUser(hub, sub);
         foreach (var g in groups)

@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.InMem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.Mongo.Tests", "Nuages.PubSub.Storage.Mongo.Tests\Nuages.PubSub.Storage.Mongo.Tests.csproj", "{5A95434B-C03C-4C61-9B80-5D30EDEDC63B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.Tests", "Nuages.PubSub.Services.Tests\Nuages.PubSub.Services.Tests.csproj", "{95875A83-3EB7-480D-88CD-B7B08102A2CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{5A95434B-C03C-4C61-9B80-5D30EDEDC63B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A95434B-C03C-4C61-9B80-5D30EDEDC63B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A95434B-C03C-4C61-9B80-5D30EDEDC63B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95875A83-3EB7-480D-88CD-B7B08102A2CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95875A83-3EB7-480D-88CD-B7B08102A2CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95875A83-3EB7-480D-88CD-B7B08102A2CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95875A83-3EB7-480D-88CD-B7B08102A2CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{90032C05-C7FF-4AD6-B7D5-1CF271AD9A29} = {E97A975A-2951-452E-8080-891F5D6D9347}
@@ -91,5 +97,6 @@ Global
 		{138F87AA-A948-48C5-AEFE-7B2C53DB3957} = {A0AB3C7E-15A9-4DEC-BCEF-0D2720BECE61}
 		{39D62FF4-DE44-4CFC-84D9-B68ABEE85C2A} = {A0AB3C7E-15A9-4DEC-BCEF-0D2720BECE61}
 		{5A95434B-C03C-4C61-9B80-5D30EDEDC63B} = {A0AB3C7E-15A9-4DEC-BCEF-0D2720BECE61}
+		{95875A83-3EB7-480D-88CD-B7B08102A2CE} = {5F8FC58F-1215-4549-ACFC-BF4CFBC0ABA3}
 	EndGlobalSection
 EndGlobal

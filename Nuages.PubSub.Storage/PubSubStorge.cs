@@ -6,6 +6,7 @@ public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
     protected abstract Task UpdateAsync(IWebSocketConnection connection);
     public abstract Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId);
     public abstract Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId);
+    protected abstract Task InsertAsync(IWebSocketConnection conn);
     
     protected abstract string GetNewId();
     
@@ -24,6 +25,8 @@ public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
         {
             conn.ExpireOn = conn.CreatedOn.Add(expireDelay.Value);
         }
+        
+        await  InsertAsync(conn);
         
         return await Task.FromResult(conn);
     }

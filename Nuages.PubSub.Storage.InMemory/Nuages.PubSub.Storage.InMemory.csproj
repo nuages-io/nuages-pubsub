@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage\Nuages.PubSub.Storage.csproj" />
     </ItemGroup>
 

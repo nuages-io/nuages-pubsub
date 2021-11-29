@@ -158,7 +158,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         await _webSocketGroupConnectionRepository.DeleteAllUserConnectionsFromGroupAsync(hub, userId);
     }
 
-    public async Task InsertAsync(IWebSocketConnection connection)
+    protected override async Task InsertAsync(IWebSocketConnection connection)
     {
         await _webSocketConnectionRepository.InsertOneAsync((WebSocketConnection) connection);
     }

@@ -180,7 +180,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
         await Task.CompletedTask;
     }
 
-    public async Task InsertAsync(IWebSocketConnection connection)
+    protected override async Task InsertAsync(IWebSocketConnection connection)
     {
         await Task.Run(() =>
         {
