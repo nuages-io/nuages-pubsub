@@ -17,7 +17,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         _webSocketGroupUserRepository = webSocketGroupUserRepository;
     }
     
-    public async Task<IEnumerable<string>> GetUserGroupIdsForUser(string hub, string sub)
+    public async Task<IEnumerable<string>> GetGroupForUser(string hub, string sub)
     {
         var list = await _webSocketGroupUserRepository.GetUserGroupForUser(hub, sub);
         
@@ -31,7 +31,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
 
     public override async Task DeleteConnectionFromGroups(string hub, string connectionId)
     {
-        await _webSocketGroupConnectionRepository.DeleteManyAsync(c => c.Hub== hub && c.ConnectionId == connectionId);
+        await _webSocketGroupConnectionRepository.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
 
     public override async Task DeleteConnection(string hub, string connectionId)
@@ -57,7 +57,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         return await Task.FromResult(_webSocketGroupConnectionRepository.GroupHasConnections(hub, group));
     }
 
-    public async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    public override async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
         return await Task.FromResult( _webSocketConnectionRepository.GetConnectionsForUser(hub, userId));
     }
@@ -84,65 +84,18 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         });
     }
 
-    public async Task UpdateAsync(IWebSocketConnection connection)
+    public override async Task UpdateAsync(IWebSocketConnection connection)
     {
         await _webSocketConnectionRepository.ReplaceOneAsync((WebSocketConnection) connection);
     }
     
-    public async Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId)
+    public override async Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId)
     {
         return await _webSocketConnectionRepository.FindOneAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
-    
-    public async Task AddPermissionAsync(string hub, string permissionString, string connectionId)
-    {
-        var connection = await GetConnectionAsync(hub, connectionId);
-        if (connection == null)
-            return;
+   
 
-        if (!await HasPermissionAsync(connection, permissionString))
-        {
-           
-            connection.AddPermission(permissionString);
-            
-            await UpdateAsync(connection);
-        }
-    }
-
-    public async Task RemovePermissionAsync(string hub, string connectionId, string permissionString)
-    {
-        var connection = await GetConnectionAsync(hub, connectionId);
-
-        if (connection?.Permissions != null)
-        {
-            connection.Permissions.Remove(permissionString);
-            
-            await UpdateAsync(connection);
-        }
-    }
-
-    public async Task<bool> HasPermissionAsync(string hub, string connectionId, string permissionString)
-    {
-        var connection = await GetConnectionAsync(hub, connectionId);
-
-        return await HasPermissionAsync(connection, permissionString);
-    }
-    
-    public async Task<bool> HasPermissionAsync(IWebSocketConnection? connection, string permissionString)
-    {
-        if (connection?.Permissions == null)
-            return false;
-        
-        var list = new List<string> { permissionString };
-        var parentPermission = permissionString.Split(".").First();
-        
-        if (parentPermission != permissionString)
-            list.Add(parentPermission);
-
-        return await Task.FromResult(connection.Permissions.Intersect(list).Any());
-    }
-
-    public async Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
+    public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
     {
         var existing = _webSocketGroupConnectionRepository.AsQueryable()
             .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
@@ -155,7 +108,8 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
                 ConnectionId = connectionId,
                 Group = group,
                 Hub = hub,
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = DateTime.UtcNow,
+                Sub = userId
             };
 
             await _webSocketGroupConnectionRepository.InsertOneAsync(groupConnection);
@@ -189,27 +143,19 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         await AddConnectionToGroupFromUserGroups(hub, group, userId);
     }
 
-    private async Task AddConnectionToGroupFromUserGroups(string hub, string group, string userId)
-    {
-        var connections = await GetConnectionsForUserAsync(hub, userId);
-        foreach (var conn in connections)
-        {
-            if (!_webSocketGroupConnectionRepository.AsQueryable().Any(c =>
-                    c.Hub == hub && c.Group == group && c.ConnectionId == conn.ConnectionId))
-            {
-                await _webSocketGroupConnectionRepository.AddConnetionToGroupAsync(hub, group, conn.ConnectionId);
-            }
-        }
-    }
 
     public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
         await _webSocketGroupUserRepository.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Id == userId);
+        await _webSocketGroupConnectionRepository.DeleteManyAsync(c =>
+            c.Hub == hub && c.Group == group && c.Sub == userId);
     }
 
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
         await _webSocketGroupUserRepository.DeleteManyAsync(c => c.Hub == hub && c.Id == userId);
+        await _webSocketGroupConnectionRepository.DeleteManyAsync(c =>
+            c.Hub == hub && c.Id == userId);
     }
 
     public async Task Insert(WebSocketConnection connection)

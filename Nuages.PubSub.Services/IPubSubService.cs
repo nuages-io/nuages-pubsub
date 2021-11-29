@@ -20,7 +20,7 @@ public interface IPubSubService
     Task CloseGroupConnectionsAsync(string hub, string group);
     Task<bool> GroupExistsAsync(string hub, string group);
 
-    Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
+    Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId);
     Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId);
     
     Task AddUserToGroupAsync(string hub, string group, string userId);

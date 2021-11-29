@@ -37,9 +37,9 @@ public partial class PubSubService<T>
         return await _pubSubStorage.GroupHasConnectionsAsync(hub, group);
     }
 
-    public async Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
+    public async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
     {
-        await _pubSubStorage.AddConnectionToGroupAsync(hub, group, connectionId);
+        await _pubSubStorage.AddConnectionToGroupAsync(hub, group, connectionId, userId);
     }
 
     public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)

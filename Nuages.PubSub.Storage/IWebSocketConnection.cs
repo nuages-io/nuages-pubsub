@@ -11,7 +11,6 @@ public interface IWebSocketConnection
     public string Hub { get; set;} 
 
     public List<string>? Permissions { get; set;}
-    void AddPermission(string permissionString);
 }
 
 public static class WebSocketConnectionExtensions
@@ -22,6 +21,14 @@ public static class WebSocketConnectionExtensions
             return false;
 
         return webSocketConnection.ExpireOn < DateTime.UtcNow;
+    }
+    
+    public static void AddPermission(this IWebSocketConnection webSocketConnection, string permissionString)
+    {
+        webSocketConnection.Permissions ??= new List<string>();
+            
+        webSocketConnection.Permissions.Add(permissionString);
+
     }
 
 }

@@ -4,13 +4,15 @@ namespace Nuages.PubSub.Storage.InMemory;
 
 public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSubStorage<WebSocketConnection>
 {
-    public List<IWebSocketConnection> Connections { get; set; } = new();
-    public List<WebSocketGroupConnection> ConnectionAndGroups { get; set; } = new();
-    
+    private Dictionary<string, List<IWebSocketConnection>> HubConnections { get; } = new();
 
-    public Task Connect(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
+    private Dictionary<string, List<WebSocketGroupConnection>> HubConnectionAndGroups { get;  } = new();
+
+    private Dictionary<string, List<WebSocketGroupUser>> HubUsersAndGroups { get;  } = new();
+
+    public override async Task UpdateAsync(IWebSocketConnection connection)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
     }
 
     protected override string GetNewId()
@@ -21,15 +23,13 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
     public override async Task DeleteConnectionFromGroups(string hub, string connectionId)
     {
         var connectionGroup = await GetConnectionGroupAsync(hub, connectionId);
-
         if (connectionGroup != null)
-            ConnectionAndGroups.Remove(connectionGroup);
+            HubConnectionAndGroups[hub].Remove(connectionGroup);
     }
 
     private async Task<WebSocketGroupConnection?> GetConnectionGroupAsync(string hub, string connectionId)
     {
-        var connection = ConnectionAndGroups.SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId);
-
+        var connection = HubConnectionAndGroups[hub].SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId);
         return await Task.FromResult(connection);
     }
 
@@ -38,108 +38,146 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
         var connection = await GetConnectionAsync(hub, connectionId);
 
         if (connection != null)
-            Connections.Remove(connection);
+            HubConnections[hub].Remove(connection);
     }
 
-    public Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
+    public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(HubConnections[hub]);
     }
 
-    public async Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId)
+    public override async Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId)
     {
-        var connection = Connections.SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId);
-
+        var connection = HubConnections[hub].SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId);
         return await Task.FromResult(connection);
     }
 
-    public Task<IEnumerable<IWebSocketConnection>> GetConnectionsForGroupAsync(string hub, string group)
+    public async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForGroupAsync(string hub, string group)
     {
-        throw new NotImplementedException();
+        var coll = HubConnectionAndGroups[hub].Where(c => c.Group == group).Select(c => c.ConnectionId);
+        return await Task.FromResult(HubConnections[hub].Where(c => coll.Contains(c.ConnectionId)));
     }
 
-    public Task<bool> GroupHasConnectionsAsync(string hub, string group)
+    public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(HubConnectionAndGroups[hub].Any(c => c.Group == group));
     }
 
-    public Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    public override async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
-        throw new NotImplementedException();
+        var conn = HubConnections[hub].Where(c => c.Sub == userId);
+
+        return await Task.FromResult(conn);
     }
 
-    public Task<bool> UserHasConnectionsAsync(string hub, string group)
+    public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(HubConnections[hub].Any(c => c.Sub == userId));
     }
 
-    public Task<bool> ConnectionExistsAsync(string hub, string connectionid)
+    public async Task<bool> ConnectionExistsAsync(string hub, string connectionid)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(HubConnections[hub].Any(c => c.ConnectionId == connectionid));
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
     }
 
-    public Task AddPermissionAsync(string hub, string connectionId, string permissionString)
+    public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
     {
-        throw new NotImplementedException();
+        var connection = new WebSocketGroupConnection
+        {
+            Id = GetNewId(),
+            Group = group,
+            Hub = hub,
+            ConnectionId = connectionId,
+            CreatedOn = DateTime.UtcNow,
+            Sub = userId
+
+        };
+
+        if (!HubConnectionAndGroups.ContainsKey(hub))
+        {
+            HubConnectionAndGroups[hub] = new List<WebSocketGroupConnection>();
+        }
+
+        await Task.Run(() =>
+        {
+            HubConnectionAndGroups[hub].Add(connection);
+        });
+        
     }
 
-    public Task RemovePermissionAsync(string hub, string connectionId, string permissionString)
+    public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
     {
-        throw new NotImplementedException();
+        var exising = HubConnectionAndGroups[hub]
+            .SingleOrDefault(c => c.Group == group && c.ConnectionId == connectionId);
+
+        if (exising != null)
+            HubConnectionAndGroups[hub].Remove(exising);
+
+        await Task.CompletedTask;
     }
 
-    public Task<bool> HasPermissionAsync(string hub, string connectionId, string permissionString)
+    public async Task AddUserToGroupAsync(string hub, string group, string userId)
     {
-        throw new NotImplementedException();
+        var existing = HubUsersAndGroups[hub].AsQueryable()
+            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.Sub == userId);
+
+        if (existing == null)
+        {
+            var userConnection = new WebSocketGroupUser
+            {
+                Id = GetNewId(),
+                Sub = userId,
+                Group = group,
+                Hub = hub,
+                CreatedOn = DateTime.Now
+            };
+
+            HubUsersAndGroups[hub].Add(userConnection);
+        }
+
+        await AddConnectionToGroupFromUserGroups(hub, group, userId);
+    
+    }
+    
+    public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
+    {
+        HubUsersAndGroups[hub].RemoveAll( c => c.Group == group && c.Sub == userId);
+        HubConnectionAndGroups[hub].RemoveAll( c => c.Group == group && c.Sub == userId);
+
+        await Task.CompletedTask;
     }
 
-    public Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
+    public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddUserToGroupAsync(string hub, string group, string userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveUserFromGroupAsync(string hub, string group, string userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveUserFromAllGroupsAsync(string hub, string userId)
-    {
-        throw new NotImplementedException();
+        HubUsersAndGroups[hub].RemoveAll( c => c.Sub == userId);
+        HubConnectionAndGroups[hub].RemoveAll( c => c.Sub == userId);
+        
+        await Task.CompletedTask;
     }
 
     public async Task Insert(WebSocketConnection connection)
     {
-
         await Task.Run(() =>
         {
-            Connections.Add(connection);
+            if (!HubConnections.ContainsKey(connection.Hub))
+            {
+                HubConnections[connection.Hub] = new List<IWebSocketConnection>();
+            }
+            
+            HubConnections[connection.Hub].Add(connection);
         });
-
     }
 
-    public Task<IEnumerable<string>> GetUserGroupIdsForUser(string hub, string sub)
+    public async Task<IEnumerable<string>> GetGroupForUser(string hub, string sub)
     {
-        throw new NotImplementedException();
+        var ids = HubUsersAndGroups[hub].Where(c => c.Sub == sub).Select(c => c.Group);
+
+        return await Task.FromResult(ids);
     }
 
-    public Task AddConnetionToGroupAsync(string hub, string connectionid, string group)
-    {
-        throw new NotImplementedException();
-    }
 }

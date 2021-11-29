@@ -11,7 +11,7 @@ public interface IPubSubStorage<T> where T : IWebSocketConnection, new()
     Task<bool> GroupHasConnectionsAsync(string hub, string group);
     
     Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId);
-    Task<bool> UserHasConnectionsAsync(string hub, string group);
+    Task<bool> UserHasConnectionsAsync(string hub, string userId);
     
     Task<bool> ConnectionExistsAsync(string hub, string connectionid);
     
@@ -22,7 +22,7 @@ public interface IPubSubStorage<T> where T : IWebSocketConnection, new()
     
     Task<bool> HasPermissionAsync(string hub, string connectionId, string permissionString);
     
-    Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
+    Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId);
     Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId);
     Task AddUserToGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromGroupAsync(string hub, string group, string userId);
@@ -30,7 +30,7 @@ public interface IPubSubStorage<T> where T : IWebSocketConnection, new()
     
     Task Insert(T connection);
     
-    Task<IEnumerable<string>> GetUserGroupIdsForUser(string hub, string sub);
+    Task<IEnumerable<string>> GetGroupForUser(string hub, string sub);
     Task DeleteConnection(string hub, string connectionId);
     Task DeleteConnectionFromGroups(string hub, string connectionId);
 }

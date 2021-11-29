@@ -1,6 +1,5 @@
 #region
 
-using MongoDB.Bson;
 using MongoDB.Driver;
 using Nuages.MongoDB.DatabaseProvider;
 using Nuages.MongoDB.Repository;
@@ -61,18 +60,7 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
         return AsQueryable()
             .Any(c => c.Hub == hub && c.Group == group);
     }
-
-    public async Task AddConnetionToGroupAsync(string hub, string group, string connectionid)
-    {
-        await InsertOneAsync(new WebSocketGroupConnection
-        {
-            Id = ObjectId.GenerateNewId().ToString(),
-            ConnectionId = connectionid,
-            Group = group,
-            CreatedOn = DateTime.UtcNow,
-            Hub = hub
-        });
-    }
+  
 }
 
 public interface IWebSocketGroupConnectionRepository : IMongoRepository<WebSocketGroupConnection>
@@ -80,5 +68,4 @@ public interface IWebSocketGroupConnectionRepository : IMongoRepository<WebSocke
     void InitializeIndexes();
     IEnumerable<string> GetConnectionsForGroup(string hub, string group);
     bool GroupHasConnections(string hub, string group);
-    Task AddConnetionToGroupAsync(string hub, string group, string connectionid);
 }

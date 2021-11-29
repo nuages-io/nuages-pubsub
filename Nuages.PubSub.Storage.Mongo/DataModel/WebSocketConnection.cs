@@ -18,11 +18,4 @@ public class WebSocketConnection : MongoDocument, IWebSocketConnection
     // ReSharper disable once MemberCanBePrivate.Global
     public List<string>? Permissions { get; set; }
 
-    public void AddPermission(string permissionString)
-    {
-        Permissions ??= new List<string>();
-            
-        Permissions.Add(permissionString);
-
-    }
 }

@@ -6,7 +6,6 @@ using Amazon;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Runtime;
-using Amazon.Runtime.Internal.Util;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Storage;
@@ -70,10 +69,10 @@ public partial class PubSubService<T> : IPubSubService where T : class, IWebSock
 
         await  _pubSubStorage.Insert(conn);
         
-        var groups = await  _pubSubStorage.GetUserGroupIdsForUser(hub, sub);
+        var groups = await  _pubSubStorage.GetGroupForUser(hub, sub);
         foreach (var g in groups)
         {
-            await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid);
+            await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid, sub);
         }
     }
 
