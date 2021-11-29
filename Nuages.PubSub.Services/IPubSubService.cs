@@ -33,7 +33,7 @@ public interface IPubSubService
     Task<bool> UserExistsAsync(string hub, string userId);
     
     //https://dotnetcoretutorials.com/2020/01/15/creating-and-validating-jwt-tokens-in-asp-net-core/
-    string GenerateToken(string issuer, string hub, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default);
+    string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default);
 
     Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);
     Task RevokePermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);

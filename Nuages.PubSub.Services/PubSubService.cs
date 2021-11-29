@@ -33,7 +33,7 @@ public partial class PubSubService<T> : IPubSubService where T : class, IWebSock
         });
     }
 
-    public string GenerateToken(string issuer, string hub, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
+    public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
     {
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
@@ -46,7 +46,7 @@ public partial class PubSubService<T> : IPubSubService where T : class, IWebSock
             }),
             Expires = DateTime.UtcNow.Add(expireDelay ?? TimeSpan.FromDays(1)),
             Issuer = issuer,
-            Audience = hub,
+            Audience = audience,
             SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
         };
 
