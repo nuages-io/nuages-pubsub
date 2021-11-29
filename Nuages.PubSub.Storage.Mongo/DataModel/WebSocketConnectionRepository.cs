@@ -8,6 +8,7 @@ using Nuages.MongoDB.Repository;
 
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
+
 // ReSharper disable once UnusedType.Global
 public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection>, IWebSocketConnectionRepository
 {

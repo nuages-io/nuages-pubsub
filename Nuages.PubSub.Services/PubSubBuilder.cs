@@ -1,9 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Nuages.PubSub.Services;
 
-
+[ExcludeFromCodeCoverage]
 public class PubSubBuilder : IPubSubBuilder
 {
     public PubSubBuilder(IServiceCollection services, IConfiguration configuration)
