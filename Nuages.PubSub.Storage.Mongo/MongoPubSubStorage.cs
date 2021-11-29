@@ -19,7 +19,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
     
     public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
     {
-        var list = await _webSocketGroupUserRepository.GetUserGroupForUserAsync(hub, sub);
+        var list = await _webSocketGroupUserRepository.GetGroupsForUserAsync(hub, sub);
         
         return list.Select(c => c.Group);
     }

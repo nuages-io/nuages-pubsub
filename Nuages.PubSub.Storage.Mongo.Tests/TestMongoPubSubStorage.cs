@@ -15,15 +15,15 @@ public class TestInMemoryPubSubStorage
     private readonly string _sub;
     private readonly Mock<IWebSocketConnectionRepository> _webSocketConnectionRepository;
     private readonly Mock<IWebSocketGroupConnectionRepository> _webSocketGroupConnectionRepository;
-    private readonly Mock<IWebSocketGroupUserRepository> _webSocketUserGroupRepository;
+    private readonly Mock<IWebSocketGroupUserRepository> _webSocketGroupUserRepository;
 
     public TestInMemoryPubSubStorage()
     {
         _webSocketConnectionRepository = new Mock<IWebSocketConnectionRepository>();
         _webSocketGroupConnectionRepository = new Mock<IWebSocketGroupConnectionRepository>();
-        _webSocketUserGroupRepository = new Mock<IWebSocketGroupUserRepository>();
+        _webSocketGroupUserRepository = new Mock<IWebSocketGroupUserRepository>();
         
-        _pubSubStorage = new MongoPubSubStorage(_webSocketConnectionRepository.Object, _webSocketGroupConnectionRepository.Object, _webSocketUserGroupRepository.Object);
+        _pubSubStorage = new MongoPubSubStorage(_webSocketConnectionRepository.Object, _webSocketGroupConnectionRepository.Object, _webSocketGroupUserRepository.Object);
         
         _hub = "Hub";
         _sub = "sub-test";
@@ -109,7 +109,7 @@ public class TestInMemoryPubSubStorage
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, TimeSpan.FromDays(1));
 
         _webSocketGroupConnectionRepository.Setup(c => c.GroupHasConnections(_hub, group)).Returns(true);
-        _webSocketUserGroupRepository.Setup(c => c.GetUserGroupForUserAsync(_hub, _sub)).ReturnsAsync(
+        _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(
             new List<WebSocketGroupUser>
             {
                 new()
@@ -122,7 +122,7 @@ public class TestInMemoryPubSubStorage
         
         _webSocketGroupConnectionRepository.Setup(c => c.DeleteConnectionFromGroupAsync(_hub, group, connectionId)).Callback(() =>
         {
-            _webSocketUserGroupRepository.Setup(c => c.GetUserGroupForUserAsync(_hub, _sub)).ReturnsAsync(new List<WebSocketGroupUser>());
+            _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(new List<WebSocketGroupUser>());
         });
         
         Assert.False(connection.IsExpired());
@@ -179,12 +179,11 @@ public class TestInMemoryPubSubStorage
 
         
         await _pubSubStorage.InsertAsync(connection);
-
-        await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
+      
 
         _webSocketGroupConnectionRepository.Setup(c => c.GroupHasConnections(_hub, group)).Returns(true);
 
-        _webSocketUserGroupRepository.Setup(c => c.GetUserGroupForUserAsync(_hub, _sub)).ReturnsAsync(
+        _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(
             new List<WebSocketGroupUser>
             {
                 new ()
@@ -194,7 +193,16 @@ public class TestInMemoryPubSubStorage
                     Hub = _hub
                 }
             });
+
+        _webSocketGroupUserRepository.Setup(c => c.DeleteUserFromGroupAsync(_hub, group, _sub)).Callback(() =>
+        {
+            _webSocketGroupUserRepository.Setup(c => c.GetGroupsForUserAsync(_hub, _sub)).ReturnsAsync(
+                new List<WebSocketGroupUser>
+                {
+                });
+        });
             
+        await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
 
         var groups = await _pubSubStorage.GetGroupsForUser(_hub, _sub);
