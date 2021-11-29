@@ -85,7 +85,7 @@ public class TestInMemoryPubSubStorage
     {
         var connectionId = Guid.NewGuid().ToString();
 
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
         var existing = await _pubSubStorage.GetConnectionAsync(_hub, connectionId);
         Assert.NotNull(existing);
@@ -129,7 +129,7 @@ public class TestInMemoryPubSubStorage
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+       await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
 
@@ -156,7 +156,7 @@ public class TestInMemoryPubSubStorage
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
         await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
 
@@ -183,7 +183,7 @@ public class TestInMemoryPubSubStorage
     {
         var connectionId = Guid.NewGuid().ToString();
         const string permissionId = "Permission";
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
         await _pubSubStorage.AddPermissionAsync(_hub, connectionId, permissionId);
         

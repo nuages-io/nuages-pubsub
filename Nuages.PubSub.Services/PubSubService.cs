@@ -63,10 +63,8 @@ public partial class PubSubService : IPubSubService
 
     public async Task Connect(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
     {
-        var conn = await _pubSubStorage.CreateConnectionAsync(hub, connectionid, sub, expireDelay);
+        await _pubSubStorage.CreateConnectionAsync(hub, connectionid, sub, expireDelay);
 
-        
-        
         var groups = await  _pubSubStorage.GetGroupsForUser(hub, sub);
         foreach (var g in groups)
         {
