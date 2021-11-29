@@ -19,7 +19,7 @@ public class Startup
         services.AddSingleton(_configuration);
         
         services
-            .AddPubSubService<WebSocketConnection>(_configuration)
+            .AddPubSubService(_configuration)
             .AddPubSubMongoStorage();
         
         services.AddControllers();

@@ -147,7 +147,6 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
         {
             var userConnection = new WebSocketGroupUser
             {
-                Id = GetNewId(),
                 Sub = userId,
                 Group = group,
                 Hub = hub,
