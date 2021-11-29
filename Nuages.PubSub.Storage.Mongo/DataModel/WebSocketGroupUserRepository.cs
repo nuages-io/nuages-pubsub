@@ -58,14 +58,23 @@ public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>,
                     Unique = false
                 })
         );
-        
     }
 
-    public async Task<IEnumerable<WebSocketGroupUser>> GetUserGroupForUser(string hub, string sub)
+    public async Task<IEnumerable<WebSocketGroupUser>> GetUserGroupForUserAsync(string hub, string sub)
     {
         var groups = AsQueryable().Where(c => c.Hub == hub && c.Sub == sub);
 
         return await Task.FromResult(groups);
+    }
+
+    public async Task DeleteUserFromGroupAsync(string hub, string group, string sub)
+    {
+        await DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Sub == sub);
+    }
+    
+    public async Task DeleteUserFromAllGroupsAsync(string hub, string sub)
+    {
+        await DeleteManyAsync(c => c.Hub == hub &&c.Sub == sub);
     }
 }
 
@@ -73,5 +82,9 @@ public interface IWebSocketGroupUserRepository : IMongoRepository<WebSocketGroup
 {
     void InitializeIndexes();
 
-    Task<IEnumerable<WebSocketGroupUser>> GetUserGroupForUser(string hub, string sub);
+    Task<IEnumerable<WebSocketGroupUser>> GetUserGroupForUserAsync(string hub, string sub);
+
+    Task DeleteUserFromGroupAsync(string hub, string group, string sub);
+    
+    Task DeleteUserFromAllGroupsAsync(string hub,  string sub);
 }

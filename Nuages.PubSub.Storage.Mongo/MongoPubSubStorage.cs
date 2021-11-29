@@ -19,7 +19,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
     
     public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
     {
-        var list = await _webSocketGroupUserRepository.GetUserGroupForUser(hub, sub);
+        var list = await _webSocketGroupUserRepository.GetUserGroupForUserAsync(hub, sub);
         
         return list.Select(c => c.Group);
     }
@@ -36,7 +36,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
 
     public async Task DeleteConnectionAsync(string hub, string connectionId)
     {
-        await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
+        await _webSocketConnectionRepository.DeleteByConnectionIdAsync(hub, connectionId);
     }
 
     public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
@@ -91,7 +91,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
     
     public override async Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId)
     {
-        return await _webSocketConnectionRepository.FindOneAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
+        return await Task.FromResult(_webSocketConnectionRepository.GetConnectionByConnectionId(hub, connectionId));
     }
    
 
@@ -118,7 +118,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
 
     public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
     {
-        await _webSocketGroupConnectionRepository.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
+        await _webSocketGroupConnectionRepository.DeleteConnectionFromGroupAsync(hub, group, connectionId);
     }
 
     public async Task AddUserToGroupAsync(string hub, string group, string userId)
@@ -146,16 +146,14 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
 
     public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
-        await _webSocketGroupUserRepository.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Id == userId);
-        await _webSocketGroupConnectionRepository.DeleteManyAsync(c =>
-            c.Hub == hub && c.Group == group && c.Sub == userId);
+        await _webSocketGroupUserRepository.DeleteUserFromGroupAsync(hub, group, userId);
+        await _webSocketGroupConnectionRepository.DeleteUserConnectionFromGroupAsync(hub, group, userId);
     }
 
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
-        await _webSocketGroupUserRepository.DeleteManyAsync(c => c.Hub == hub && c.Id == userId);
-        await _webSocketGroupConnectionRepository.DeleteManyAsync(c =>
-            c.Hub == hub && c.Id == userId);
+        await _webSocketGroupUserRepository.DeleteUserFromAllGroupsAsync(hub, userId);
+        await _webSocketGroupConnectionRepository.DeleteAllUserConnectionsFromGroupAsync(hub, userId);
     }
 
     public async Task InsertAsync(IWebSocketConnection connection)

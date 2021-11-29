@@ -77,6 +77,16 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
         return AsQueryable()
             .Any(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
+
+    public IWebSocketConnection? GetConnectionByConnectionId(string hub, string connectionId)
+    {
+        return FindOneAsync(c => c.Hub == hub && c.ConnectionId == connectionId).Result;
+    }
+
+    public async Task DeleteByConnectionIdAsync(string hub, string connectionId)
+    {
+        await DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
+    }
 }
 
 public interface IWebSocketConnectionRepository : IMongoRepository<WebSocketConnection>
@@ -88,4 +98,7 @@ public interface IWebSocketConnectionRepository : IMongoRepository<WebSocketConn
     bool UserHasConnections(string hub, string userId);
     bool ConnectionExists(string hub, string connectionId);
 
+    IWebSocketConnection? GetConnectionByConnectionId(string hub, string connectionId);
+
+    Task DeleteByConnectionIdAsync(string hub, string connectionId);
 }

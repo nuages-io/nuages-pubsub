@@ -60,7 +60,21 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
         return AsQueryable()
             .Any(c => c.Hub == hub && c.Group == group);
     }
-  
+
+    public async Task DeleteConnectionFromGroupAsync(string hub, string group, string connectionId)
+    {
+        await DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
+    }
+    
+    public async Task DeleteUserConnectionFromGroupAsync(string hub, string group, string sub)
+    {
+        await DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Sub == sub);
+    }
+    
+    public async Task DeleteAllUserConnectionsFromGroupAsync(string hub, string sub)
+    {
+        await DeleteManyAsync(c => c.Hub == hub && c.Sub == sub);
+    }
 }
 
 public interface IWebSocketGroupConnectionRepository : IMongoRepository<WebSocketGroupConnection>
@@ -68,4 +82,7 @@ public interface IWebSocketGroupConnectionRepository : IMongoRepository<WebSocke
     void InitializeIndexes();
     IEnumerable<string> GetConnectionsForGroup(string hub, string group);
     bool GroupHasConnections(string hub, string group);
+    Task DeleteConnectionFromGroupAsync(string hub, string group, string connectionId);
+    Task DeleteUserConnectionFromGroupAsync(string hub, string group, string sub);
+    Task DeleteAllUserConnectionsFromGroupAsync(string hub, string sub);
 }
