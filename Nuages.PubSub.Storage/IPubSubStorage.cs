@@ -1,8 +1,8 @@
 namespace Nuages.PubSub.Storage;
 
-public interface IPubSubStorage<T> where T : IWebSocketConnection, new()
+public interface IPubSubStorage 
 {
-    Task<T> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay);
+    Task<IWebSocketConnection> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay);
 
     Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub);
     Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId);
@@ -28,7 +28,7 @@ public interface IPubSubStorage<T> where T : IWebSocketConnection, new()
     Task RemoveUserFromGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);
     
-    Task InsertAsync(T connection);
+    Task InsertAsync(IWebSocketConnection connection);
     
     Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub);
     Task DeleteConnectionAsync(string hub, string connectionId);

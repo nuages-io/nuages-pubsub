@@ -1,16 +1,14 @@
 
 using System;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
-using Nuages.PubSub.Storage.InMemory.DataModel;
 using Xunit;
 
 namespace Nuages.PubSub.Storage.InMemory.Tests;
 
 public class TestInMemoryPubSubStorage
 {
-    private readonly IPubSubStorage<WebSocketConnection> _pubSubStorage;
+    private readonly IPubSubStorage _pubSubStorage;
     private readonly string _hub;
     private readonly string _sub;
 
@@ -165,7 +163,7 @@ public class TestInMemoryPubSubStorage
     public async Task ShouldAddPermission()
     {
         var connectionId = Guid.NewGuid().ToString();
-        var permissionId = "Permission";
+        const string permissionId = "Permission";
         var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
 
         await _pubSubStorage.InsertAsync(connection);

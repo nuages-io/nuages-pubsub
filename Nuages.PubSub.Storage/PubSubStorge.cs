@@ -3,13 +3,13 @@ namespace Nuages.PubSub.Storage;
 public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
 {
     public abstract Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId);
-    public abstract Task UpdateAsync(IWebSocketConnection connection);
+    protected abstract Task UpdateAsync(IWebSocketConnection connection);
     public abstract Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId);
     public abstract Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId);
     
     protected abstract string GetNewId();
     
-    public async Task<T> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay) 
+    public async Task<IWebSocketConnection> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay) 
     {
         var conn = new T
         {
@@ -62,7 +62,7 @@ public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
         return await HasPermissionAsync(connection, permissionString);
     }
 
-    private async Task<bool> HasPermissionAsync(IWebSocketConnection? connection, string permissionString)
+    private static async Task<bool> HasPermissionAsync(IWebSocketConnection? connection, string permissionString)
     {
         if (connection?.Permissions == null)
             return false;

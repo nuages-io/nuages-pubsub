@@ -3,42 +3,42 @@ using Nuages.PubSub.Storage.InMemory.DataModel;
 
 namespace Nuages.PubSub.Storage.InMemory;
 
-public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSubStorage<WebSocketConnection>
+public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSubStorage
 {
-    private Dictionary<string, List<IWebSocketConnection>> _hubConnections { get; } = new();
+    private Dictionary<string, List<IWebSocketConnection>> HubConnections { get; } = new();
 
-    private Dictionary<string, List<WebSocketGroupConnection>> _hubConnectionsAndGroups { get;  } = new();
+    private Dictionary<string, List<WebSocketGroupConnection>> HubConnectionsAndGroups { get;  } = new();
 
-    private Dictionary<string, List<WebSocketGroupUser>> _hubUsersAndGroups { get;  } = new();
+    private Dictionary<string, List<WebSocketGroupUser>> HubUsersAndGroups { get;  } = new();
 
     [ExcludeFromCodeCoverage]
-    public override async Task UpdateAsync(IWebSocketConnection connection)
+    protected override async Task UpdateAsync(IWebSocketConnection connection)
     {
         await Task.CompletedTask;
     }
 
-    List<IWebSocketConnection> GetHubConnections(string hub)
+    private List<IWebSocketConnection> GetHubConnections(string hub)
     {
-        if (!_hubConnections.ContainsKey(hub))
-            _hubConnections[hub] = new List<IWebSocketConnection>();
+        if (!HubConnections.ContainsKey(hub))
+            HubConnections[hub] = new List<IWebSocketConnection>();
 
-        return _hubConnections[hub];
+        return HubConnections[hub];
     }
-    
-    List<WebSocketGroupConnection> GetHubConnectionsAndGroups(string hub)
-    {
-        if (!_hubConnectionsAndGroups.ContainsKey(hub))
-            _hubConnectionsAndGroups[hub] = new List<WebSocketGroupConnection>();
 
-        return _hubConnectionsAndGroups[hub];
+    private List<WebSocketGroupConnection> GetHubConnectionsAndGroups(string hub)
+    {
+        if (!HubConnectionsAndGroups.ContainsKey(hub))
+            HubConnectionsAndGroups[hub] = new List<WebSocketGroupConnection>();
+
+        return HubConnectionsAndGroups[hub];
     }
-    
-    List<WebSocketGroupUser> GetHubUsersAndGroups(string hub)
-    {
-        if (!_hubUsersAndGroups.ContainsKey(hub))
-            _hubUsersAndGroups[hub] = new List<WebSocketGroupUser>();
 
-        return _hubUsersAndGroups[hub];
+    private List<WebSocketGroupUser> GetHubUsersAndGroups(string hub)
+    {
+        if (!HubUsersAndGroups.ContainsKey(hub))
+            HubUsersAndGroups[hub] = new List<WebSocketGroupUser>();
+
+        return HubUsersAndGroups[hub];
     }
     
     protected override string GetNewId()
@@ -180,7 +180,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
         await Task.CompletedTask;
     }
 
-    public async Task InsertAsync(WebSocketConnection connection)
+    public async Task InsertAsync(IWebSocketConnection connection)
     {
         await Task.Run(() =>
         {

@@ -5,7 +5,7 @@ using Amazon.Lambda.APIGatewayEvents;
 namespace Nuages.PubSub.Services;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public partial class PubSubService<T>
+public partial class PubSubService
 {
     public virtual async Task<APIGatewayProxyResponse> SendToConnectionAsync(string hub,  string connectionId, string content)
     {

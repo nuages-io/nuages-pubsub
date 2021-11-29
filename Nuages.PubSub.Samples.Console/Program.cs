@@ -10,11 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Nuages.MongoDB;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Mongo;
-using Nuages.PubSub.Storage.Mongo.DataModel;
+// ReSharper disable SuggestBaseTypeForParameter
 
 #endregion
 
@@ -49,7 +47,7 @@ class Program
         serviceCollection.AddSingleton<IConfiguration>(_configuration);
             
         serviceCollection
-            .AddPubSubService<WebSocketConnection>(_configuration)
+            .AddPubSubService(_configuration)
             .AddPubSubMongoStorage();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -63,9 +61,10 @@ class Program
         
         System.Console.WriteLine("Getting Token...");
 
-        var hub = "hub";
+        const string hub = "hub";
+        const string user = "user";
         
-        var token = GenerateToken("user", _audience);
+        var token = GenerateToken(user, _audience);
         LogData(token);
         
         System.Console.WriteLine("Try connect to Server with Uri");
@@ -76,7 +75,7 @@ class Program
         await Connect(url);
     }
 
-    static IPubSubService PubSubService { get; set; }
+    private static IPubSubService PubSubService { get; set; }
 
     private static void LogLine()
     {

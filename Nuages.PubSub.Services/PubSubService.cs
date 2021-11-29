@@ -13,12 +13,12 @@ using Nuages.PubSub.Storage;
 namespace Nuages.PubSub.Services;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public partial class PubSubService<T> : IPubSubService where T : class, IWebSocketConnection, new()
+public partial class PubSubService : IPubSubService 
 {
-    private readonly IPubSubStorage<T> _pubSubStorage;
+    private readonly IPubSubStorage _pubSubStorage;
     private readonly PubSubOptions _pubSubOptions;
 
-    public PubSubService(IPubSubStorage<T> pubSubStorage, IOptions<PubSubOptions> pubSubOptions)
+    public PubSubService(IPubSubStorage pubSubStorage, IOptions<PubSubOptions> pubSubOptions)
     {
         _pubSubStorage = pubSubStorage;
         _pubSubOptions = pubSubOptions.Value;

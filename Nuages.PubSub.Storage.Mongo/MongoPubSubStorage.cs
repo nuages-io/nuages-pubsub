@@ -3,7 +3,7 @@ using Nuages.PubSub.Storage.Mongo.DataModel;
 
 namespace Nuages.PubSub.Storage.Mongo;
 
-public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSubStorage<WebSocketConnection>
+public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSubStorage
 {
     private readonly IWebSocketConnectionRepository _webSocketConnectionRepository;
     private readonly IWebSocketGroupConnectionRepository _webSocketGroupConnectionRepository;
@@ -84,7 +84,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         });
     }
 
-    public override async Task UpdateAsync(IWebSocketConnection connection)
+    protected override async Task UpdateAsync(IWebSocketConnection connection)
     {
         await _webSocketConnectionRepository.ReplaceOneAsync((WebSocketConnection) connection);
     }
@@ -158,8 +158,8 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
             c.Hub == hub && c.Id == userId);
     }
 
-    public async Task InsertAsync(WebSocketConnection connection)
+    public async Task InsertAsync(IWebSocketConnection connection)
     {
-        await _webSocketConnectionRepository.InsertOneAsync(connection);
+        await _webSocketConnectionRepository.InsertOneAsync((WebSocketConnection) connection);
     }
 }

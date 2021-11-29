@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.Mongo;
-using Nuages.PubSub.Storage.Mongo.DataModel;
 
 #endregion
 
@@ -52,14 +51,14 @@ public class Functions : PubSubFunction
             
         serviceCollection
             .AddPubSubLambdaRoutes(configuration)
-            .AddPubSubService<WebSocketConnection>()
+            .AddPubSubService()
             .AddPubSubMongoStorage();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         GetRequiredServices(serviceProvider);
 
-        var pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage<WebSocketConnection>>();
+        var pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
         pubSubStorage.InitializeAsync();
     }
 }
