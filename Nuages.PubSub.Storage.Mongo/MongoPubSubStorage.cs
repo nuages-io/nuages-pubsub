@@ -17,7 +17,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         _webSocketGroupUserRepository = webSocketGroupUserRepository;
     }
     
-    public async Task<IEnumerable<string>> GetGroupForUser(string hub, string sub)
+    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
     {
         var list = await _webSocketGroupUserRepository.GetUserGroupForUser(hub, sub);
         
@@ -29,12 +29,12 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
         return ObjectId.GenerateNewId().ToString();
     }
 
-    public override async Task DeleteConnectionFromGroups(string hub, string connectionId)
+    public async Task DeleteConnectionFromGroupsAsync(string hub, string connectionId)
     {
         await _webSocketGroupConnectionRepository.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
 
-    public override async Task DeleteConnection(string hub, string connectionId)
+    public async Task DeleteConnectionAsync(string hub, string connectionId)
     {
         await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
     }
@@ -158,7 +158,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSub
             c.Hub == hub && c.Id == userId);
     }
 
-    public async Task Insert(WebSocketConnection connection)
+    public async Task InsertAsync(WebSocketConnection connection)
     {
         await _webSocketConnectionRepository.InsertOneAsync(connection);
     }

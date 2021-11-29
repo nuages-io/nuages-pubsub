@@ -67,9 +67,9 @@ public partial class PubSubService<T> : IPubSubService where T : class, IWebSock
     {
         var conn = await _pubSubStorage.CreateConnectionAsync(hub, connectionid, sub, expireDelay);
 
-        await  _pubSubStorage.Insert(conn);
+        await  _pubSubStorage.InsertAsync(conn);
         
-        var groups = await  _pubSubStorage.GetGroupForUser(hub, sub);
+        var groups = await  _pubSubStorage.GetGroupsForUser(hub, sub);
         foreach (var g in groups)
         {
             await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid, sub);
@@ -78,8 +78,8 @@ public partial class PubSubService<T> : IPubSubService where T : class, IWebSock
 
     public async Task Disconnect(string hub, string connectionId)
     {
-        await _pubSubStorage.DeleteConnection(hub, connectionId);
-        await _pubSubStorage.DeleteConnectionFromGroups(hub, connectionId);
+        await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
+        await _pubSubStorage.DeleteConnectionFromGroupsAsync(hub, connectionId);
     }
     
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)

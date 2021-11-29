@@ -2,8 +2,6 @@ namespace Nuages.PubSub.Storage;
 
 public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
 {
-    public abstract Task DeleteConnectionFromGroups(string hub, string connectionId);
-    public abstract Task DeleteConnection(string hub, string connectionId);
     public abstract Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId);
     public abstract Task UpdateAsync(IWebSocketConnection connection);
     public abstract Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId);
@@ -31,7 +29,7 @@ public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
     }
     
      
-    public async Task AddPermissionAsync(string hub, string permissionString, string connectionId)
+    public async Task AddPermissionAsync(string hub,  string connectionId, string permissionString)
     {
         var connection = await GetConnectionAsync(hub, connectionId);
         if (connection == null)
@@ -39,7 +37,6 @@ public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
 
         if (!await HasPermissionAsync(connection, permissionString))
         {
-           
             connection.AddPermission(permissionString);
             
             await UpdateAsync(connection);
@@ -64,8 +61,8 @@ public abstract class PubSubStorgeBase<T> where T : IWebSocketConnection, new()
 
         return await HasPermissionAsync(connection, permissionString);
     }
-    
-    public async Task<bool> HasPermissionAsync(IWebSocketConnection? connection, string permissionString)
+
+    private async Task<bool> HasPermissionAsync(IWebSocketConnection? connection, string permissionString)
     {
         if (connection?.Permissions == null)
             return false;

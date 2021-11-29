@@ -28,9 +28,9 @@ public interface IPubSubStorage<T> where T : IWebSocketConnection, new()
     Task RemoveUserFromGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);
     
-    Task Insert(T connection);
+    Task InsertAsync(T connection);
     
-    Task<IEnumerable<string>> GetGroupForUser(string hub, string sub);
-    Task DeleteConnection(string hub, string connectionId);
-    Task DeleteConnectionFromGroups(string hub, string connectionId);
+    Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub);
+    Task DeleteConnectionAsync(string hub, string connectionId);
+    Task DeleteConnectionFromGroupsAsync(string hub, string connectionId);
 }
