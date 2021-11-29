@@ -3,13 +3,14 @@ namespace Nuages.PubSub.Storage;
 
 public interface IWebSocketConnection
 {
-    public string ConnectionId { get;  } 
-    public string Sub { get;  } 
-    public DateTime CreatedOn { get;  }
-    public DateTime? ExpireOn { get;  }
-    public string Hub { get; } 
+    public string Id { get; set; }
+    public string ConnectionId { get; set; } 
+    public string Sub { get; set; } 
+    public DateTime CreatedOn { get;  set;}
+    public DateTime? ExpireOn { get;  set;}
+    public string Hub { get; set;} 
 
-    public List<string>? Permissions { get; }
+    public List<string>? Permissions { get; set;}
     void AddPermission(string permissionString);
 }
 

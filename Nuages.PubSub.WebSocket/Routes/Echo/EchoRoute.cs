@@ -20,11 +20,11 @@ public class EchoRoute : IEchoRoute
     {
         try
         {
-            var endpoint = $"https://{request.RequestContext.DomainName}";
-            if (endpoint.ToLower().EndsWith("amazonaws.com"))
-                endpoint += $"/{request.RequestContext.Stage}";
-            
-            context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
+            // var endpoint = $"https://{request.RequestContext.DomainName}";
+            // if (endpoint.ToLower().EndsWith("amazonaws.com"))
+            //     endpoint += $"/{request.RequestContext.Stage}";
+            //
+            // context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
             
             var connectionId = request.RequestContext.ConnectionId;
@@ -39,7 +39,9 @@ public class EchoRoute : IEchoRoute
                     connectionId
                 }
             };
-
+            
+            context.Logger.LogLine($"Payload: {JsonSerializer.Serialize(result) }");
+            context.Logger.LogLine($"Hub :  {request.GetHub()}");
             return await _pubSubService.SendToConnectionAsync(request.GetHub(),  connectionId, JsonSerializer.Serialize(result) );
             
         }

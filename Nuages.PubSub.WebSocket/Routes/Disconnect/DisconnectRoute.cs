@@ -1,17 +1,17 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Nuages.PubSub.Storage;
+using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.WebSocket.Routes.Disconnect;
 
 // ReSharper disable once UnusedType.Global
 public class DisconnectRoute : IDisconnectRoute
 {
-    private readonly IPubSubStorage _storage;
+    private readonly IPubSubService _pubSubService;
 
-    public DisconnectRoute(IPubSubStorage storage)
+    public DisconnectRoute(IPubSubService pubSubService)
     {
-        _storage = storage;
+        _pubSubService = pubSubService;
     }
 
     public async Task<APIGatewayProxyResponse> DisconnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
@@ -21,7 +21,7 @@ public class DisconnectRoute : IDisconnectRoute
             var connectionId = request.RequestContext.ConnectionId;
             context.Logger.LogLine($"ConnectionId: {connectionId}");
 
-            await _storage.Disconnect(request.GetHub(), connectionId);
+            await _pubSubService.Disconnect(request.GetHub(), connectionId);
 
             return new APIGatewayProxyResponse
             {

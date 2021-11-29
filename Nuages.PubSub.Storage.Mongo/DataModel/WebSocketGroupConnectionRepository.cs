@@ -71,7 +71,6 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
             Group = group,
             CreatedOn = DateTime.UtcNow,
             Hub = hub
-            
         });
     }
 }

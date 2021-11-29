@@ -14,7 +14,7 @@ public static class PubSubMongoConfigExtensions
         builder.Services.AddScoped<IWebSocketGroupConnectionRepository, WebSocketGroupConnectionRepository>();
         builder.Services.AddScoped<IWebSocketGroupUserRepository, WebSocketGroupUserRepository>();
         
-        builder.Services.AddScoped<IPubSubStorage, MongoPubSubStorage>();
+        builder.Services.AddScoped<IPubSubStorage<WebSocketConnection>, MongoPubSubStorage>();
         builder.Services.AddNuagesMongoDb(builder.Configuration, configure);
     }
 }

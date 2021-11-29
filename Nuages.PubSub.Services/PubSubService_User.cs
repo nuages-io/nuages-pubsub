@@ -4,7 +4,7 @@ using Nuages.PubSub.Storage;
 
 namespace Nuages.PubSub.Services;
 
-public partial class PubSubService
+public partial class PubSubService<T>
 {
     public async Task<APIGatewayProxyResponse> SendToUserAsync(string hub, string userId, string content, List<string>? excludedIds = null)
     {

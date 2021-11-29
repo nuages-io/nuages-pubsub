@@ -6,6 +6,7 @@ using Amazon;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Runtime;
+using Amazon.Runtime.Internal.Util;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Storage;
@@ -13,12 +14,12 @@ using Nuages.PubSub.Storage;
 namespace Nuages.PubSub.Services;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public partial class PubSubService : IPubSubService
+public partial class PubSubService<T> : IPubSubService where T : class, IWebSocketConnection, new()
 {
-    private readonly IPubSubStorage _pubSubStorage;
+    private readonly IPubSubStorage<T> _pubSubStorage;
     private readonly PubSubOptions _pubSubOptions;
 
-    public PubSubService(IPubSubStorage pubSubStorage, IOptions<PubSubOptions> pubSubOptions)
+    public PubSubService(IPubSubStorage<T> pubSubStorage, IOptions<PubSubOptions> pubSubOptions)
     {
         _pubSubStorage = pubSubStorage;
         _pubSubOptions = pubSubOptions.Value;
@@ -63,6 +64,25 @@ public partial class PubSubService : IPubSubService
         return tokenHandler.WriteToken(token);
     }
 
+    public async Task Connect(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
+    {
+        var conn = await _pubSubStorage.CreateConnectionAsync(hub, connectionid, sub, expireDelay);
+
+        await  _pubSubStorage.Insert(conn);
+        
+        var groups = await  _pubSubStorage.GetUserGroupIdsForUser(hub, sub);
+        foreach (var g in groups)
+        {
+            await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid);
+        }
+    }
+
+    public async Task Disconnect(string hub, string connectionId)
+    {
+        await _pubSubStorage.DeleteConnection(hub, connectionId);
+        await _pubSubStorage.DeleteConnectionFromGroups(hub, connectionId);
+    }
+    
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
@@ -96,6 +116,8 @@ public partial class PubSubService : IPubSubService
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
+        Console.WriteLine($"_pubSubOptions.Uri {_pubSubOptions.Uri}");
+        
         using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
         
         foreach (var connectionId in connectionIds)
@@ -110,6 +132,7 @@ public partial class PubSubService : IPubSubService
             {
                 stream.Position = 0;
                     
+                Console.WriteLine($"PostToConnectionAsync : {connectionId}");
                 await apiGateway.PostToConnectionAsync(postConnectionRequest);
             }
             catch (AmazonServiceException e)
@@ -120,7 +143,7 @@ public partial class PubSubService : IPubSubService
                 // from our collection.
                 if (e.StatusCode == HttpStatusCode.Gone)
                 {
-                    await _pubSubStorage.Disconnect(hub, postConnectionRequest.ConnectionId);
+                    await Disconnect(hub, postConnectionRequest.ConnectionId);
                 }
             }
         }
@@ -137,7 +160,7 @@ public partial class PubSubService : IPubSubService
                 ConnectionId = connectionId
             });
 
-            await _pubSubStorage.Disconnect(hub, connectionId);
+            await Disconnect(hub, connectionId);
         }
    
     }

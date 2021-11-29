@@ -1,18 +1,18 @@
 using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Nuages.PubSub.Storage;
+using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.WebSocket.Routes.Connect;
 
 // ReSharper disable once UnusedType.Global
 public class ConnectRoute : IConnectRoute
 {
-    private readonly IPubSubStorage _storage;
+    private readonly IPubSubService _pubSubService;
 
-    public ConnectRoute(IPubSubStorage storage)
+    public ConnectRoute(IPubSubService  pubSubService)
     {
-        _storage = storage;
+        _pubSubService = pubSubService;
     }
     
     public async Task<APIGatewayProxyResponse> ConnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
@@ -26,7 +26,7 @@ public class ConnectRoute : IConnectRoute
 
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _storage.Connect(request.GetHub(), connectionId, sub!);
+            await _pubSubService.Connect(request.GetHub(), connectionId, sub!);
 
             return new APIGatewayProxyResponse
             {

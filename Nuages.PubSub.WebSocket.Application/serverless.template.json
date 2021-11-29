@@ -186,7 +186,7 @@
                   {
                     "Ref": "AWS::Region"
                   },
-                  "/Prod"
+                  ".amazonaws.com/Prod"
                 ]
               ]
             }
@@ -228,7 +228,7 @@
                   {
                     "Ref": "AWS::Region"
                   },
-                  "/Prod"
+                  ".amazonaws.com/Prod"
                 ]
               ]
             }
@@ -312,7 +312,7 @@
                   {
                     "Ref": "AWS::Region"
                   },
-                  "/Prod"
+                  ".amazonaws.com/Prod"
                 ]
               ]
             }
@@ -354,7 +354,7 @@
                   {
                     "Ref": "AWS::Region"
                   },
-                  "/Prod"
+                  ".amazonaws.com/Prod"
                 ]
               ]
             }

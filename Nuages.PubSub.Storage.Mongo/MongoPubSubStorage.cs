@@ -3,7 +3,7 @@ using Nuages.PubSub.Storage.Mongo.DataModel;
 
 namespace Nuages.PubSub.Storage.Mongo;
 
-public class MongoPubSubStorage : IPubSubStorage
+public class MongoPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSubStorage<WebSocketConnection>
 {
     private readonly IWebSocketConnectionRepository _webSocketConnectionRepository;
     private readonly IWebSocketGroupConnectionRepository _webSocketGroupConnectionRepository;
@@ -16,37 +16,27 @@ public class MongoPubSubStorage : IPubSubStorage
         _webSocketGroupConnectionRepository = webSocketGroupConnectionRepository;
         _webSocketGroupUserRepository = webSocketGroupUserRepository;
     }
-
-    public async Task Connect(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
+    
+    public async Task<IEnumerable<string>> GetUserGroupIdsForUser(string hub, string sub)
     {
-        var conn = new WebSocketConnection
-        {
-            Id = ObjectId.GenerateNewId().ToString(),
-            ConnectionId = connectionid,
-            Sub = sub,
-            Hub = hub,
-            CreatedOn = DateTime.UtcNow
-        };
-
-        if (expireDelay.HasValue)
-        {
-            conn.ExpireOn = conn.CreatedOn.Add(expireDelay.Value);
-        }
+        var list = await _webSocketGroupUserRepository.GetUserGroupForUser(hub, sub);
         
-        await _webSocketConnectionRepository.InsertOneAsync(conn);
-
-        var groups = await _webSocketGroupUserRepository.GetUserGroupForUser(hub, sub);
-        foreach (var g in groups)
-        {
-            await _webSocketGroupConnectionRepository.AddConnetionToGroupAsync(hub, g.Group, connectionid);
-        }
+        return list.Select(c => c.Group);
     }
 
-    public async Task Disconnect(string hub, string connectionId)
+    protected override string GetNewId()
+    {
+        return ObjectId.GenerateNewId().ToString();
+    }
+
+    public override async Task DeleteConnectionFromGroups(string hub, string connectionId)
+    {
+        await _webSocketGroupConnectionRepository.DeleteManyAsync(c => c.Hub== hub && c.ConnectionId == connectionId);
+    }
+
+    public override async Task DeleteConnection(string hub, string connectionId)
     {
         await _webSocketConnectionRepository.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
-
-        await _webSocketGroupConnectionRepository.DeleteManyAsync( c => c.ConnectionId == connectionId);
     }
 
     public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
@@ -220,5 +210,10 @@ public class MongoPubSubStorage : IPubSubStorage
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
         await _webSocketGroupUserRepository.DeleteManyAsync(c => c.Hub == hub && c.Id == userId);
+    }
+
+    public async Task Insert(WebSocketConnection connection)
+    {
+        await _webSocketConnectionRepository.InsertOneAsync(connection);
     }
 }

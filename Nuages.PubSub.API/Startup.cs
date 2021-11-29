@@ -1,5 +1,6 @@
 ﻿using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Mongo;
+using Nuages.PubSub.Storage.Mongo.DataModel;
 
 namespace Nuages.PubSub.API;
 
@@ -18,7 +19,7 @@ public class Startup
         services.AddSingleton(_configuration);
         
         services
-            .AddPubSubService(_configuration)
+            .AddPubSubService<WebSocketConnection>(_configuration)
             .AddPubSubMongoStorage();
         
         services.AddControllers();
