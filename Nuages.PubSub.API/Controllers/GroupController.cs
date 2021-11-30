@@ -16,7 +16,7 @@ public class GroupController
     [HttpPost("Send")]
     public async Task SendAsync(string hub, string group, string message)
     {
-        await _pubSubService.SendToGroupAsync( hub,  group, message);
+        await _pubSubService.SendToGroupAsync( hub,  group, new PubSubMessage());
     }
     
     [HttpDelete("Close")]

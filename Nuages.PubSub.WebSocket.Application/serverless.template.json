@@ -362,6 +362,90 @@
         }
       }
     },
+    "JoinFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::JoinHandlerAsync",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::GetAtt": [
+            "NuagesPubSubRole",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "Nuages__Mongo__Connection": {
+              "Ref": "MongoConnectionString"
+            },
+            "Nuages__ConfigurationManagerPath": {
+              "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "NuagesPubSub"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/Prod"
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LeaveFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::LeaveHandlerAsync",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": {
+          "Fn::GetAtt": [
+            "NuagesPubSubRole",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "Nuages__Mongo__Connection": {
+              "Ref": "MongoConnectionString"
+            },
+            "Nuages__ConfigurationManagerPath": {
+              "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Uri": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "NuagesPubSub"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com/Prod"
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
     "NuagesPubSub": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
@@ -509,7 +593,7 @@
         "ApiId": {
           "Ref": "NuagesPubSub"
         },
-        "RouteKey": "sendmessage",
+        "RouteKey": "sendToGroup",
         "AuthorizationType": "NONE",
         "OperationName": "SendRoute",
         "Target": {
@@ -597,6 +681,100 @@
         }
       }
     },
+    "JoinRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "NuagesPubSub"
+        },
+        "RouteKey": "joinGroup",
+        "AuthorizationType": "NONE",
+        "OperationName": "JoinRoute",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "JoinInteg"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "JoinInteg": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "NuagesPubSub"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Sub": [
+            "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${function}/invocations",
+            {
+              "region": {
+                "Ref": "AWS::Region"
+              },
+              "function": {
+                "Fn::GetAtt": [
+                  "JoinFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "LeaveRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "NuagesPubSub"
+        },
+        "RouteKey": "leaveGroup",
+        "AuthorizationType": "NONE",
+        "OperationName": "LeaveRoute",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "LeaveInteg"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "LeaveInteg": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "NuagesPubSub"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Sub": [
+            "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${function}/invocations",
+            {
+              "region": {
+                "Ref": "AWS::Region"
+              },
+              "function": {
+                "Fn::GetAtt": [
+                  "LeaveFunction",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
     "Deployment": {
       "Type": "AWS::ApiGatewayV2::Deployment",
       "DependsOn": [
@@ -674,6 +852,34 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Ref": "EchoFunction"
+        },
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "JoinPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "JoinFunction",
+        "NuagesPubSub"
+      ],
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "JoinFunction"
+        },
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "LeavePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "LeaveFunction",
+        "NuagesPubSub"
+      ],
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "LeaveFunction"
         },
         "Principal": "apigateway.amazonaws.com"
       }

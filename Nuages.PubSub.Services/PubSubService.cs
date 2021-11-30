@@ -2,6 +2,7 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using Amazon;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
@@ -106,9 +107,9 @@ public partial class PubSubService : IPubSubService
         return await _pubSubStorage.HasPermissionAsync(hub ,permissionString, connectionId);
     }
 
-    protected virtual async Task SendMessageAsync(string hub, IEnumerable<string> connectionIds,  string content)
+    protected virtual async Task SendMessageAsync(string hub, IEnumerable<string> connectionIds,  PubSubMessage message)
     {
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
 
         Console.WriteLine($"_pubSubOptions.Uri {_pubSubOptions.Uri}");
         
@@ -142,7 +143,9 @@ public partial class PubSubService : IPubSubService
             }
         }
     }
-    
+
+   
+
     private async Task CloseConnectionsAsync(string hub, IEnumerable<string> connectionIds)
     {
         var api = CreateApiGateway(_pubSubOptions.Uri!);

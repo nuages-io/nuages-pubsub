@@ -22,11 +22,10 @@ public class ConnectRoute : IConnectRoute
         try
         {
             var connectionId = request.RequestContext.ConnectionId;
-            context.Logger.LogLine($"ConnectionId: {connectionId} User: {sub}");
 
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _pubSubService.Connect(request.GetHub(), connectionId, sub!);
+            await _pubSubService.Connect(request.GetHub(), connectionId, sub);
 
             return new APIGatewayProxyResponse
             {

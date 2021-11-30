@@ -16,7 +16,7 @@ public class UserController
     [HttpPost("Send")]
     public async Task SendAsync(string hub, string userId, string message)
     {
-        await _pubSubService.SendToUserAsync(hub, userId, message);
+        await _pubSubService.SendToUserAsync(hub, userId, new PubSubMessage());
     }
     
     [HttpDelete("Close")]

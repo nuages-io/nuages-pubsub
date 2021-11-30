@@ -16,7 +16,7 @@ public class AllController
     [HttpPost("Send")]
     public async Task SendAsync(string hub, string message)
     {
-        await _pubSubService.SendToAllAsync(hub, message);
+        await _pubSubService.SendToAllAsync(hub, new PubSubMessage());
     }
     
     [HttpDelete("Close")]

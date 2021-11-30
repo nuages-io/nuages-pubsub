@@ -1,6 +1,5 @@
 ﻿using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Mongo;
-using Nuages.PubSub.Storage.Mongo.DataModel;
 
 namespace Nuages.PubSub.API;
 

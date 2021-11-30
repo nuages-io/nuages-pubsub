@@ -1,11 +1,10 @@
 // ReSharper disable InconsistentNaming
-namespace Nuages.PubSub.WebSocket.Model;
+namespace Nuages.PubSub.Services;
 
-public class SendModel
+public class PubSubInboundGroupMessage
 {
-    public string type { get; set; } = null!;
     public string group { get; set; } = null!;
     public string datatype { get; set; } = "json";
     public object? data { get; set; }
-    public bool noEcho { get; set; } = false;
+    public bool noEcho { get; set; } 
 }

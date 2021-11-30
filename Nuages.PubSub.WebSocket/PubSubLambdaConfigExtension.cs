@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
+using Nuages.PubSub.WebSocket.Routes.Join;
+using Nuages.PubSub.WebSocket.Routes.Leave;
 using Nuages.PubSub.WebSocket.Routes.Send;
 
 namespace Nuages.PubSub.WebSocket;
@@ -21,6 +23,8 @@ public static class PubSubLambdaConfigExtension
         serviceCollection.AddScoped<IDisconnectRoute, DisconnectRoute>();
         serviceCollection.AddScoped<IEchoRoute, EchoRoute>();
         serviceCollection.AddScoped<ISendRoute, SendRoute>();
+        serviceCollection.AddScoped<IJoinRoute, JoinRoute>();
+        serviceCollection.AddScoped<ILeaveRoute, LeaveRoute>();
         
         return new PubSubBuilder(serviceCollection, configuration);
     }

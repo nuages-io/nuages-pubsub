@@ -2,41 +2,44 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
+using Nuages.PubSub.WebSocket.Routes.Join;
 
-namespace Nuages.PubSub.WebSocket.Routes.Echo;
+namespace Nuages.PubSub.WebSocket.Routes.Leave;
 
 // ReSharper disable once UnusedType.Global
-public class EchoRoute : IEchoRoute
+public class LeaveRoute : ILeaveRoute
 {
     private readonly IPubSubService _pubSubService;
 
-    public EchoRoute(IPubSubService pubSubService)
+    public LeaveRoute(IPubSubService pubSubService)
     {
         _pubSubService = pubSubService;
     }
     
-    public async Task<APIGatewayProxyResponse> EchoAsync(APIGatewayProxyRequest request,
+    public async Task<APIGatewayProxyResponse> LeaveAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         try
         {
+            context.Logger.LogLine(request.Body);
+            
+            var inMessage = JsonSerializer.Deserialize<PubSubInboundGroupMessage>(request.Body);
+            if (inMessage == null)
+                throw new NullReferenceException("message is null");
+
+            if (string.IsNullOrEmpty(inMessage.group) )
+                throw new NullReferenceException("group must be provided");
+            
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
             
             var connectionId = request.RequestContext.ConnectionId;
             
-            var message = new PubSubMessage
+            await _pubSubService.RemoveConnectionFromGroupAsync(request.GetHub(), inMessage.group,  connectionId);
+            
+            return new APIGatewayProxyResponse
             {
-                from = PubSubMessageSource.self,
-                type = "echo",
-                data = new
-                {
-                    connectionId = request.RequestContext.ConnectionId
-                }
+                StatusCode = 200
             };
-            
-            context.Logger.LogLine($"Message Payload: {JsonSerializer.Serialize(message) }");
-            
-            return await _pubSubService.SendToConnectionAsync(request.GetHub(),  connectionId, message);
             
         }
         catch (Exception e)

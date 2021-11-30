@@ -7,9 +7,9 @@ namespace Nuages.PubSub.Services;
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public partial class PubSubService
 {
-    public virtual async Task<APIGatewayProxyResponse> SendToConnectionAsync(string hub,  string connectionId, string content)
+    public virtual async Task<APIGatewayProxyResponse> SendToConnectionAsync(string hub,  string connectionId, PubSubMessage message)
     {
-        await SendMessageAsync(hub, new List<string>{ connectionId } , content);
+        await SendMessageAsync(hub, new List<string>{ connectionId } , message);
         
         return new APIGatewayProxyResponse
         {

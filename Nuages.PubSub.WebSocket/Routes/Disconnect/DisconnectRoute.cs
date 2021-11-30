@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
@@ -19,7 +20,8 @@ public class DisconnectRoute : IDisconnectRoute
         try
         {
             var connectionId = request.RequestContext.ConnectionId;
-            context.Logger.LogLine($"ConnectionId: {connectionId}");
+            
+            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
             await _pubSubService.Disconnect(request.GetHub(), connectionId);
 

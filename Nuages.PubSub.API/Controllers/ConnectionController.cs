@@ -16,7 +16,7 @@ public class ConnectionController
     [HttpPost("Send")]
     public async Task SendAsync( string hub, string connectionId, string message)
     {
-        await _pubSubService.SendToConnectionAsync(hub,  connectionId, message);
+        await _pubSubService.SendToConnectionAsync(hub,  connectionId, new PubSubMessage());
     }
     
     [HttpDelete("Close")]

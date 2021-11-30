@@ -3,7 +3,6 @@ using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.WebSocket.Model;
 
 namespace Nuages.PubSub.WebSocket.Routes.Send;
 
@@ -20,40 +19,40 @@ public class SendRoute : ISendRoute
     {
         try
         {
-            var endpoint = $"https://{request.RequestContext.DomainName}";
-            if (endpoint.ToLower().EndsWith("amazonaws.com"))
-                endpoint += $"/{request.RequestContext.Stage}";
+            context.Logger.LogLine(request.Body);
             
-            context.Logger.LogLine($"API Gateway management endpoint: {endpoint}");
-            
-            var message = JsonSerializer.Deserialize<SendModel>(request.Body);
-            if (message == null)
+            var inMessage = JsonSerializer.Deserialize<PubSubInboundGroupMessage>(request.Body);
+            if (inMessage == null)
                 throw new NullReferenceException("message is null");
 
-            if (string.IsNullOrEmpty(message.group) )
+            if (string.IsNullOrEmpty(inMessage.group) )
                 throw new NullReferenceException("group must be provided");
             
-            var hasPermission = await _pubSubService.CheckPermissionAsync(request.GetHub(), PubSubPermission.SendMessageToGroup, request.RequestContext.ConnectionId, message.group);
+            var hasPermission = await _pubSubService.CheckPermissionAsync(request.GetHub(), PubSubPermission.SendMessageToGroup, request.RequestContext.ConnectionId, inMessage.group);
 
             if (hasPermission)
             {
-                var result = new MessageModel
+                var message = new PubSubGroupMessage
                 {
-                    group = message.group,
-                    from = "group",
+                    group = inMessage.group,
+                    from = PubSubMessageSource.group,
                     fromSub = request.GetSub(),
                     type = "message",
-                    datatype = message.datatype,
+                    dataType = inMessage.datatype,
                     data = new
                     {
-                        message.data
+                        inMessage.data
                     }
                 };
 
-                return await _pubSubService.SendToGroupAsync(request.GetHub(), message.group, JsonSerializer.Serialize(result),  
-                                    message.noEcho ? new List<string> { request.RequestContext.ConnectionId} : null);
+                context.Logger.LogLine($"Message Payload: {JsonSerializer.Serialize(message) }");
+                
+                return await _pubSubService.SendToGroupAsync(request.GetHub(), inMessage.group, message,  
+                                    inMessage.noEcho ? new List<string> { request.RequestContext.ConnectionId} : null);
             }
            
+            context.Logger.LogLine("Not authorized to send message to group");
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = (int)HttpStatusCode.Forbidden

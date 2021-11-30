@@ -5,6 +5,8 @@ using Nuages.PubSub.WebSocket.Routes.Authorize;
 using Nuages.PubSub.WebSocket.Routes.Connect;
 using Nuages.PubSub.WebSocket.Routes.Disconnect;
 using Nuages.PubSub.WebSocket.Routes.Echo;
+using Nuages.PubSub.WebSocket.Routes.Join;
+using Nuages.PubSub.WebSocket.Routes.Leave;
 using Nuages.PubSub.WebSocket.Routes.Send;
 
 namespace Nuages.PubSub.WebSocket;
@@ -16,7 +18,9 @@ public class PubSubFunction
     private IConnectRoute? _connectRoute;
     private IAuthorizeRoute? _authorizeRoute;
     private ISendRoute? _sendMessageRoute;
-    
+    private IJoinRoute? _joinRoute;
+    private ILeaveRoute? _leaveRoute;
+
     protected void GetRequiredServices(ServiceProvider serviceProvider)
     {
         _echoRoute = serviceProvider.GetRequiredService<IEchoRoute>();
@@ -24,6 +28,8 @@ public class PubSubFunction
         _connectRoute = serviceProvider.GetRequiredService<IConnectRoute>();
         _authorizeRoute = serviceProvider.GetRequiredService<IAuthorizeRoute>();
         _sendMessageRoute = serviceProvider.GetRequiredService<ISendRoute>();
+        _joinRoute = serviceProvider.GetRequiredService<IJoinRoute>();
+        _leaveRoute = serviceProvider.GetRequiredService<ILeaveRoute>();
     }
     
     // ReSharper disable once UnusedMember.Global
@@ -71,5 +77,23 @@ public class PubSubFunction
             throw new NullReferenceException("_sendMessageRoute is null");
         
         return await _sendMessageRoute.SendAsync(request, context);
+    }
+    
+    public async Task<APIGatewayProxyResponse> JoinHandlerAsync(APIGatewayProxyRequest request,
+        ILambdaContext context)
+    {
+        if (_joinRoute == null)
+            throw new NullReferenceException("_echoService is null");
+        
+        return await _joinRoute.JoinAsync(request, context);
+    }
+    
+    public async Task<APIGatewayProxyResponse> LeaveHandlerAsync(APIGatewayProxyRequest request,
+        ILambdaContext context)
+    {
+        if (_leaveRoute == null)
+            throw new NullReferenceException("_echoService is null");
+        
+        return await _leaveRoute.LeaveAsync(request, context);
     }
 }
