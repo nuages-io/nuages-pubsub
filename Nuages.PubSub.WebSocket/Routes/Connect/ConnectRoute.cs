@@ -25,8 +25,21 @@ public class ConnectRoute : IConnectRoute
 
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _pubSubService.Connect(request.GetHub(), connectionId, sub);
+            await _pubSubService.ConnectAsync(request.GetHub(), connectionId, sub);
 
+            var roleClaim = request.RequestContext.Authorizer["roles"];
+            if (roleClaim != null)
+            {
+                var roles = roleClaim.ToString()!.Split(" ");
+                foreach (var r in roles)
+                {
+                    var name = r.Split(".");
+                    
+                    await _pubSubService.GrantPermissionAsync(request.GetHub(), Enum.Parse<PubSubPermission>(name.First()), connectionId,
+                        name.Length > 1 ? name[1] : null);
+                }
+            }
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = 200,

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
@@ -33,13 +34,22 @@ public class JoinRoute : IJoinRoute
             
             var connectionId = request.RequestContext.ConnectionId;
             
-            await _pubSubService.AddConnectionToGroupAsync(request.GetHub(), inMessage.group,  connectionId, request.GetSub());
+            var hasPermission = await _pubSubService.CheckPermissionAsync(request.GetHub(), PubSubPermission.JoinOrLeaveGroup, request.RequestContext.ConnectionId, inMessage.group);
+
+            if (hasPermission)
+            {
+                await _pubSubService.AddConnectionToGroupAsync(request.GetHub(), inMessage.group,  connectionId, request.GetSub());
             
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 200
+                };
+            }
+          
             return new APIGatewayProxyResponse
             {
-                StatusCode = 200
+                StatusCode = (int)HttpStatusCode.Forbidden
             };
-            
         }
         catch (Exception e)
         {

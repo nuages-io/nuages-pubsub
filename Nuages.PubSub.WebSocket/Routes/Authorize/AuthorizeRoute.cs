@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
@@ -33,7 +34,6 @@ public class AuthorizeRoute : IAuthorizeRoute
             return CreateResponse(false, input.MethodArn);
         }
             
-
         var hub = input.QueryStringParameters["hub"];
 
         if (string.IsNullOrEmpty(hub))
@@ -44,9 +44,11 @@ public class AuthorizeRoute : IAuthorizeRoute
 
         var jwtToken = new JwtSecurityTokenHandler()
             .ReadJwtToken(token);
-        
-        var claimDict = GetClaims(jwtToken);
 
+        context.Logger.LogLine($"Input claims: {JsonSerializer.Serialize(jwtToken.Claims)}");
+        var claimDict = GetClaims(jwtToken);
+        context.Logger.LogLine($"Output claims: {JsonSerializer.Serialize(claimDict)}");
+        
         claimDict.Add("nuageshub", hub);
         
         context.Logger.LogLine($"Issuer: {jwtToken.Issuer}");

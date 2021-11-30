@@ -26,7 +26,7 @@ public partial class PubSubService
             ConnectionId = connectionId
         });
 
-        await Disconnect(hub, connectionId);
+        await DisconnectAsync(hub, connectionId);
     }
 
     public async Task<bool> ConnectionExistsAsync(string hub, string connectionId)

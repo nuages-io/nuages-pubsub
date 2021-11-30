@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
@@ -34,13 +35,23 @@ public class LeaveRoute : ILeaveRoute
             
             var connectionId = request.RequestContext.ConnectionId;
             
-            await _pubSubService.RemoveConnectionFromGroupAsync(request.GetHub(), inMessage.group,  connectionId);
+            var hasPermission = await _pubSubService.CheckPermissionAsync(request.GetHub(), PubSubPermission.JoinOrLeaveGroup, request.RequestContext.ConnectionId, inMessage.group);
+
+            if (hasPermission)
+            {
+                await _pubSubService.RemoveConnectionFromGroupAsync(request.GetHub(), inMessage.group, connectionId);
+
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 200
+                };
+            }
             
             return new APIGatewayProxyResponse
             {
-                StatusCode = 200
+                StatusCode = (int)HttpStatusCode.Forbidden
             };
-            
+
         }
         catch (Exception e)
         {

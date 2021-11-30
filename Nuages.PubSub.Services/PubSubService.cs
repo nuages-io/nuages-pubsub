@@ -62,7 +62,7 @@ public partial class PubSubService : IPubSubService
         return tokenHandler.WriteToken(token);
     }
 
-    public async Task Connect(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
+    public async Task ConnectAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
     {
         await _pubSubStorage.CreateConnectionAsync(hub, connectionid, sub, expireDelay);
 
@@ -73,7 +73,7 @@ public partial class PubSubService : IPubSubService
         }
     }
 
-    public async Task Disconnect(string hub, string connectionId)
+    public async Task DisconnectAsync(string hub, string connectionId)
     {
         await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
     }
@@ -82,7 +82,7 @@ public partial class PubSubService : IPubSubService
     {
         var permissionString = GetPermissionString(permission, target);
 
-        await _pubSubStorage.AddPermissionAsync(hub, permissionString, connectionId);
+        await _pubSubStorage.AddPermissionAsync(hub, connectionId, permissionString);
     }
 
     private static string GetPermissionString(PubSubPermission permission, string? target)
@@ -97,14 +97,14 @@ public partial class PubSubService : IPubSubService
     {
         var permissionString = GetPermissionString(permission, target);
 
-        await _pubSubStorage.RemovePermissionAsync(hub, permissionString, connectionId);
+        await _pubSubStorage.RemovePermissionAsync(hub, connectionId, permissionString);
     }
 
     public async Task<bool> CheckPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
 
-        return await _pubSubStorage.HasPermissionAsync(hub ,permissionString, connectionId);
+        return await _pubSubStorage.HasPermissionAsync(hub ,connectionId, permissionString);
     }
 
     protected virtual async Task SendMessageAsync(string hub, IEnumerable<string> connectionIds,  PubSubMessage message)
@@ -138,7 +138,7 @@ public partial class PubSubService : IPubSubService
                 // from our collection.
                 if (e.StatusCode == HttpStatusCode.Gone)
                 {
-                    await Disconnect(hub, postConnectionRequest.ConnectionId);
+                    await DisconnectAsync(hub, postConnectionRequest.ConnectionId);
                 }
             }
         }
@@ -157,7 +157,7 @@ public partial class PubSubService : IPubSubService
                 ConnectionId = connectionId
             });
 
-            await Disconnect(hub, connectionId);
+            await DisconnectAsync(hub, connectionId);
         }
    
     }

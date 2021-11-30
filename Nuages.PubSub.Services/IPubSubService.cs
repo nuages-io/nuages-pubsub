@@ -8,7 +8,7 @@ public interface IPubSubService
     Task<APIGatewayProxyResponse> SendToAllAsync(string hub, PubSubMessage message, List<string>? excludedIds = null);
     Task CloseAllConnectionsAsync(string hub);
 
-    Task Connect(string hub, string connectionid, string sub, TimeSpan? expireDelay = default);
+    Task ConnectAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay = default);
     
     //Connection
     Task<APIGatewayProxyResponse> SendToConnectionAsync(string hub, string connectionId, PubSubMessage message);
@@ -39,7 +39,7 @@ public interface IPubSubService
     Task RevokePermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);
     Task<bool> CheckPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);
     
-    Task Disconnect(string hub, string connectionId);
+    Task DisconnectAsync(string hub, string connectionId);
 }
 
 
