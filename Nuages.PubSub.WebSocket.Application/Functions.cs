@@ -2,6 +2,8 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
+using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.Mongo;
+using Nuages.PubSub.WebSocket.Application.CallBacks;
+using Nuages.PubSub.WebSocket.Routes.Connect;
 
 #endregion
 
@@ -53,6 +57,8 @@ public class Functions : PubSubFunction
             .AddPubSubLambdaRoutes(configuration)
             .AddPubSubService()
             .AddPubSubMongoStorage();
+
+        serviceCollection.AddScoped<IOnConnectedCallback, OnConnectedCallback>();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -60,5 +66,17 @@ public class Functions : PubSubFunction
 
         var pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
         pubSubStorage.InitializeAsync();
+    }
+
+    public override Task<APIGatewayProxyResponse> OnConnectHandlerAsync(APIGatewayProxyRequest request, ILambdaContext context)
+    {
+        var res = base.OnConnectHandlerAsync(request, context);
+
+        if (res.Result.StatusCode == 200)
+        {
+            context.Logger.LogLine("200 connected!");
+        }
+        
+        return res;
     }
 }

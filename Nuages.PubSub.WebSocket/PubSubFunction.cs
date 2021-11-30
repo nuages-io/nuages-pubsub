@@ -8,6 +8,7 @@ using Nuages.PubSub.WebSocket.Routes.Echo;
 using Nuages.PubSub.WebSocket.Routes.Join;
 using Nuages.PubSub.WebSocket.Routes.Leave;
 using Nuages.PubSub.WebSocket.Routes.Send;
+// ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace Nuages.PubSub.WebSocket;
 
@@ -33,7 +34,7 @@ public class PubSubFunction
     }
     
     // ReSharper disable once UnusedMember.Global
-    public async Task<APIGatewayProxyResponse> EchoHandlerAsync(APIGatewayProxyRequest request,
+    public virtual async Task<APIGatewayProxyResponse> EchoHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         if (_echoRoute == null)
@@ -43,7 +44,7 @@ public class PubSubFunction
     }
 
     // ReSharper disable once UnusedMember.Global
-    public  async Task<APIGatewayProxyResponse> OnDisconnectHandlerAsync(APIGatewayProxyRequest request,
+    public  virtual async Task<APIGatewayProxyResponse> OnDisconnectHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         if (_disconnectRoute == null)
@@ -52,7 +53,7 @@ public class PubSubFunction
     }
 
     // ReSharper disable once UnusedMember.Global
-    public async Task<APIGatewayProxyResponse> OnConnectHandlerAsync(APIGatewayProxyRequest request,
+    public virtual async Task<APIGatewayProxyResponse> OnConnectHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         if (_connectRoute == null)
@@ -61,7 +62,7 @@ public class PubSubFunction
     }
         
     // ReSharper disable once UnusedMember.Global
-    public async Task<APIGatewayCustomAuthorizerResponse> OnAuthorizeHandlerAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
+    public virtual async Task<APIGatewayCustomAuthorizerResponse> OnAuthorizeHandlerAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
     {
         if (_authorizeRoute == null)
             throw new NullReferenceException("_authorizeService is null");
@@ -70,7 +71,7 @@ public class PubSubFunction
     }
 
     // ReSharper disable once UnusedMember.Global
-    public async Task<APIGatewayProxyResponse> SendHandlerAsync(APIGatewayProxyRequest request,
+    public virtual async Task<APIGatewayProxyResponse> SendHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         if (_sendMessageRoute == null)
@@ -79,7 +80,7 @@ public class PubSubFunction
         return await _sendMessageRoute.SendAsync(request, context);
     }
     
-    public async Task<APIGatewayProxyResponse> JoinHandlerAsync(APIGatewayProxyRequest request,
+    public virtual async Task<APIGatewayProxyResponse> JoinHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         if (_joinRoute == null)
@@ -88,7 +89,7 @@ public class PubSubFunction
         return await _joinRoute.JoinAsync(request, context);
     }
     
-    public async Task<APIGatewayProxyResponse> LeaveHandlerAsync(APIGatewayProxyRequest request,
+    public virtual async Task<APIGatewayProxyResponse> LeaveHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         if (_leaveRoute == null)

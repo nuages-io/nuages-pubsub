@@ -9,4 +9,5 @@ public class PubSubOptions
     public bool DisableSslCheck { get; set; }
     public string? Issuer { get; set; }
     public string? Uri { get; set; }
+    public string Region { get; set; } = "";
 }

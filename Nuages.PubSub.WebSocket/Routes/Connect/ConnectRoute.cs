@@ -9,10 +9,12 @@ namespace Nuages.PubSub.WebSocket.Routes.Connect;
 public class ConnectRoute : IConnectRoute
 {
     private readonly IPubSubService _pubSubService;
+    private readonly IOnConnectedCallback? _onConnectedCallback;
 
-    public ConnectRoute(IPubSubService  pubSubService)
+    public ConnectRoute(IPubSubService  pubSubService, IOnConnectedCallback? onConnectedCallback = null)
     {
         _pubSubService = pubSubService;
+        _onConnectedCallback = onConnectedCallback;
     }
     
     public async Task<APIGatewayProxyResponse> ConnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
@@ -38,6 +40,11 @@ public class ConnectRoute : IConnectRoute
                     await _pubSubService.GrantPermissionAsync(request.GetHub(), Enum.Parse<PubSubPermission>(name.First()), connectionId,
                         name.Length > 1 ? name[1] : null);
                 }
+            }
+
+            if (_onConnectedCallback != null)
+            {
+                await _onConnectedCallback.OnConnectedAsync(request, context);
             }
             
             return new APIGatewayProxyResponse

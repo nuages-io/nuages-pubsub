@@ -216,6 +216,10 @@
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
+            "Nuages__PubSub__Region":
+            {
+              "Ref" : "AWS::Region"
+            },
             "Nuages__PubSub__Uri": {
               "Fn::Join": [
                 "",
@@ -299,6 +303,10 @@
             },
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Region":
+            {
+              "Ref" : "AWS::Region"
             },
             "Nuages__PubSub__Uri": {
               "Fn::Join": [

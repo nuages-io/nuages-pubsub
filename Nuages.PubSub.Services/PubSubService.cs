@@ -29,7 +29,7 @@ public partial class PubSubService : IPubSubService
     
     private IAmazonApiGatewayManagementApi CreateApiGateway(string url)
     {
-        return _apiClientientProvider.Create(url, RegionEndpoint.CACentral1.SystemName);
+        return _apiClientientProvider.Create(url, _pubSubOptions.Region);
     }
 
     public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
