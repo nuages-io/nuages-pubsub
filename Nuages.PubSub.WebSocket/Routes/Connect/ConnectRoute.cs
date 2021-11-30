@@ -29,19 +29,15 @@ public class ConnectRoute : IConnectRoute
 
             await _pubSubService.ConnectAsync(request.GetHub(), connectionId, sub);
 
-            var roleClaim = request.RequestContext.Authorizer["roles"];
-            if (roleClaim != null)
+            var roles = GetRoles(request);
+            foreach (var r in roles)
             {
-                var roles = roleClaim.ToString()!.Split(" ");
-                foreach (var r in roles)
-                {
-                    var name = r.Split(".");
+                var name = r.Split(".");
                     
-                    await _pubSubService.GrantPermissionAsync(request.GetHub(), Enum.Parse<PubSubPermission>(name.First()), connectionId,
-                        name.Length > 1 ? name[1] : null);
-                }
+                await _pubSubService.GrantPermissionAsync(request.GetHub(), Enum.Parse<PubSubPermission>(name.First()), connectionId,
+                    name.Length > 1 ? name[1] : null);
             }
-
+            
             if (_onConnectedCallback != null)
             {
                 await _onConnectedCallback.OnConnectedAsync(request, context);
@@ -65,5 +61,14 @@ public class ConnectRoute : IConnectRoute
         }
     }
 
+    protected virtual string[] GetRoles(APIGatewayProxyRequest request)
+    {
+        var roleClaim = request.RequestContext.Authorizer["roles"];
+        if (roleClaim != null)
+        {
+            return roleClaim.ToString()!.Split(" ");
+        }
 
+        return Array.Empty<string>();
+    }
 }

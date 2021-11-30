@@ -18,22 +18,17 @@ public class AuthorizeRoute : IAuthorizeRoute
     {
         _pubSubOptions = pubSubAuthOptions.Value;
     }
-    
-    public async Task<APIGatewayCustomAuthorizerResponse> AuthorizeAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
+
+    public async Task<APIGatewayCustomAuthorizerResponse> AuthorizeAsync(APIGatewayCustomAuthorizerRequest input,
+        ILambdaContext context)
     {
-        
-        var architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
-        var dotnetVersion = Environment.Version.ToString();
-        context.Logger.LogLine(
-            $"Architecture: {architecture}, .NET Version: {dotnetVersion}");
-            
         var token = input.QueryStringParameters["access_token"];
         if (string.IsNullOrEmpty(token))
         {
             context.Logger.LogLine("Token (access_token query parameter) was not provided. Exiting.");
             return CreateResponse(false, input.MethodArn);
         }
-            
+
         var hub = input.QueryStringParameters["hub"];
 
         if (string.IsNullOrEmpty(hub))
@@ -45,24 +40,15 @@ public class AuthorizeRoute : IAuthorizeRoute
         var jwtToken = new JwtSecurityTokenHandler()
             .ReadJwtToken(token);
 
-        context.Logger.LogLine($"Input claims: {JsonSerializer.Serialize(jwtToken.Claims)}");
         var claimDict = GetClaims(jwtToken);
-        context.Logger.LogLine($"Output claims: {JsonSerializer.Serialize(claimDict)}");
-        
+
         claimDict.Add("nuageshub", hub);
-        
-        context.Logger.LogLine($"Issuer: {jwtToken.Issuer}");
-        context.Logger.LogLine($"Alg: {jwtToken.SignatureAlgorithm}");
-        context.Logger.LogLine($"Aud: {claimDict["aud"]}");
-        
-        context.Logger.LogLine($"Valid issuers : {_pubSubOptions.ValidIssuers}");
-        context.Logger.LogLine($"Valid audiences : {_pubSubOptions.ValidAudiences}");
-            
+
         var validIssuers = _pubSubOptions.ValidIssuers.Split(",");
         var validAudiences = _pubSubOptions.ValidAudiences?.Split(",").ToList();
 
         var keys = new List<SecurityKey>();
-        
+
         var secret = _pubSubOptions.Secret;
         switch (jwtToken.SignatureAlgorithm)
         {
@@ -75,25 +61,18 @@ public class AuthorizeRoute : IAuthorizeRoute
             {
                 if (string.IsNullOrEmpty(secret))
                     throw new NullReferenceException("secret was not provided");
-                
+
                 var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
                 keys = new List<SecurityKey> { mySecurityKey };
-            
+
                 context.Logger.LogLine($"Secret : {secret}");
                 break;
             }
         }
-       try
+
+        try
         {
-            new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKeys = keys,
-                ValidIssuers = validIssuers,
-                ValidateIssuer = true,
-                ValidAudiences = validAudiences,
-                ValidateAudience = validAudiences != null && validAudiences.Any()
-            }, out _);
+            ValidateToken(token, keys, validIssuers, validAudiences);
 
             return CreateResponse(true, input.MethodArn, claimDict);
         }
@@ -104,23 +83,37 @@ public class AuthorizeRoute : IAuthorizeRoute
 
         return CreateResponse(false, input.MethodArn);
     }
-    
+
+    protected virtual void ValidateToken(string token, List<SecurityKey> keys, string[] validIssuers,
+        List<string>? validAudiences)
+    {
+        new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKeys = keys,
+            ValidIssuers = validIssuers,
+            ValidateIssuer = true,
+            ValidAudiences = validAudiences,
+            ValidateAudience = validAudiences != null && validAudiences.Any()
+        }, out _);
+    }
+
     private static string GetEndpoint(string issuer)
     {
         var endpoint = issuer;
 
         if (!endpoint.EndsWith("/"))
             endpoint += "/";
-            
+
         return endpoint;
     }
 
-    private async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
+    protected virtual async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
     {
-        var jsonWebKeySetUrl =  $"{GetEndpoint(issuer)}{_pubSubOptions.JsonWebKeySetUrlPath}";
-            
+        var jsonWebKeySetUrl = $"{GetEndpoint(issuer)}{_pubSubOptions.JsonWebKeySetUrlPath}";
+
         context.Logger.LogLine(jsonWebKeySetUrl);
-            
+
         using var handler = new HttpClientHandler();
 
         if (_pubSubOptions.DisableSslCheck)
@@ -135,7 +128,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         return keys;
     }
 
-    private static Dictionary<string, string> GetClaims(JwtSecurityToken token)
+    protected virtual Dictionary<string, string> GetClaims(JwtSecurityToken token)
     {
         var claimDict = new Dictionary<string, string>();
         foreach (var c in token.Claims)
@@ -145,7 +138,7 @@ public class AuthorizeRoute : IAuthorizeRoute
                 claimDict[c.Type] = claimDict[c.Type] + " " + c.Value;
         return claimDict;
     }
-    
+
     private static APIGatewayCustomAuthorizerResponse CreateResponse(bool success, string methodArn,
         Dictionary<string, string>? claims = null)
     {
@@ -167,11 +160,11 @@ public class AuthorizeRoute : IAuthorizeRoute
                 {
                     new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement
                     {
-                        Action = new HashSet<string> {"execute-api:Invoke"},
+                        Action = new HashSet<string> { "execute-api:Invoke" },
                         Effect = success
                             ? "Allow"
                             : "Deny",
-                        Resource = new HashSet<string> {methodArn}
+                        Resource = new HashSet<string> { methodArn }
                     }
                 }
             },
