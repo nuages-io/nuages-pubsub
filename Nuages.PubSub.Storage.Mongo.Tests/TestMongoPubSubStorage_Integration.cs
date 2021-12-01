@@ -11,13 +11,13 @@ using Xunit;
 
 namespace Nuages.PubSub.Storage.Mongo.Tests;
 
-public class TestInMemoryPubSubStorage
+public class TestMongoPubSubStorage
 {
     private readonly IPubSubStorage _pubSubStorage;
     private readonly string _hub;
     private readonly string _sub;
 
-    public TestInMemoryPubSubStorage()
+    public TestMongoPubSubStorage()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
@@ -41,7 +41,7 @@ public class TestInMemoryPubSubStorage
         _sub = "sub-test";
 
         var clientProvider = serviceProvider.GetRequiredService<IMongoClientProvider>();
-        var client = clientProvider.CreateClient<WebSocketConnection>();
+        var client = clientProvider.CreateClient<PubSubConnection>();
 
         var dbName = configuration.GetSection("Nuages:DbName").Value;
         
@@ -196,5 +196,18 @@ public class TestInMemoryPubSubStorage
         await _pubSubStorage.RemovePermissionAsync(_hub, connectionId, permissionId);
         
         Assert.False(await _pubSubStorage.HasPermissionAsync(_hub, connectionId, permissionId));
+    }
+
+    [Fact]
+    public async Task ShouldAddAck()
+    {
+        var connectionId = Guid.NewGuid().ToString();
+        var ackId = Guid.NewGuid().ToString();
+        
+        Assert.False(await _pubSubStorage.ExistAckAsync(_hub, connectionId, ackId));
+        
+        await _pubSubStorage.InsertAckAsync(_hub, connectionId, ackId);
+        
+        Assert.True(await _pubSubStorage.ExistAckAsync(_hub, connectionId, ackId));
     }
 }

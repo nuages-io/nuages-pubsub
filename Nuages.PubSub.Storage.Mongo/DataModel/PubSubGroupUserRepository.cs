@@ -10,23 +10,23 @@ using Nuages.MongoDB.Repository;
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
 // ReSharper disable once UnusedType.Global
-public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>, IWebSocketGroupUserRepository
+public class PubSubGroupUserRepository : MongoRepository<PubSubGroupUser>, IPubSubGroupUserRepository
 {
     [ExcludeFromCodeCoverage]
-    protected WebSocketGroupUserRepository(IMongoDatabase db) : base(db)
+    protected PubSubGroupUserRepository(IMongoDatabase db) : base(db)
     {
     }
 
     // ReSharper disable once UnusedMember.Global
-    public WebSocketGroupUserRepository(IMongoDatabaseProvider provider) : base(provider)
+    public PubSubGroupUserRepository(IMongoDatabaseProvider provider) : base(provider)
     {
     }
 
     public void InitializeIndexes()
     {
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketGroupUser>(
-                Builders<WebSocketGroupUser>.IndexKeys
+            new CreateIndexModel<PubSubGroupUser>(
+                Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Group)
                     .Ascending(p => p.Sub)
@@ -38,8 +38,8 @@ public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>,
         );
         
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketGroupUser>(
-                Builders<WebSocketGroupUser>.IndexKeys
+            new CreateIndexModel<PubSubGroupUser>(
+                Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Group)
                 , new CreateIndexOptions
@@ -50,8 +50,8 @@ public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>,
         );
         
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketGroupUser>(
-                Builders<WebSocketGroupUser>.IndexKeys
+            new CreateIndexModel<PubSubGroupUser>(
+                Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Sub)
                 , new CreateIndexOptions
@@ -62,7 +62,7 @@ public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>,
         );
     }
 
-    public async Task<IEnumerable<WebSocketGroupUser>> GetGroupsForUserAsync(string hub, string sub)
+    public async Task<IEnumerable<PubSubGroupUser>> GetGroupsForUserAsync(string hub, string sub)
     {
         var groups = AsQueryable().Where(c => c.Hub == hub && c.Sub == sub);
 
@@ -80,11 +80,11 @@ public class WebSocketGroupUserRepository : MongoRepository<WebSocketGroupUser>,
     }
 }
 
-public interface IWebSocketGroupUserRepository : IMongoRepository<WebSocketGroupUser>
+public interface IPubSubGroupUserRepository : IMongoRepository<PubSubGroupUser>
 {
     void InitializeIndexes();
 
-    Task<IEnumerable<WebSocketGroupUser>> GetGroupsForUserAsync(string hub, string sub);
+    Task<IEnumerable<PubSubGroupUser>> GetGroupsForUserAsync(string hub, string sub);
 
     Task DeleteUserFromGroupAsync(string hub, string group, string sub);
     

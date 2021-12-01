@@ -1,7 +1,7 @@
 // ReSharper disable UnusedMemberInSuper.Global
 namespace Nuages.PubSub.Storage;
 
-public interface IWebSocketConnection
+public interface IPubSubConnection
 {
     public string Id { get; set; }
     public string ConnectionId { get; set; } 
@@ -15,19 +15,19 @@ public interface IWebSocketConnection
 
 public static class WebSocketConnectionExtensions
 {
-    public static bool IsExpired(this IWebSocketConnection webSocketConnection)
+    public static bool IsExpired(this IPubSubConnection pubSubConnection)
     {
-        if (!webSocketConnection.ExpireOn.HasValue)
+        if (!pubSubConnection.ExpireOn.HasValue)
             return false;
 
-        return webSocketConnection.ExpireOn < DateTime.UtcNow;
+        return pubSubConnection.ExpireOn < DateTime.UtcNow;
     }
     
-    public static void AddPermission(this IWebSocketConnection webSocketConnection, string permissionString)
+    public static void AddPermission(this IPubSubConnection pubSubConnection, string permissionString)
     {
-        webSocketConnection.Permissions ??= new List<string>();
+        pubSubConnection.Permissions ??= new List<string>();
             
-        webSocketConnection.Permissions.Add(permissionString);
+        pubSubConnection.Permissions.Add(permissionString);
 
     }
 

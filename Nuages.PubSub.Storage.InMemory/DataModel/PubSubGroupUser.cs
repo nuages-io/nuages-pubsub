@@ -1,7 +1,7 @@
 
 namespace Nuages.PubSub.Storage.InMemory.DataModel;
 
-public class WebSocketGroupUser
+public class PubSubGroupUser
 {
     public string Group { get; set; } = "";
     public string Sub { get; set; } = "";

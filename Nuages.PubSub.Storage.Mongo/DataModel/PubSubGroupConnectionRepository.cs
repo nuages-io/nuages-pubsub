@@ -10,23 +10,23 @@ using Nuages.MongoDB.Repository;
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
 // ReSharper disable once UnusedType.Global
-public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroupConnection>, IWebSocketGroupConnectionRepository
+public class PubSubGroupConnectionRepository : MongoRepository<PubSubGroupConnection>, IPubSubGroupConnectionRepository
 {
     [ExcludeFromCodeCoverage]
-    protected WebSocketGroupConnectionRepository(IMongoDatabase db) : base(db)
+    protected PubSubGroupConnectionRepository(IMongoDatabase db) : base(db)
     {
     }
 
     // ReSharper disable once UnusedMember.Global
-    public WebSocketGroupConnectionRepository(IMongoDatabaseProvider provider) : base(provider)
+    public PubSubGroupConnectionRepository(IMongoDatabaseProvider provider) : base(provider)
     {
     }
 
     public void InitializeIndexes()
     {
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketGroupConnection>(
-                Builders<WebSocketGroupConnection>.IndexKeys
+            new CreateIndexModel<PubSubGroupConnection>(
+                Builders<PubSubGroupConnection>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Group)
                     .Ascending(p => p.ConnectionId)
@@ -38,8 +38,8 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
         );
         
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketGroupConnection>(
-                Builders<WebSocketGroupConnection>.IndexKeys
+            new CreateIndexModel<PubSubGroupConnection>(
+                Builders<PubSubGroupConnection>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Group)
                 , new CreateIndexOptions
@@ -79,7 +79,7 @@ public class WebSocketGroupConnectionRepository : MongoRepository<WebSocketGroup
     }
 }
 
-public interface IWebSocketGroupConnectionRepository : IMongoRepository<WebSocketGroupConnection>
+public interface IPubSubGroupConnectionRepository : IMongoRepository<PubSubGroupConnection>
 {
     void InitializeIndexes();
     IEnumerable<string> GetConnectionsForGroup(string hub, string group);

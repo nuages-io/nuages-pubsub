@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
@@ -10,6 +9,7 @@ using Nuages.PubSub.Services;
 namespace Nuages.PubSub.WebSocket.Routes.Authorize;
 
 // ReSharper disable once UnusedType.Global
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class AuthorizeRoute : IAuthorizeRoute
 {
     private readonly PubSubOptions _pubSubOptions;
@@ -84,7 +84,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         return CreateResponse(false, input.MethodArn);
     }
 
-    protected virtual void ValidateToken(string token, List<SecurityKey> keys, string[] validIssuers,
+    protected virtual void ValidateToken(string token, IEnumerable<SecurityKey> keys, IEnumerable<string> validIssuers,
         List<string>? validAudiences)
     {
         new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters

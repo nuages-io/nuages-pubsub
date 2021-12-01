@@ -6,8 +6,8 @@ using Nuages.MongoDB.Model;
 
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
-[MongoCollection("web_socket_connection", "Nuages:DbName", true)]
-public class WebSocketConnection : MongoDocument, IWebSocketConnection
+[MongoCollection("pub_sub_connection", "Nuages:DbName", true)]
+public class PubSubConnection : MongoDocument, IPubSubConnection
 {
     public string ConnectionId { get; set; } = "";
     public string Sub { get; set; } = "";

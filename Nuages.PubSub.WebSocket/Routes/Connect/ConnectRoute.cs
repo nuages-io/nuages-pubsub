@@ -6,15 +6,14 @@ using Nuages.PubSub.Services;
 namespace Nuages.PubSub.WebSocket.Routes.Connect;
 
 // ReSharper disable once UnusedType.Global
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class ConnectRoute : IConnectRoute
 {
     private readonly IPubSubService _pubSubService;
-    private readonly IOnConnectedCallback? _onConnectedCallback;
 
-    public ConnectRoute(IPubSubService  pubSubService, IOnConnectedCallback? onConnectedCallback = null)
+    public ConnectRoute(IPubSubService  pubSubService)
     {
         _pubSubService = pubSubService;
-        _onConnectedCallback = onConnectedCallback;
     }
     
     public async Task<APIGatewayProxyResponse> ConnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
@@ -38,11 +37,6 @@ public class ConnectRoute : IConnectRoute
                     name.Length > 1 ? name[1] : null);
             }
             
-            if (_onConnectedCallback != null)
-            {
-                await _onConnectedCallback.OnConnectedAsync(request, context);
-            }
-            
             return new APIGatewayProxyResponse
             {
                 StatusCode = 200,
@@ -61,14 +55,9 @@ public class ConnectRoute : IConnectRoute
         }
     }
 
-    protected virtual string[] GetRoles(APIGatewayProxyRequest request)
+    protected virtual IEnumerable<string> GetRoles(APIGatewayProxyRequest request)
     {
         var roleClaim = request.RequestContext.Authorizer["roles"];
-        if (roleClaim != null)
-        {
-            return roleClaim.ToString()!.Split(" ");
-        }
-
-        return Array.Empty<string>();
+        return roleClaim != null ? roleClaim.ToString()!.Split(" ") : Array.Empty<string>();
     }
 }

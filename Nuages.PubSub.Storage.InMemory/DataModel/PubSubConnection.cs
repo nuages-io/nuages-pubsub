@@ -2,7 +2,7 @@
 
 namespace Nuages.PubSub.Storage.InMemory.DataModel;
 
-public class WebSocketConnection : IWebSocketConnection
+public class PubSubConnection : IPubSubConnection
 {
     public string Id { get; set; } = "";
     public string ConnectionId { get; set; } = "";

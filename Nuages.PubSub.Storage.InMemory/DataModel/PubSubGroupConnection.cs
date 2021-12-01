@@ -1,14 +1,9 @@
-#region
 
-using Nuages.MongoDB.Model;
+namespace Nuages.PubSub.Storage.InMemory.DataModel;
 
-#endregion
-
-namespace Nuages.PubSub.Storage.Mongo.DataModel;
-
-[MongoCollection("web_socket_group_connection", "Nuages:DbName", true)]
-public class WebSocketGroupConnection : MongoDocument
+public class PubSubGroupConnection
 {
+    public string Id { get; set; } = "";
     public string Group { get; set; } = "";
     public string ConnectionId { get; set; } = "";
     public DateTime CreatedOn { get; set; }

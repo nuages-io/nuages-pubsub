@@ -6,11 +6,12 @@ using Nuages.MongoDB.Model;
 
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
-[MongoCollection("web_socket_group_user", "Nuages:DbName", true)]
-public class WebSocketGroupUser : MongoDocument
+[MongoCollection("pub_sub_group_connection", "Nuages:DbName", true)]
+public class PubSubGroupConnection : MongoDocument
 {
     public string Group { get; set; } = "";
-    public string Sub { get; set; } = "";
+    public string ConnectionId { get; set; } = "";
     public DateTime CreatedOn { get; set; }
     public string Hub { get; set; } = "";
+    public string Sub { get; set; } = "";
 }

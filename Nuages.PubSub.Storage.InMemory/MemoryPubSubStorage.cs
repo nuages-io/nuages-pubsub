@@ -3,50 +3,60 @@ using Nuages.PubSub.Storage.InMemory.DataModel;
 
 namespace Nuages.PubSub.Storage.InMemory;
 
-public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSubStorage
+public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
-    private Dictionary<string, List<IWebSocketConnection>> HubConnections { get; } = new();
+    private Dictionary<string, List<IPubSubConnection>> HubConnections { get; } = new();
 
-    private Dictionary<string, List<WebSocketGroupConnection>> HubConnectionsAndGroups { get;  } = new();
+    private Dictionary<string, List<PubSubGroupConnection>> HubConnectionsAndGroups { get;  } = new();
 
-    private Dictionary<string, List<WebSocketGroupUser>> HubUsersAndGroups { get;  } = new();
+    private Dictionary<string, List<PubSubGroupUser>> HubUsersAndGroups { get;  } = new();
 
+    private Dictionary<string, List<PubSubAck>> HubAck { get;  } = new();
+    
     [ExcludeFromCodeCoverage]
-    protected override async Task UpdateAsync(IWebSocketConnection connection)
+    protected override async Task UpdateAsync(IPubSubConnection connection)
     {
         await Task.CompletedTask;
     }
 
-    private List<IWebSocketConnection> GetHubConnections(string hub)
+    private List<IPubSubConnection> GetHubConnections(string hub)
     {
         if (!HubConnections.ContainsKey(hub))
-            HubConnections[hub] = new List<IWebSocketConnection>();
+            HubConnections[hub] = new List<IPubSubConnection>();
 
         return HubConnections[hub];
     }
 
-    private List<WebSocketGroupConnection> GetHubConnectionsAndGroups(string hub)
+    private List<PubSubGroupConnection> GetHubConnectionsAndGroups(string hub)
     {
         if (!HubConnectionsAndGroups.ContainsKey(hub))
-            HubConnectionsAndGroups[hub] = new List<WebSocketGroupConnection>();
+            HubConnectionsAndGroups[hub] = new List<PubSubGroupConnection>();
 
         return HubConnectionsAndGroups[hub];
     }
 
-    private List<WebSocketGroupUser> GetHubUsersAndGroups(string hub)
+    private List<PubSubGroupUser> GetHubUsersAndGroups(string hub)
     {
         if (!HubUsersAndGroups.ContainsKey(hub))
-            HubUsersAndGroups[hub] = new List<WebSocketGroupUser>();
+            HubUsersAndGroups[hub] = new List<PubSubGroupUser>();
 
         return HubUsersAndGroups[hub];
+    }
+    
+    private List<PubSubAck> GetHubPubSubAck(string hub)
+    {
+        if (!HubAck.ContainsKey(hub))
+            HubAck[hub] = new List<PubSubAck>();
+
+        return HubAck[hub];
     }
     
     protected override string GetNewId()
     {
         return Guid.NewGuid().ToString();
     }
-    
-    public async Task DeleteConnectionFromGroupsAsync(string hub, string connectionId)
+
+    private async Task DeleteConnectionFromAllGroupsAsync(string hub, string connectionId)
     {
 
         GetHubConnectionsAndGroups(hub).RemoveAll(c => c.Hub == hub && c.ConnectionId == connectionId);
@@ -58,21 +68,22 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
     {
         GetHubConnections(hub).RemoveAll(c => c.Hub == hub && c.ConnectionId == connectionId);
 
-        await DeleteConnectionFromGroupsAsync(hub, connectionId);
+        await DeleteConnectionFromAllGroupsAsync(hub, connectionId);
     }
 
-    public async Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub)
+
+    public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
     {
         return await Task.FromResult(GetHubConnections(hub));
     }
 
-    public override async Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId)
+    public override async Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
     {
         var connection = GetHubConnections(hub).SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId);
         return await Task.FromResult(connection);
     }
 
-    public async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForGroupAsync(string hub, string group)
+    public async Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group)
     {
         var coll = GetHubConnectionsAndGroups(hub).Where(c => c.Group == group).Select(c => c.ConnectionId);
         return await Task.FromResult(GetHubConnections(hub).Where(c => coll.Contains(c.ConnectionId)));
@@ -84,7 +95,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
         return await Task.FromResult(GetHubConnectionsAndGroups(hub).Any(c => c.Group == group));
     }
 
-    public override async Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
         var conn = GetHubConnections(hub).Where(c => c.Sub == userId);
 
@@ -110,7 +121,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
 
     public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
     {
-        var connection = new WebSocketGroupConnection
+        var connection = new PubSubGroupConnection
         {
             Id = GetNewId(),
             Group = group,
@@ -145,7 +156,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
 
         if (existing == null)
         {
-            var userConnection = new WebSocketGroupUser
+            var userConnection = new PubSubGroupUser
             {
                 Sub = userId,
                 Group = group,
@@ -179,7 +190,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
         await Task.CompletedTask;
     }
 
-    protected override async Task InsertAsync(IWebSocketConnection connection)
+    protected override async Task InsertAsync(IPubSubConnection connection)
     {
         await Task.Run(() =>
         {
@@ -194,4 +205,25 @@ public class MemoryPubSubStorage : PubSubStorgeBase<WebSocketConnection>, IPubSu
         return await Task.FromResult(ids);
     }
 
+    public async Task<bool> ExistAckAsync(string hub, string connectionId, string ackId)
+    {
+        return await Task.Run(() =>
+        {
+            return GetHubPubSubAck(hub).Any(c => c.ConnectionId == connectionId && c.AckId == ackId);
+        });
+    }
+
+    public async Task InsertAckAsync(string hub, string connectionId, string ackId)
+    {
+        await Task.Run(() =>
+        {
+            var pubSubAck = new PubSubAck
+            {
+                ConnectionId = connectionId,
+                AckId = ackId
+            };
+            
+            GetHubPubSubAck(hub).Add(pubSubAck);
+        }); 
+    }
 }

@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.Mongo;
-using Nuages.PubSub.WebSocket.Application.CallBacks;
-using Nuages.PubSub.WebSocket.Routes.Connect;
 
 #endregion
 
@@ -57,8 +55,6 @@ public class Functions : PubSubFunction
             .AddPubSubLambdaRoutes(configuration)
             .AddPubSubService()
             .AddPubSubMongoStorage();
-
-        serviceCollection.AddScoped<IOnConnectedCallback, OnConnectedCallback>();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -68,15 +64,13 @@ public class Functions : PubSubFunction
         pubSubStorage.InitializeAsync();
     }
 
-    public override Task<APIGatewayProxyResponse> OnConnectHandlerAsync(APIGatewayProxyRequest request, ILambdaContext context)
+    protected override async Task<APIGatewayProxyResponse> OnAfterConnectAsync(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
     {
-        var res = base.OnConnectHandlerAsync(request, context);
-
-        if (res.Result.StatusCode == 200)
+        if (res.StatusCode == 200)
         {
             context.Logger.LogLine("200 connected!");
         }
         
-        return res;
+        return await Task.FromResult(res);
     }
 }

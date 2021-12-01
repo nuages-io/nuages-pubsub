@@ -3,7 +3,6 @@ using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.WebSocket.Routes.Join;
 
 namespace Nuages.PubSub.WebSocket.Routes.Leave;
 

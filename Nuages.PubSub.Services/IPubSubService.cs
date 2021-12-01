@@ -40,6 +40,9 @@ public interface IPubSubService
     Task<bool> CheckPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);
     
     Task DisconnectAsync(string hub, string connectionId);
+    
+    Task<bool> CreateAckAsync(string hub, string connectionId, string? inMessageAckId);
+    Task SendAckToConnectionAsync(string hub, string connectionId, string ackId, bool success, PubSubAckResult? result = null);
 }
 
 

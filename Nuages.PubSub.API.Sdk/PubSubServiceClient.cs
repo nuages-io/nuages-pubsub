@@ -21,11 +21,14 @@ public partial class PubSubServiceClient
     
     public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
     {
+        HttpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
+        
         var webService = new AuthClient(HttpClient)
         {
             BaseUrl = _url
         };
     
+        
         return await webService.GetClientAccessTokenAsync(userId, _hub, expiresAfter, roles);
     }
 }

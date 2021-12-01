@@ -86,6 +86,7 @@
     },
     "NuagesApiMapping": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
+     
       "Properties": {
         "DomainName": {
           "Ref": "NuagesDomainName"
@@ -173,6 +174,10 @@
             },
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Region":
+            {
+              "Ref" : "AWS::Region"
             },
             "Nuages__PubSub__Uri": {
               "Fn::Join": [
@@ -281,7 +286,7 @@
         }
       }
     },
-    "SendFunction": {
+    "SendToGroupFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::SendHandlerAsync",
@@ -350,6 +355,10 @@
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
+            "Nuages__PubSub__Region":
+            {
+              "Ref" : "AWS::Region"
+            },
             "Nuages__PubSub__Uri": {
               "Fn::Join": [
                 "",
@@ -370,7 +379,7 @@
         }
       }
     },
-    "JoinFunction": {
+    "JoinGroupFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::JoinHandlerAsync",
@@ -392,6 +401,10 @@
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
+            "Nuages__PubSub__Region":
+            {
+              "Ref" : "AWS::Region"
+            },
             "Nuages__PubSub__Uri": {
               "Fn::Join": [
                 "",
@@ -412,7 +425,7 @@
         }
       }
     },
-    "LeaveFunction": {
+    "LeaveGroupFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::LeaveHandlerAsync",
@@ -433,6 +446,10 @@
             },
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
+            },
+            "Nuages__PubSub__Region":
+            {
+              "Ref" : "AWS::Region"
             },
             "Nuages__PubSub__Uri": {
               "Fn::Join": [
@@ -457,7 +474,7 @@
     "NuagesPubSub": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
-        "Name": "Nuages-PubSub",
+        "Name": "Nuages-PubSub-2",
         "ProtocolType": "WEBSOCKET",
         "RouteSelectionExpression": "$request.body.type"
       }
@@ -601,7 +618,7 @@
         "ApiId": {
           "Ref": "NuagesPubSub"
         },
-        "RouteKey": "sendToGroup",
+        "RouteKey": "send",
         "AuthorizationType": "NONE",
         "OperationName": "SendRoute",
         "Target": {
@@ -633,7 +650,7 @@
               },
               "function": {
                 "Fn::GetAtt": [
-                  "SendFunction",
+                  "SendToGroupFunction",
                   "Arn"
                 ]
               }
@@ -695,7 +712,7 @@
         "ApiId": {
           "Ref": "NuagesPubSub"
         },
-        "RouteKey": "joinGroup",
+        "RouteKey": "join",
         "AuthorizationType": "NONE",
         "OperationName": "JoinRoute",
         "Target": {
@@ -727,7 +744,7 @@
               },
               "function": {
                 "Fn::GetAtt": [
-                  "JoinFunction",
+                  "JoinGroupFunction",
                   "Arn"
                 ]
               }
@@ -742,7 +759,7 @@
         "ApiId": {
           "Ref": "NuagesPubSub"
         },
-        "RouteKey": "leaveGroup",
+        "RouteKey": "leave",
         "AuthorizationType": "NONE",
         "OperationName": "LeaveRoute",
         "Target": {
@@ -774,7 +791,7 @@
               },
               "function": {
                 "Fn::GetAtt": [
-                  "LeaveFunction",
+                  "LeaveGroupFunction",
                   "Arn"
                 ]
               }
@@ -787,8 +804,11 @@
       "Type": "AWS::ApiGatewayV2::Deployment",
       "DependsOn": [
         "ConnectRoute",
+        "DisconnectRoute",
         "SendRoute",
-        "DisconnectRoute"
+        "EchoRoute",
+        "JoinRoute",
+        "LeaveRoute"
       ],
       "Properties": {
         "ApiId": {
@@ -839,13 +859,13 @@
     "SendPermission": {
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
-        "SendFunction",
+        "SendToGroupFunction",
         "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "SendFunction"
+          "Ref": "SendToGroupFunction"
         },
         "Principal": "apigateway.amazonaws.com"
       }
@@ -867,13 +887,13 @@
     "JoinPermission": {
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
-        "JoinFunction",
+        "JoinGroupFunction",
         "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "JoinFunction"
+          "Ref": "JoinGroupFunction"
         },
         "Principal": "apigateway.amazonaws.com"
       }
@@ -881,13 +901,13 @@
     "LeavePermission": {
       "Type": "AWS::Lambda::Permission",
       "DependsOn": [
-        "LeaveFunction",
+        "LeaveGroupFunction",
         "NuagesPubSub"
       ],
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "LeaveFunction"
+          "Ref": "LeaveGroupFunction"
         },
         "Principal": "apigateway.amazonaws.com"
       }

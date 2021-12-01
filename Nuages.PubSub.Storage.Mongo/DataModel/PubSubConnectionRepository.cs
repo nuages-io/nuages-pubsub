@@ -11,23 +11,23 @@ namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
 
 // ReSharper disable once UnusedType.Global
-public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection>, IWebSocketConnectionRepository
+public class PubSubConnectionRepository : MongoRepository<PubSubConnection>, IPubSubConnectionRepository
 {
     [ExcludeFromCodeCoverage]
-    protected WebSocketConnectionRepository(IMongoDatabase db) : base(db)
+    protected PubSubConnectionRepository(IMongoDatabase db) : base(db)
     {
     }
 
     // ReSharper disable once UnusedMember.Global
-    public WebSocketConnectionRepository(IMongoDatabaseProvider provider) : base(provider)
+    public PubSubConnectionRepository(IMongoDatabaseProvider provider) : base(provider)
     {
     }
 
     public void InitializeIndexes()
     {
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketConnection>(
-                Builders<WebSocketConnection>.IndexKeys
+            new CreateIndexModel<PubSubConnection>(
+                Builders<PubSubConnection>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.ConnectionId)
                 , new CreateIndexOptions
@@ -38,8 +38,8 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
         );
         
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketConnection>(
-                Builders<WebSocketConnection>.IndexKeys
+            new CreateIndexModel<PubSubConnection>(
+                Builders<PubSubConnection>.IndexKeys
                     .Ascending(p => p.Hub)
                 , new CreateIndexOptions
                 {
@@ -49,8 +49,8 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
         );
         
         Collection?.Indexes.CreateOne(
-            new CreateIndexModel<WebSocketConnection>(
-                Builders<WebSocketConnection>.IndexKeys
+            new CreateIndexModel<PubSubConnection>(
+                Builders<PubSubConnection>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Sub)
                 , new CreateIndexOptions
@@ -61,11 +61,11 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
         );
     }
 
-    public IEnumerable<IWebSocketConnection> GetAllConnectionForHub(string hub)
+    public IEnumerable<IPubSubConnection> GetAllConnectionForHub(string hub)
     {
         return AsQueryable().Where(h => h.Hub == hub);
     }
-    public IEnumerable<IWebSocketConnection> GetConnectionsForUser(string hub, string userId)
+    public IEnumerable<IPubSubConnection> GetConnectionsForUser(string hub, string userId)
     {
         return AsQueryable().Where(h => h.Hub == hub && h.Sub == userId);
     }
@@ -81,7 +81,7 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
             .Any(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
 
-    public IWebSocketConnection? GetConnectionByConnectionId(string hub, string connectionId)
+    public IPubSubConnection? GetConnectionByConnectionId(string hub, string connectionId)
     {
         return FindOneAsync(c => c.Hub == hub && c.ConnectionId == connectionId).Result;
     }
@@ -92,16 +92,16 @@ public class WebSocketConnectionRepository : MongoRepository<WebSocketConnection
     }
 }
 
-public interface IWebSocketConnectionRepository : IMongoRepository<WebSocketConnection>
+public interface IPubSubConnectionRepository : IMongoRepository<PubSubConnection>
 {
     void InitializeIndexes();
-    IEnumerable<IWebSocketConnection> GetAllConnectionForHub(string hub);
+    IEnumerable<IPubSubConnection> GetAllConnectionForHub(string hub);
     
-    IEnumerable<IWebSocketConnection> GetConnectionsForUser(string hub, string userId);
+    IEnumerable<IPubSubConnection> GetConnectionsForUser(string hub, string userId);
     bool UserHasConnections(string hub, string userId);
     bool ConnectionExists(string hub, string connectionId);
 
-    IWebSocketConnection? GetConnectionByConnectionId(string hub, string connectionId);
+    IPubSubConnection? GetConnectionByConnectionId(string hub, string connectionId);
 
     Task DeleteByConnectionIdAsync(string hub, string connectionId);
 }

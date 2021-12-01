@@ -1,6 +1,5 @@
 // ReSharper disable InconsistentNaming
 
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Nuages.PubSub.Services;
@@ -15,6 +14,13 @@ public class PubSubMessage
     public string dataType { get; set; } = "json";
     
     public object? data { get; set; }
+    
+    public string? group { get; set; }
+    public string? fromSub { get; set; }
+    
+    public string ackId { get; set; } = "";
+    public bool success { get; set; }
+    public string? error { get; set; }
 }
 
 public enum PubSubMessageSource
@@ -22,10 +28,4 @@ public enum PubSubMessageSource
     server,
     group,
     self
-}
-
-public class PubSubGroupMessage : PubSubMessage
-{
-    public string? group { get; set; }
-    public string? fromSub { get; set; }
 }

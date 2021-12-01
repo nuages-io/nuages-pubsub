@@ -2,17 +2,16 @@ namespace Nuages.PubSub.Storage;
 
 public interface IPubSubStorage 
 {
-    Task<IWebSocketConnection> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay);
+    Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay);
 
-    Task<IEnumerable<IWebSocketConnection>> GetAllConnectionAsync(string hub);
-    Task<IWebSocketConnection?> GetConnectionAsync(string hub, string connectionId);
+    Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub);
+    Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId);
     
-    Task<IEnumerable<IWebSocketConnection>> GetConnectionsForGroupAsync(string hub, string group);
+    Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group);
     Task<bool> GroupHasConnectionsAsync(string hub, string group);
     
-    Task<IEnumerable<IWebSocketConnection>> GetConnectionsForUserAsync(string hub, string userId);
+    Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId);
     Task<bool> UserHasConnectionsAsync(string hub, string userId);
-    
     Task<bool> ConnectionExistsAsync(string hub, string connectionid);
     
     Task InitializeAsync();
@@ -30,5 +29,9 @@ public interface IPubSubStorage
     
     Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub);
     Task DeleteConnectionAsync(string hub, string connectionId);
+
+    Task<bool> ExistAckAsync(string hub, string connectionId, string ackId);
+    Task InsertAckAsync(string hub, string connectionId, string ackId);
     
+
 }

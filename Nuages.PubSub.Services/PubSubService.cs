@@ -3,7 +3,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Amazon;
+using System.Text.Json.Serialization;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Runtime;
@@ -77,7 +77,7 @@ public partial class PubSubService : IPubSubService
     {
         await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
     }
-    
+
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
@@ -109,7 +109,14 @@ public partial class PubSubService : IPubSubService
 
     protected virtual async Task SendMessageAsync(string hub, IEnumerable<string> connectionIds,  PubSubMessage message)
     {
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
+        var text = JsonSerializer.Serialize(message, new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        });
+        
+        Console.WriteLine($"text: {text}");
+        
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
 
         Console.WriteLine($"_pubSubOptions.Uri {_pubSubOptions.Uri}");
         
@@ -144,8 +151,6 @@ public partial class PubSubService : IPubSubService
         }
     }
 
-   
-
     private async Task CloseConnectionsAsync(string hub, IEnumerable<string> connectionIds)
     {
         var api = CreateApiGateway(_pubSubOptions.Uri!);
@@ -159,6 +164,31 @@ public partial class PubSubService : IPubSubService
 
             await DisconnectAsync(hub, connectionId);
         }
-   
+    }
+    
+    public async Task<bool> CreateAckAsync(string hub, string connectionId, string? ackId)
+    {
+        if (string.IsNullOrEmpty(ackId))
+            return true;
+
+        if (await _pubSubStorage.ExistAckAsync(hub, connectionId, ackId))
+            return false;
+
+        await _pubSubStorage.InsertAckAsync(hub, connectionId, ackId);
+        
+        return true;
+    }
+
+    public async Task SendAckToConnectionAsync(string hub, string connectionId, string ackId, bool success, PubSubAckResult? result = null)
+    {
+        var message = new PubSubMessage
+        {
+            type = "ack",
+            ackId = ackId,
+            error = success ? null : result.ToString(),
+            success = success
+        };
+
+        await SendToConnectionAsync(hub, connectionId, message);
     }
 }

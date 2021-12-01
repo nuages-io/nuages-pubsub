@@ -9,6 +9,7 @@ using Nuages.PubSub.WebSocket.Routes.Join;
 using Nuages.PubSub.WebSocket.Routes.Leave;
 using Nuages.PubSub.WebSocket.Routes.Send;
 // ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable UnusedParameter.Global
 
 namespace Nuages.PubSub.WebSocket;
 
@@ -34,7 +35,7 @@ public class PubSubFunction
     }
     
     // ReSharper disable once UnusedMember.Global
-    public virtual async Task<APIGatewayProxyResponse> EchoHandlerAsync(APIGatewayProxyRequest request,
+    public async Task<APIGatewayProxyResponse> EchoHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
         if (_echoRoute == null)
@@ -44,57 +45,148 @@ public class PubSubFunction
     }
 
     // ReSharper disable once UnusedMember.Global
-    public  virtual async Task<APIGatewayProxyResponse> OnDisconnectHandlerAsync(APIGatewayProxyRequest request,
+    public  async Task<APIGatewayProxyResponse> OnDisconnectHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
+        await OnBeforeDisconnectAsync(request, context);
+        
         if (_disconnectRoute == null)
             throw new NullReferenceException("_disconnectService is null");
-        return await _disconnectRoute.DisconnectAsync(request, context);
+        
+        var res = await _disconnectRoute.DisconnectAsync(request, context);
+
+        return await OnAfterDisconnectAsync(request, context, res);
+    }
+
+    protected virtual async Task<APIGatewayProxyResponse> OnAfterDisconnectAsync(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
+    {
+        return await Task.FromResult(res);
+    }
+
+    protected virtual async Task OnBeforeDisconnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
+    {
+        await Task.CompletedTask;
     }
 
     // ReSharper disable once UnusedMember.Global
-    public virtual async Task<APIGatewayProxyResponse> OnConnectHandlerAsync(APIGatewayProxyRequest request,
+    public async Task<APIGatewayProxyResponse> OnConnectHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
+        await OnBeforeConnectAsync(request, context);
+        
         if (_connectRoute == null)
             throw new NullReferenceException("_connectService is null");
-        return await _connectRoute.ConnectAsync(request, context);
-    }
         
-    // ReSharper disable once UnusedMember.Global
-    public virtual async Task<APIGatewayCustomAuthorizerResponse> OnAuthorizeHandlerAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
+        var res = await _connectRoute.ConnectAsync(request, context);
+        
+        return await OnAfterConnectAsync(request, context, res);
+        
+    }
+
+    protected virtual async Task<APIGatewayProxyResponse> OnAfterConnectAsync(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
     {
+        return await Task.FromResult(res);
+    }
+
+    protected virtual async Task OnBeforeConnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
+    {
+        await Task.CompletedTask;
+    }
+
+    // ReSharper disable once UnusedMember.Global
+    public async Task<APIGatewayCustomAuthorizerResponse> OnAuthorizeHandlerAsync(APIGatewayCustomAuthorizerRequest input, ILambdaContext context)
+    {
+        await OnBeforeAuthorize(input, context);
+        
         if (_authorizeRoute == null)
             throw new NullReferenceException("_authorizeService is null");
         
-        return await _authorizeRoute.AuthorizeAsync(input, context);
+        var res = await _authorizeRoute.AuthorizeAsync(input, context);
+        
+        return await OnAfterAuthorize(input, context, res);
+        
+    }
+
+    protected virtual async Task<APIGatewayCustomAuthorizerResponse> OnAfterAuthorize(APIGatewayCustomAuthorizerRequest input, ILambdaContext context, APIGatewayCustomAuthorizerResponse res)
+    {
+        return await Task.FromResult(res);
+    }
+
+    protected virtual async Task OnBeforeAuthorize(APIGatewayCustomAuthorizerRequest request, ILambdaContext context)
+    {
+        await Task.CompletedTask;
     }
 
     // ReSharper disable once UnusedMember.Global
-    public virtual async Task<APIGatewayProxyResponse> SendHandlerAsync(APIGatewayProxyRequest request,
+    public async Task<APIGatewayProxyResponse> SendHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
+        await OnBeforeSend(request, context);
+        
         if (_sendMessageRoute == null)
             throw new NullReferenceException("_sendMessageRoute is null");
         
-        return await _sendMessageRoute.SendAsync(request, context);
+        var res = await _sendMessageRoute.SendAsync(request, context);
+        
+        return await OnAfterSend(request, context, res);
+
     }
-    
-    public virtual async Task<APIGatewayProxyResponse> JoinHandlerAsync(APIGatewayProxyRequest request,
+
+    protected virtual async Task<APIGatewayProxyResponse> OnAfterSend(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
+    {
+        return await Task.FromResult(res);
+    }
+
+    protected virtual async Task OnBeforeSend(APIGatewayProxyRequest request, ILambdaContext context)
+    {
+        await Task.CompletedTask;
+    }
+
+    // ReSharper disable once UnusedMember.Global
+    public async Task<APIGatewayProxyResponse> JoinHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
+        await OnBeforeJoin(request, context);
+        
         if (_joinRoute == null)
             throw new NullReferenceException("_echoService is null");
         
-        return await _joinRoute.JoinAsync(request, context);
+        var res = await _joinRoute.JoinAsync(request, context);
+        
+        return await OnAfterJoin(request, context, res);
     }
-    
-    public virtual async Task<APIGatewayProxyResponse> LeaveHandlerAsync(APIGatewayProxyRequest request,
+
+    protected virtual async Task<APIGatewayProxyResponse> OnAfterJoin(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
+    {
+        return await Task.FromResult(res);
+    }
+
+    protected virtual async Task OnBeforeJoin(APIGatewayProxyRequest request, ILambdaContext context)
+    {
+        await Task.CompletedTask;
+    }
+
+    // ReSharper disable once UnusedMember.Global
+    public async Task<APIGatewayProxyResponse> LeaveHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
+        await OnBeforeLeave(request, context);
+        
         if (_leaveRoute == null)
             throw new NullReferenceException("_echoService is null");
         
-        return await _leaveRoute.LeaveAsync(request, context);
+        var res = await _leaveRoute.LeaveAsync(request, context);
+        
+        return await OnAfterLeave(request, context, res);
+    }
+
+    protected virtual async Task<APIGatewayProxyResponse> OnAfterLeave(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
+    {
+        return await Task.FromResult(res);
+    }
+
+    protected virtual async Task OnBeforeLeave(APIGatewayProxyRequest request, ILambdaContext context)
+    {
+        await Task.CompletedTask;
     }
 }

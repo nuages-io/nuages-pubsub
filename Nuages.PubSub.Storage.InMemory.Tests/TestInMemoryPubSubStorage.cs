@@ -168,4 +168,17 @@ public class TestInMemoryPubSubStorage
         
         Assert.False(await _pubSubStorage.HasPermissionAsync(_hub, connectionId, permissionId));
     }
+    
+    [Fact]
+    public async Task ShouldAddAck()
+    {
+        var connectionId = Guid.NewGuid().ToString();
+        var ackId = Guid.NewGuid().ToString();
+        
+        Assert.False(await _pubSubStorage.ExistAckAsync(_hub, connectionId, ackId));
+        
+        await _pubSubStorage.InsertAckAsync(_hub, connectionId, ackId);
+        
+        Assert.True(await _pubSubStorage.ExistAckAsync(_hub, connectionId, ackId));
+    }
 }

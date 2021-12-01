@@ -19,6 +19,10 @@ public class JoinRoute : IJoinRoute
     public async Task<APIGatewayProxyResponse> JoinAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
+
+        string? ackId = null;
+        var connectionId = "";
+        
         try
         {
             context.Logger.LogLine(request.Body);
@@ -27,25 +31,47 @@ public class JoinRoute : IJoinRoute
             if (inMessage == null)
                 throw new NullReferenceException("message is null");
 
+            ackId = inMessage.ackId;
+            
             if (string.IsNullOrEmpty(inMessage.group) )
                 throw new NullReferenceException("group must be provided");
             
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
             
-            var connectionId = request.RequestContext.ConnectionId;
+            var hub = request.GetHub();
+            connectionId = request.RequestContext.ConnectionId;
+
+            var ackExists = await _pubSubService.CreateAckAsync(hub, connectionId, ackId);
+            if (!ackExists)
+            {
+                await _pubSubService.SendAckToConnectionAsync(hub, connectionId, ackId!, false, PubSubAckResult.Duplicate);
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Body = $"Duplicate ackId : {inMessage.ackId}"
+                };
+            }
             
-            var hasPermission = await _pubSubService.CheckPermissionAsync(request.GetHub(), PubSubPermission.JoinOrLeaveGroup, request.RequestContext.ConnectionId, inMessage.group);
+            var hasPermission = await _pubSubService.CheckPermissionAsync(hub, PubSubPermission.JoinOrLeaveGroup, request.RequestContext.ConnectionId, inMessage.group);
 
             if (hasPermission)
             {
-                await _pubSubService.AddConnectionToGroupAsync(request.GetHub(), inMessage.group,  connectionId, request.GetSub());
-            
+                await _pubSubService.AddConnectionToGroupAsync(hub, inMessage.group,  connectionId, request.GetSub());
+
+                if (!string.IsNullOrEmpty(ackId))
+                {
+                    await _pubSubService.SendAckToConnectionAsync(hub, connectionId,ackId, true);
+                }
+                
                 return new APIGatewayProxyResponse
                 {
                     StatusCode = 200
                 };
             }
-          
+            
+            if (!string.IsNullOrEmpty(ackId))
+                await _pubSubService.SendAckToConnectionAsync(hub, connectionId, ackId, false, PubSubAckResult.Forbidden);
+                
             return new APIGatewayProxyResponse
             {
                 StatusCode = (int)HttpStatusCode.Forbidden
@@ -55,6 +81,10 @@ public class JoinRoute : IJoinRoute
         {
             context.Logger.LogLine("Error disconnecting: " + e.Message);
             context.Logger.LogLine(e.StackTrace);
+            
+            if (!string.IsNullOrEmpty(ackId))
+                await _pubSubService.SendAckToConnectionAsync(request.GetHub(), connectionId, ackId, false, PubSubAckResult.InternalServerError);
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = 500,

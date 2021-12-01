@@ -40,7 +40,7 @@ public class TestsPubSubServiceInMemory
         
         _pubSubService = serviceProvider.GetRequiredService<IPubSubService>();
         
-        _pubSubService.ConnectAsync(_hub, _connectionId, _userId, null);
+        _pubSubService.ConnectAsync(_hub, _connectionId, _userId);
     }
     
     
@@ -49,7 +49,7 @@ public class TestsPubSubServiceInMemory
     {
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId, _userId);
 
-        await _pubSubService.GrantPermissionAsync(_hub, PubSubPermission.SendMessageToGroup, _connectionId, null);
+        await _pubSubService.GrantPermissionAsync(_hub, PubSubPermission.SendMessageToGroup, _connectionId);
         
         Assert.True(await _pubSubService.CheckPermissionAsync(_hub, PubSubPermission.SendMessageToGroup, _connectionId, _group));
 

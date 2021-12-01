@@ -39,6 +39,7 @@ public class LambdaEntryPoint :
     /// <param name="builder"></param>
     protected override void Init(IHostBuilder builder)
     {
+        // ReSharper disable once UnusedParameter.Local
         builder.ConfigureAppConfiguration((context, configBuilder) =>
         {
             var configurationRoot = configBuilder.Build();

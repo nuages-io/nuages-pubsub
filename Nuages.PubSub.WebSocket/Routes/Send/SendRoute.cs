@@ -32,17 +32,14 @@ public class SendRoute : ISendRoute
 
             if (hasPermission)
             {
-                var message = new PubSubGroupMessage
+                var message = new PubSubMessage
                 {
                     group = inMessage.group,
                     from = PubSubMessageSource.group,
                     fromSub = request.GetSub(),
                     type = "message",
                     dataType = inMessage.datatype,
-                    data = new
-                    {
-                        inMessage.data
-                    }
+                    data = inMessage.data
                 };
 
                 context.Logger.LogLine($"Message Payload: {JsonSerializer.Serialize(message) }");
