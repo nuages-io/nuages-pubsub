@@ -160,6 +160,7 @@ public class TestMongoPubSubStorage
 
         await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
 
+        Assert.True(await _pubSubStorage.IsConnectionInGroup(_hub, group, connectionId));
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
 
         var groups = await _pubSubStorage.GetGroupsForUser(_hub, _sub);

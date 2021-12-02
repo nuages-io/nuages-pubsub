@@ -21,7 +21,7 @@ public class DisconnectRoute : IDisconnectRoute
         {
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _pubSubService.DisconnectAsync(request.GetHub(), request.RequestContext.ConnectionId);
+            await _pubSubService.CloseConnectionAsync(request.GetHub(), request.RequestContext.ConnectionId);
 
             return new APIGatewayProxyResponse
             {

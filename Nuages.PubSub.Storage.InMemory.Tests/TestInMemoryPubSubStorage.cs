@@ -84,6 +84,8 @@ public class TestInMemoryPubSubStorage
         
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
 
+        Assert.True(await _pubSubStorage.IsConnectionInGroup(_hub, group, connectionId));
+        
         Assert.False(await _pubSubStorage.GroupHasConnectionsAsync("Bad_hub", group));
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
         

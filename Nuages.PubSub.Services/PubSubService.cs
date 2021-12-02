@@ -155,13 +155,20 @@ public partial class PubSubService : IPubSubService
     {
         var api = CreateApiGateway(_pubSubOptions.Uri!);
 
-        foreach (var connectionId in connectionIds)
+        foreach (var connectionId in connectionIds.ToList())
         {
-            await api.DeleteConnectionAsync(new DeleteConnectionRequest
+            try
             {
-                ConnectionId = connectionId
-            });
-
+                await api.DeleteConnectionAsync(new DeleteConnectionRequest
+                {
+                    ConnectionId = connectionId
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+           
             await DisconnectAsync(hub, connectionId);
         }
     }

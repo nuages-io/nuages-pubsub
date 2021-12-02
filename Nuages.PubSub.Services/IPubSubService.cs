@@ -30,9 +30,9 @@ public interface IPubSubService
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);
     
     //User
-    Task<APIGatewayProxyResponse> SendToUserAsync( string hub, string userId, PubSubMessage message, List<string>? excludedIds = null);
-    Task CloseUserConnectionsAsync(string hub, string userId);
-    Task<bool> UserExistsAsync(string hub, string userId);
+    Task<APIGatewayProxyResponse> SendToUserAsync( string hub, string sub, PubSubMessage message, List<string>? excludedIds = null);
+    Task CloseUserConnectionsAsync(string hub, string sub);
+    Task<bool> UserExistsAsync(string hub, string sub);
     
     //https://dotnetcoretutorials.com/2020/01/15/creating-and-validating-jwt-tokens-in-asp-net-core/
     string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default);
@@ -40,8 +40,6 @@ public interface IPubSubService
     Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);
     Task RevokePermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);
     Task<bool> CheckPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null);
-    
-    Task DisconnectAsync(string hub, string connectionId);
     
     Task<bool> CreateAckAsync(string hub, string connectionId, string? inMessageAckId);
     Task SendAckToConnectionAsync(string hub, string connectionId, string ackId, bool success, PubSubAckResult? result = null);

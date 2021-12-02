@@ -1,6 +1,7 @@
 using System.Net;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Runtime;
 
 namespace Nuages.PubSub.Services;
 
@@ -24,6 +25,29 @@ public partial class PubSubService
 
     public async Task<bool> ConnectionExistsAsync(string hub, string connectionId)
     {
-        return await _pubSubStorage.ConnectionExistsAsync(hub, connectionId);
+        try
+        {
+            using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
+            var response = await apiGateway.GetConnectionAsync(new GetConnectionRequest
+            {
+                ConnectionId = connectionId
+            });
+        
+            return await _pubSubStorage.ConnectionExistsAsync(hub, connectionId);
+        }
+        catch (AmazonServiceException e)
+        {
+            Console.WriteLine(e.Message);
+            // API Gateway returns a status of 410 GONE then the connection is no
+            // longer available. If this happens, delete the identifier
+            // from our collection.
+            if (e.StatusCode == HttpStatusCode.Gone)
+            {
+                await DisconnectAsync(hub, connectionId);
+            }
+
+            return false;
+        }
+       
     }
 }
