@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Amazon.ApiGatewayManagementApi;
 using Amazon.ApiGatewayManagementApi.Model;
@@ -18,6 +19,7 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
         Config = new AmazonApiGatewayManagementApiConfig();
     }
     
+    [ExcludeFromCodeCoverage]
     public IClientConfig Config { get; }
     
     public void Dispose()

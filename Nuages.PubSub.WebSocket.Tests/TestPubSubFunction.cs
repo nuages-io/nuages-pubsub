@@ -4,13 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.TestUtilities;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.WebSocket.Routes.JoinLeave;
 using Xunit;
 
 namespace Nuages.PubSub.WebSocket.Tests;
@@ -50,13 +50,15 @@ public class TestPubSubFunction
         
         request.RequestContext.Authorizer["sub"] = sub;
         request.RequestContext.Authorizer["nuageshub"] = hub;
-        request.RequestContext.Authorizer["roles"] = null;
+        request.RequestContext.Authorizer["roles"] = "JoinOrLeaveGroup";
         
-        await function.OnConnectHandlerAsync(request, lambdaContext);
+        var res = await function.OnConnectHandlerAsync(request, lambdaContext);
 
+        Assert.Equal(200, res.StatusCode);
+        
         pubSubService.Setup(c => c.ConnectAsync(hub, connectionId, sub, It.IsAny<TimeSpan?>())).ThrowsAsync(new Exception());
 
-        var res = await function.OnConnectHandlerAsync(request, lambdaContext);
+         res = await function.OnConnectHandlerAsync(request, lambdaContext);
         
         Assert.Equal(500, res.StatusCode);
     }
@@ -90,11 +92,11 @@ public class TestPubSubFunction
         request.RequestContext.Authorizer["sub"] = sub;
         request.RequestContext.Authorizer["nuageshub"] = hub;
         
-        await function.OnDisconnectHandlerAsync(request, lambdaContext);
+        var res = await function.OnDisconnectHandlerAsync(request, lambdaContext);
+        Assert.Equal(200, res.StatusCode);
         
         pubSubService.Setup(c => c.CloseConnectionAsync(hub, connectionId)).ThrowsAsync(new Exception());
-
-        var res = await function.OnDisconnectHandlerAsync(request, lambdaContext);
+        res = await function.OnDisconnectHandlerAsync(request, lambdaContext);
         
         Assert.Equal(500, res.StatusCode);
     }
@@ -123,11 +125,18 @@ public class TestPubSubFunction
             }
         };
 
-        await function.EchoHandlerAsync(request, lambdaContext);
+        pubSubService.Setup(c => c.SendToConnectionAsync(It.IsAny<string>(), connectionId, It.IsAny<PubSubMessage>())).ReturnsAsync(
+        new APIGatewayProxyResponse
+        {
+            StatusCode = 200
+        });
+
+        var  res = await function.EchoHandlerAsync(request, lambdaContext);
+        Assert.Equal(200, res.StatusCode);
         
         pubSubService.Setup(c => c.SendToConnectionAsync(It.IsAny<string>(), connectionId, It.IsAny<PubSubMessage>())).ThrowsAsync(new Exception());
 
-        var res = await function.EchoHandlerAsync(request, lambdaContext);
+        res = await function.EchoHandlerAsync(request, lambdaContext);
         
         Assert.Equal(500, res.StatusCode);
     }
@@ -145,6 +154,14 @@ public class TestPubSubFunction
         var hub = "hub";
         var group = "group";
         var user = "user";
+
+        var body = new
+        {
+            type = "join",
+            dataType = "json",
+            group,
+            ackId = "$"
+        };
         
         var request = new APIGatewayProxyRequest
         {
@@ -156,14 +173,21 @@ public class TestPubSubFunction
                     ["sub"] = user,
                     ["nuageshub"] = hub
                 }
-            }
+                
+            },
+            Body = JsonSerializer.Serialize(body)
         };
 
-        await function.JoinHandlerAsync(request, lambdaContext);
+        pubSubService.Setup(c => c.CreateAckAsync(hub, connectionId, It.IsAny<string?>())).ReturnsAsync(true);
+        pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.JoinOrLeaveGroup, connectionId, group))
+            .ReturnsAsync(true);
         
-        pubSubService.Setup(c => c.AddUserToGroupAsync(hub, group, user)).ThrowsAsync(new Exception());
-
         var res = await function.JoinHandlerAsync(request, lambdaContext);
+        Assert.Equal(200, res.StatusCode);
+        
+        pubSubService.Setup(c => c.AddConnectionToGroupAsync(hub, group, connectionId, user)).ThrowsAsync(new Exception());
+
+        res = await function.JoinHandlerAsync(request, lambdaContext);
         
         Assert.Equal(500, res.StatusCode);
     }
@@ -182,6 +206,14 @@ public class TestPubSubFunction
         var group = "group";
         var user = "user";
         
+        var body = new
+        {
+            type = "join",
+            dataType = "json",
+            group,
+            ackId = "$"
+        };
+        
         var request = new APIGatewayProxyRequest
         {
             RequestContext = new APIGatewayProxyRequest.ProxyRequestContext
@@ -192,14 +224,20 @@ public class TestPubSubFunction
                     ["sub"] = user,
                     ["nuageshub"] = hub
                 }
-            }
+            },
+            Body = JsonSerializer.Serialize(body)
         };
 
-        await function.LeaveHandlerAsync(request, lambdaContext);
+        pubSubService.Setup(c => c.CreateAckAsync(hub, connectionId, It.IsAny<string?>())).ReturnsAsync(true);
+        pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.JoinOrLeaveGroup, connectionId, group))
+            .ReturnsAsync(true);
         
-        pubSubService.Setup(c => c.RemoveUserFromGroupAsync(hub, group, user)).ThrowsAsync(new Exception());
-
         var res = await function.LeaveHandlerAsync(request, lambdaContext);
+        Assert.Equal(200, res.StatusCode);
+        
+        pubSubService.Setup(c => c.RemoveConnectionFromGroupAsync(hub, group, connectionId)).ThrowsAsync(new Exception());
+
+        res = await function.LeaveHandlerAsync(request, lambdaContext);
         
         Assert.Equal(500, res.StatusCode);
     }
@@ -213,7 +251,23 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        string connectionId = "test-id";
+        var connectionId = "test-id";
+        var hub = "hub";
+        var group = "group";
+        
+        var body = new PubSubMessage
+        {
+            type = "send",
+            dataType = "json",
+            group = group,
+            data = new
+            {
+                h = "h"
+            },
+            ackId = "$"
+        };
+
+        
         
         var request = new APIGatewayProxyRequest
         {
@@ -223,18 +277,25 @@ public class TestPubSubFunction
                 Authorizer = new APIGatewayCustomAuthorizerContext
                 {
                     ["sub"] = "user",
-                    ["nuageshub"] = "hub"
+                    ["nuageshub"] = hub
                 }
-            }
+            },
+            Body = JsonSerializer.Serialize(body)
         };
 
-        await function.SendHandlerAsync(request, lambdaContext);
+        pubSubService.Setup(c => c.CreateAckAsync(hub, connectionId, It.IsAny<string?>())).ReturnsAsync(true);
+        pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.SendMessageToGroup, connectionId, group))
+            .ReturnsAsync(true);
         
-        // pubSubService.Setup(c => c.Sen(hub, group, user)).ThrowsAsync(new Exception());
-        //
-        // var res = await function.SendHandlerAsync(request, lambdaContext);
-        //
-        // Assert.Equal(500, res.StatusCode);
+        pubSubService.Setup(c => c.SendToGroupAsync(hub, group, It.IsAny<PubSubMessage>(), It.IsAny<List<string>?>())).ReturnsAsync(new APIGatewayProxyResponse
+        {
+            StatusCode = 200
+        });
+
+        var res = await function.SendHandlerAsync(request, lambdaContext);
+        Assert.Equal(200, res.StatusCode);
+        
+
     }
     
     [Fact]
@@ -267,6 +328,7 @@ public class TestPubSubFunction
         request.QueryStringParameters.Add("access_token", GenerateToken(options.Issuer!, options.ValidAudiences!, "user", new List<string>(), options.Secret! ,null));
         
         await function.OnAuthorizeHandlerAsync(request, lambdaContext);
+        
     }
     
     string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)

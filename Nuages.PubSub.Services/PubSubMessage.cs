@@ -1,9 +1,11 @@
 // ReSharper disable InconsistentNaming
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Nuages.PubSub.Services;
 
+[ExcludeFromCodeCoverage]
 public class PubSubMessage
 {
     public string type { get; set; } = "message";

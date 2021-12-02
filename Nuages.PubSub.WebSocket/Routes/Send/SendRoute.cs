@@ -102,6 +102,7 @@ public class SendRoute : ISendRoute
 
         if (string.IsNullOrEmpty(inMessage.group))
             throw new NullReferenceException("group must be provided");
+        
         return inMessage;
     }
 }

@@ -17,8 +17,6 @@ public partial class PubSubService
 
         connections = connections.Where(c => !c.IsExpired());
         
-      
-        
         await SendMessageAsync(hub, connections.Select(c => c.ConnectionId),  message);
         
         return new APIGatewayProxyResponse

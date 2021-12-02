@@ -1,6 +1,9 @@
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Nuages.PubSub.Storage.InMemory.DataModel;
 
+[ExcludeFromCodeCoverage]
 public class PubSubGroupConnection
 {
     public string Id { get; set; } = "";

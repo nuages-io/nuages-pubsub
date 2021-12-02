@@ -1,6 +1,10 @@
 // ReSharper disable InconsistentNaming
+
+using System.Diagnostics.CodeAnalysis;
+
 namespace Nuages.PubSub.Services;
 
+[ExcludeFromCodeCoverage]
 public class PubSubInboundGroupMessage
 {
     public string group { get; set; } = null!;

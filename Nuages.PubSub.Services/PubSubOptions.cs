@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Nuages.PubSub.Services;
 
+[ExcludeFromCodeCoverage]
 public class PubSubOptions
 {
     public string ValidIssuers { get; set; } = "";
