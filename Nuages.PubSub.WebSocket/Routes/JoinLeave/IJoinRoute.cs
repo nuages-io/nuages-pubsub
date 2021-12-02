@@ -1,7 +1,7 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-namespace Nuages.PubSub.WebSocket.Routes.Join;
+namespace Nuages.PubSub.WebSocket.Routes.JoinLeave;
 
 public interface IJoinRoute
 {

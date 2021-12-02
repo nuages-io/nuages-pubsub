@@ -22,8 +22,6 @@ public class EchoRoute : IEchoRoute
         {
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
             
-            var connectionId = request.RequestContext.ConnectionId;
-            
             var message = new PubSubMessage
             {
                 from = PubSubMessageSource.self,
@@ -36,7 +34,7 @@ public class EchoRoute : IEchoRoute
             
             context.Logger.LogLine($"Message Payload: {JsonSerializer.Serialize(message) }");
             
-            return await _pubSubService.SendToConnectionAsync(request.GetHub(),  connectionId, message);
+            return await _pubSubService.SendToConnectionAsync(request.GetHub(),  request.RequestContext.ConnectionId, message);
             
         }
         catch (Exception e)

@@ -22,18 +22,16 @@ public class ConnectRoute : IConnectRoute
         
         try
         {
-            var connectionId = request.RequestContext.ConnectionId;
-
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _pubSubService.ConnectAsync(request.GetHub(), connectionId, sub);
+            await _pubSubService.ConnectAsync(request.GetHub(), request.RequestContext.ConnectionId, sub);
 
-            await ProcessRolesAsync(request, connectionId);
+            await ProcessRolesAsync(request, request.RequestContext.ConnectionId);
 
             return new APIGatewayProxyResponse
             {
                 StatusCode = 200,
-                Body = connectionId
+                Body = request.RequestContext.ConnectionId
             };
         }
         catch (Exception e)

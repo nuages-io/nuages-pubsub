@@ -82,6 +82,10 @@ public class SendRoute : ISendRoute
             context.Logger.LogLine("Error disconnecting: " + e.Message);
             context.Logger.LogLine(e.StackTrace);
             
+            if (!string.IsNullOrEmpty(ackId))
+                await _pubSubService.SendAckToConnectionAsync(request.GetHub(), connectionId, ackId, false, PubSubAckResult.InternalServerError);
+
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
@@ -96,7 +100,7 @@ public class SendRoute : ISendRoute
         if (inMessage == null)
             throw new NullReferenceException("message is null");
 
-        if (string.IsNullOrEmpty(inMessage.@group))
+        if (string.IsNullOrEmpty(inMessage.group))
             throw new NullReferenceException("group must be provided");
         return inMessage;
     }

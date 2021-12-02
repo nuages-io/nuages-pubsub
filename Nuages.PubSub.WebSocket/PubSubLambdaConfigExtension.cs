@@ -1,8 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.WebSocket.Routes.Join;
-using Nuages.PubSub.WebSocket.Routes.Leave;
+using Nuages.PubSub.WebSocket.Routes.JoinLeave;
 using Nuages.PubSub.WebSocket.Routes.Send;
 
 namespace Nuages.PubSub.WebSocket;

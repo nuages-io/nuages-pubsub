@@ -5,8 +5,7 @@ using Nuages.PubSub.WebSocket.Routes.Authorize;
 using Nuages.PubSub.WebSocket.Routes.Connect;
 using Nuages.PubSub.WebSocket.Routes.Disconnect;
 using Nuages.PubSub.WebSocket.Routes.Echo;
-using Nuages.PubSub.WebSocket.Routes.Join;
-using Nuages.PubSub.WebSocket.Routes.Leave;
+using Nuages.PubSub.WebSocket.Routes.JoinLeave;
 using Nuages.PubSub.WebSocket.Routes.Send;
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable UnusedParameter.Global
