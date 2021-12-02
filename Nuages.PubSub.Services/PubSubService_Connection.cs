@@ -19,14 +19,7 @@ public partial class PubSubService
 
     public async Task CloseConnectionAsync(string hub, string connectionId)
     {
-        var api = CreateApiGateway(_pubSubOptions.Uri!);
-
-        await api.DeleteConnectionAsync(new DeleteConnectionRequest
-        {
-            ConnectionId = connectionId
-        });
-
-        await DisconnectAsync(hub, connectionId);
+        await CloseConnectionsAsync(hub, new List<string> { connectionId});
     }
 
     public async Task<bool> ConnectionExistsAsync(string hub, string connectionId)

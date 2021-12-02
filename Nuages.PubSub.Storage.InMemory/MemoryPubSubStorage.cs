@@ -226,4 +226,9 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
             GetHubPubSubAck(hub).Add(pubSubAck);
         }); 
     }
+
+    public async Task<bool> IsConnectionInGroup(string hub, string group, string connectionId)
+    {
+        return await Task.FromResult(GetHubConnectionsAndGroups(hub).Any(c => c.Group == group && c.ConnectionId == connectionId));
+    }
 }

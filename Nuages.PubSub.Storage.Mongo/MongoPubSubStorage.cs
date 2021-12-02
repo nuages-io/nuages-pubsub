@@ -182,4 +182,10 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
         await _pubSubAckRepository.InsertOneAsync(pubSubAck);
     }
+
+    public async Task<bool> IsConnectionInGroup(string hub, string group, string connectionId)
+    {
+        return await Task.FromResult(_pubSubGroupConnectionRepository.AsQueryable()
+            .Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
+    }
 }

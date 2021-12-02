@@ -81,7 +81,7 @@ public partial class PubSubService : IPubSubService
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
-
+        
         await _pubSubStorage.AddPermissionAsync(hub, connectionId, permissionString);
     }
 

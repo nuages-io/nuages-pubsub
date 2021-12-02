@@ -24,7 +24,6 @@ public partial class PubSubService
         };
     }
 
-    
     public async Task CloseUserConnectionsAsync(string hub, string userId)
     {
         var connections = await _pubSubStorage.GetConnectionsForUserAsync(hub, userId);
