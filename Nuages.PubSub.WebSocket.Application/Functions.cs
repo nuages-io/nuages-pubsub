@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
@@ -21,6 +22,7 @@ using Nuages.PubSub.Storage.Mongo;
 namespace Nuages.PubSub.WebSocket.Application;
 
 // ReSharper disable once UnusedType.Global
+[ExcludeFromCodeCoverage]
 public class Functions : PubSubFunction
 {
     public Functions() 
