@@ -25,24 +25,17 @@ public class JoinRoute : IJoinRoute
         
         try
         {
-            context.Logger.LogLine(request.Body);
+            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
             
-            var inMessage = JsonSerializer.Deserialize<PubSubInboundGroupMessage>(request.Body);
-            if (inMessage == null)
-                throw new NullReferenceException("message is null");
+            var inMessage = GetInboundMessage(request);
 
             ackId = inMessage.ackId;
-            
-            if (string.IsNullOrEmpty(inMessage.group) )
-                throw new NullReferenceException("group must be provided");
-            
-            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
             
             var hub = request.GetHub();
             connectionId = request.RequestContext.ConnectionId;
 
-            var ackExists = await _pubSubService.CreateAckAsync(hub, connectionId, ackId);
-            if (!ackExists)
+            var ackIsValid = await _pubSubService.CreateAckAsync(hub, connectionId, ackId);
+            if (!ackIsValid)
             {
                 await _pubSubService.SendAckToConnectionAsync(hub, connectionId, ackId!, false, PubSubAckResult.Duplicate);
                 return new APIGatewayProxyResponse
@@ -91,5 +84,18 @@ public class JoinRoute : IJoinRoute
                 Body = $"Failed to disconnect: {e.Message}"
             };
         }
+    }
+
+    private static PubSubInboundGroupMessage GetInboundMessage(APIGatewayProxyRequest request)
+    {
+        var inMessage = JsonSerializer.Deserialize<PubSubInboundGroupMessage>(request.Body);
+        
+        if (inMessage == null)
+            throw new NullReferenceException("message is null");
+        
+        if (string.IsNullOrEmpty(inMessage.group) )
+            throw new NullReferenceException("group must be provided");
+        
+        return inMessage;
     }
 }

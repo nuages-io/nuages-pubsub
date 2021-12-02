@@ -18,7 +18,7 @@ public class PubSubMessage
     public string? group { get; set; }
     public string? fromSub { get; set; }
     
-    public string ackId { get; set; } = "";
+    public string? ackId { get; set; } 
     public bool success { get; set; }
     public string? error { get; set; }
 }

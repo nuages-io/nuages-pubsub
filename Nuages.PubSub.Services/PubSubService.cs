@@ -168,7 +168,7 @@ public partial class PubSubService : IPubSubService
     
     public async Task<bool> CreateAckAsync(string hub, string connectionId, string? ackId)
     {
-        if (string.IsNullOrEmpty(ackId))
+        if (string.IsNullOrEmpty(ackId) || ackId == "$")
             return true;
 
         if (await _pubSubStorage.ExistAckAsync(hub, connectionId, ackId))

@@ -28,15 +28,8 @@ public class ConnectRoute : IConnectRoute
 
             await _pubSubService.ConnectAsync(request.GetHub(), connectionId, sub);
 
-            var roles = GetRoles(request);
-            foreach (var r in roles)
-            {
-                var name = r.Split(".");
-                    
-                await _pubSubService.GrantPermissionAsync(request.GetHub(), Enum.Parse<PubSubPermission>(name.First()), connectionId,
-                    name.Length > 1 ? name[1] : null);
-            }
-            
+            await ProcessRolesAsync(request, connectionId);
+
             return new APIGatewayProxyResponse
             {
                 StatusCode = 200,
@@ -52,6 +45,19 @@ public class ConnectRoute : IConnectRoute
                 StatusCode = 500,
                 Body = $"Failed to connect: {e.Message}"
             };
+        }
+    }
+
+    private async Task ProcessRolesAsync(APIGatewayProxyRequest request, string connectionId)
+    {
+        var roles = GetRoles(request);
+        foreach (var r in roles)
+        {
+            var name = r.Split(".");
+
+            await _pubSubService.GrantPermissionAsync(request.GetHub(), Enum.Parse<PubSubPermission>(name.First()),
+                connectionId,
+                name.Length > 1 ? name[1] : null);
         }
     }
 
