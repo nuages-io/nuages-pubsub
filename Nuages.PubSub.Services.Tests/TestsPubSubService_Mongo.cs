@@ -418,7 +418,7 @@ public class TestsPubSubServiceMongo : IDisposable
         }, out _);
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         _client.DropDatabase(_dbName);
         _serviceProvider.Dispose();
