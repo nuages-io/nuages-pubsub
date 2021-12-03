@@ -70,8 +70,8 @@ public class TestsPubSubServiceMongo : IDisposable
         
         System.Threading.Thread.Sleep(200);
     }
-    
-    FakeApiGateway GetApiGateway()
+
+    private FakeApiGateway GetApiGateway()
     {
         var gatewayProvider = _serviceProvider.GetRequiredService<IAmazonApiGatewayManagementApiClientProvider>();
         var apiGateWay = gatewayProvider.Create(string.Empty, string.Empty);
@@ -81,20 +81,20 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(0)]
-    public async Task ShouldCloseConnection()
+    public async Task ShouldCloseConnectionAsync()
     {
-        //var gateway = GetApiGateway();
+        var gateway = GetApiGateway();
         
         await _pubSubService.CloseConnectionAsync(_hub, _connectionId);
         
-        //Assert.True(gateway.DeleteRequestResponse.Single().Item1.ConnectionId == _connectionId);
+        Assert.True(gateway.DeleteRequestResponse.Single().Item1.ConnectionId == _connectionId);
         
         Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
     }
     
     [Fact]
     [TestPriority(1)]
-    public async Task ShouldCloseConnectionWhenErrorOccured()
+    public async Task ShouldCloseConnectionWhenErrorOccuredAsync()
     {
         var gateway = GetApiGateway();
         gateway.HttpStatusCode = HttpStatusCode.InternalServerError;
@@ -108,13 +108,13 @@ public class TestsPubSubServiceMongo : IDisposable
 
     [Fact]
     [TestPriority(2)]
-    public async Task ShouldCloseGroupConnection()
+    public async Task ShouldCloseGroupConnectionAsync()
     {
         var gateway = GetApiGateway();
         
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId, _sub);
 
-        Assert.True(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
         await _pubSubService.CloseGroupConnectionsAsync(_hub, _group);
         
@@ -125,7 +125,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(3)]
-    public async Task ShouldCloseUserConnection()
+    public async Task ShouldCloseUserConnectionAsync()
     {
         var gateway = GetApiGateway();
         
@@ -133,7 +133,7 @@ public class TestsPubSubServiceMongo : IDisposable
 
         await _pubSubService.GroupExistsAsync(_hub, _group);
         
-        Assert.True(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
         await _pubSubService.CloseUserConnectionsAsync(_hub, _sub);
         
@@ -144,20 +144,20 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(4)]
-    public async Task ShouldCloseAllConnection()
+    public async Task ShouldCloseAllConnectionAsync()
     {
-        //var gateway = GetApiGateway();
+        var gateway = GetApiGateway();
         
         await _pubSubService.CloseAllConnectionsAsync(_hub);
         
-        //Assert.True(gateway.DeleteRequestResponse.Single().Item1.ConnectionId == _connectionId);
+        Assert.True(gateway.DeleteRequestResponse.Single().Item1.ConnectionId == _connectionId);
         
         Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
     }
     
     [Fact]
     [TestPriority(5)]
-    public async Task ShouldAddConnectionToGroup()
+    public async Task ShouldAddConnectionToGroupAsync()
     {
         Assert.True(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
         
@@ -165,7 +165,7 @@ public class TestsPubSubServiceMongo : IDisposable
         
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId, _sub);
 
-        Assert.True(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
         await _pubSubService.GrantPermissionAsync(_hub, PubSubPermission.SendMessageToGroup, _connectionId);
         
@@ -177,33 +177,33 @@ public class TestsPubSubServiceMongo : IDisposable
 
         await _pubSubService.RemoveConnectionFromGroupAsync(_hub, _group, _connectionId);
         
-        Assert.False(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.False(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
     }
     
     
     [Fact]
     [TestPriority(6)]
-    public async Task ShouldAddUserToGroup()
+    public async Task ShouldAddUserToGroupAsync()
     {
         await _pubSubService.AddUserToGroupAsync(_hub, _group, _sub);
 
         await _pubSubService.GroupExistsAsync(_hub, _group);
-        Assert.True(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
         
         await _pubSubService.ConnectAsync(_hub, "other_connection", _sub);
-        Assert.True(await _pubSubService.IsConnectionInGroup(_hub, _group, "other_connection"));
+        Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, "other_connection"));
        
 
         await _pubSubService.RemoveUserFromGroupAsync(_hub, _group, _sub);
         
-        Assert.False(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.False(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
         await _pubSubService.AddUserToGroupAsync(_hub, _group, _sub);
-        Assert.True(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
         await _pubSubService.RemoveUserFromAllGroupsAsync(_hub,  _sub);
-        Assert.False(await _pubSubService.IsConnectionInGroup(_hub, _group, _connectionId));
+        Assert.False(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class TestsPubSubServiceMongo : IDisposable
 
     [Fact]
     [TestPriority(8)]
-    public async Task ShouldSendToConnection()
+    public async Task ShouldSendToConnectionAsync()
     {
         var message = new PubSubMessage
         {
@@ -237,7 +237,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(9)]
-    public async Task ShouldFailSendToConnection()
+    public async Task ShouldFailSendToConnectionAsync()
     {
         var message = new PubSubMessage
         {
@@ -256,7 +256,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(10)]
-    public async Task ShouldSendToGroup()
+    public async Task ShouldSendToGroupAsync()
     {
         var message = new PubSubMessage
         {
@@ -276,7 +276,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(11)]
-    public async Task ShouldSendToGroupConnectionExcluded()
+    public async Task ShouldSendToGroupConnectionExcludedAsync()
     {
         var message = new PubSubMessage
         {
@@ -296,7 +296,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(12)]
-    public async Task ShouldNotSendToGroupNoConnections()
+    public async Task ShouldNotSendToGroupNoConnectionsAsync()
     {
         var message = new PubSubMessage
         {
@@ -314,7 +314,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(13)]
-    public async Task ShouldSendAckToConnection()
+    public async Task ShouldSendAckToConnectionAsync()
     {
         await _pubSubService.SendAckToConnectionAsync(_hub, _connectionId, "1", true);
         
@@ -325,7 +325,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(14)]
-    public async Task ShouldSendToUser()
+    public async Task ShouldSendToUserAsync()
     {
         var message = new PubSubMessage
         {
@@ -336,14 +336,14 @@ public class TestsPubSubServiceMongo : IDisposable
         
         await _pubSubService.SendToUserAsync(_hub, _sub, message);
         
-        // var gateway = GetApiGateway();
-        //
-        // Assert.True(gateway.PostRequestResponse.Single().Item1.ConnectionId == _connectionId);
+        var gateway = GetApiGateway();
+        
+        Assert.True(gateway.PostRequestResponse.Single().Item1.ConnectionId == _connectionId);
     }
     
     [Fact]
     [TestPriority(0)]
-    public async Task ShouldSendToUserConnectionExcluded()
+    public async Task ShouldSendToUserConnectionExcludedAsync()
     {
         var message = new PubSubMessage
         {
@@ -360,7 +360,7 @@ public class TestsPubSubServiceMongo : IDisposable
     
     [Fact]
     [TestPriority(15)]
-    public async Task ShouldSendToAll()
+    public async Task ShouldSendToAllAsync()
     {
         var message = new PubSubMessage
         {
@@ -371,14 +371,14 @@ public class TestsPubSubServiceMongo : IDisposable
         
         await _pubSubService.SendToAllAsync(_hub, message);
         
-        // var gateway = GetApiGateway();
-        //
-        // Assert.True(gateway.PostRequestResponse.Single().Item1.ConnectionId == _connectionId);
+        var gateway = GetApiGateway();
+        
+        Assert.True(gateway.PostRequestResponse.Single().Item1.ConnectionId == _connectionId);
     }
     
     [Fact]
     [TestPriority(16)]
-    public async Task ShouldSendToAllConnectionExcluded()
+    public async Task ShouldSendToAllConnectionExcludedAsync()
     {
         var message = new PubSubMessage
         {
@@ -388,9 +388,9 @@ public class TestsPubSubServiceMongo : IDisposable
 
         await _pubSubService.SendToAllAsync(_hub,  message, new List<string> {_connectionId});
         
-        // var gateway = GetApiGateway();
-        //
-        // Assert.Empty(gateway.PostRequestResponse);
+        var gateway = GetApiGateway();
+        
+        Assert.Empty(gateway.PostRequestResponse);
     }
 
     [Fact]
@@ -398,11 +398,11 @@ public class TestsPubSubServiceMongo : IDisposable
     public void ShouldGenerateToken()
     {
         var secret = Guid.NewGuid().ToString();
-        var issuer = "issuer";
-        var audience = "audience";
+        const string issuer = "issuer";
+        const string audience = "audience";
         
         var token = _pubSubService.GenerateToken(issuer, audience, _sub, new List<string> { "role"},
-            secret, null);
+            secret);
         
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
         var keys = new List<SecurityKey> { mySecurityKey };
@@ -425,7 +425,7 @@ public class TestsPubSubServiceMongo : IDisposable
     }
 }
 
-class TestDbNameProvider : IMongoDatabaseNameProvider
+internal class TestDbNameProvider : IMongoDatabaseNameProvider
 {
     private readonly string _name;
 

@@ -97,7 +97,7 @@ public class JoinOrLeaveRoute
     {
         var inMessage = JsonSerializer.Deserialize<PubSubInboundGroupMessage>(request.Body);
 
-        if (string.IsNullOrEmpty(inMessage.group) )
+        if (string.IsNullOrEmpty(inMessage!.group) )
             throw new NullReferenceException("group must be provided");
         
         return inMessage;

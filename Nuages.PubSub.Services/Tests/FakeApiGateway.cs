@@ -28,7 +28,7 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
     }
 
     public async Task<DeleteConnectionResponse> DeleteConnectionAsync(DeleteConnectionRequest request,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = new ())
     {
         if (HttpStatusCode != HttpStatusCode.OK)
             throw new AmazonServiceException("Error")
@@ -46,7 +46,7 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
         return await Task.FromResult(response);
     }
 
-    public async Task<GetConnectionResponse> GetConnectionAsync(GetConnectionRequest request, CancellationToken cancellationToken = new CancellationToken())
+    public async Task<GetConnectionResponse> GetConnectionAsync(GetConnectionRequest request, CancellationToken cancellationToken = new ())
     {
         if (HttpStatusCode != HttpStatusCode.OK)
             throw new AmazonServiceException("Error")
@@ -65,7 +65,7 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
     }
 
     public async Task<PostToConnectionResponse> PostToConnectionAsync(PostToConnectionRequest request,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = new ())
     {
         if (HttpStatusCode != HttpStatusCode.OK)
             throw new AmazonServiceException("Error")

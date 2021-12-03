@@ -17,13 +17,9 @@ namespace Nuages.PubSub.WebSocket.Tests;
 
 public class TestPubSubFunction
 {
-    public TestPubSubFunction()
-    {
-
-    }
     
     [Fact]
-    public async Task TestConnect()
+    public async Task TestConnectAsync()
     {
         var pubSubService = new Mock<IPubSubService>();
         
@@ -31,22 +27,19 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        var connectionId = "test-id";
+        const string connectionId = "test-id";
         
         var request = new APIGatewayProxyRequest
         {
             RequestContext = new APIGatewayProxyRequest.ProxyRequestContext
             {
                 ConnectionId = connectionId,
-                Authorizer = new APIGatewayCustomAuthorizerContext
-                {
-                    
-                }
+                Authorizer = new APIGatewayCustomAuthorizerContext()
             }
         };
 
-        var hub = "hub";
-        var sub = "user";
+        const string hub = "hub";
+        const string sub = "user";
         
         request.RequestContext.Authorizer["sub"] = sub;
         request.RequestContext.Authorizer["nuageshub"] = hub;
@@ -66,7 +59,7 @@ public class TestPubSubFunction
     }
     
     [Fact]
-    public async Task TestDisconnect()
+    public async Task TestDisconnectAsync()
     {
         var pubSubService = new Mock<IPubSubService>();
         
@@ -74,22 +67,19 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        var connectionId = "test-id";
+        const string connectionId = "test-id";
         
         var request = new APIGatewayProxyRequest
         {
             RequestContext = new APIGatewayProxyRequest.ProxyRequestContext
             {
                 ConnectionId = connectionId,
-                Authorizer = new APIGatewayCustomAuthorizerContext
-                {
-                    
-                }
+                Authorizer = new APIGatewayCustomAuthorizerContext()
             }
         };
 
-        var hub = "hub";
-        var sub = "user";
+        const string hub = "hub";
+        const string sub = "user";
         
         request.RequestContext.Authorizer["sub"] = sub;
         request.RequestContext.Authorizer["nuageshub"] = hub;
@@ -107,7 +97,7 @@ public class TestPubSubFunction
     }
     
     [Fact]
-    public async Task TestEcho()
+    public async Task TestEchoAsync()
     {
         var pubSubService = new Mock<IPubSubService>();
         
@@ -115,7 +105,7 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        string connectionId = "test-id";
+        const string connectionId = "test-id";
         
         var request = new APIGatewayProxyRequest
         {
@@ -150,7 +140,7 @@ public class TestPubSubFunction
     }
     
     [Fact]
-    public async Task TestJoin()
+    public async Task TestJoinAsync()
     {
         var pubSubService = new Mock<IPubSubService>();
         
@@ -158,10 +148,10 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        var connectionId = "test-id";
-        var hub = "hub";
-        var group = "group";
-        var user = "user";
+        const string connectionId = "test-id";
+        const string hub = "hub";
+        const string group = "group";
+        const string user = "user";
 
         var body = new
         {
@@ -217,7 +207,7 @@ public class TestPubSubFunction
     }
     
     [Fact]
-    public async Task TestLeave()
+    public async Task TestLeaveAsync()
     {
         var pubSubService = new Mock<IPubSubService>();
         
@@ -225,10 +215,10 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        var connectionId = "test-id";
-        var hub = "hub";
-        var group = "group";
-        var user = "user";
+        const string connectionId = "test-id";
+        const string hub = "hub";
+        const string group = "group";
+        const string user = "user";
         
         var body = new
         {
@@ -282,7 +272,7 @@ public class TestPubSubFunction
     }
     
     [Fact]
-    public async Task TestSend()
+    public async Task TestSendAsync()
     {
         var pubSubService = new Mock<IPubSubService>();
         
@@ -290,9 +280,9 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        var connectionId = "test-id";
-        var hub = "hub";
-        var group = "group";
+        const string connectionId = "test-id";
+        const string hub = "hub";
+        const string group = "group";
         
         var body = new PubSubMessage
         {
@@ -354,7 +344,7 @@ public class TestPubSubFunction
     }
     
     [Fact]
-    public async Task TestAuthorize()
+    public async Task TestAuthorizeAsync()
     {
         var pubSubService = new Mock<IPubSubService>();
         
@@ -362,17 +352,14 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        string connectionId = "test-id";
+        const string connectionId = "test-id";
         
         var request = new APIGatewayCustomAuthorizerRequest
         {
             RequestContext = new APIGatewayProxyRequest.ProxyRequestContext
             {
                 ConnectionId = connectionId,
-                Authorizer = new APIGatewayCustomAuthorizerContext
-                {
-                    
-                }
+                Authorizer = new APIGatewayCustomAuthorizerContext()
             },
             QueryStringParameters = new Dictionary<string, string>()
         };
@@ -380,7 +367,7 @@ public class TestPubSubFunction
         var options = function.PubSubOpt.Value;
 
         request.QueryStringParameters.Add("hub", "Hub");
-        request.QueryStringParameters.Add("access_token", GenerateToken(options.Issuer!, options.ValidAudiences!, "userId", new List<string>(), options.Secret! ,null));
+        request.QueryStringParameters.Add("access_token", GenerateToken(options.Issuer!, options.ValidAudiences!, "userId", new List<string>(), options.Secret!));
         
         var res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
         
@@ -408,17 +395,14 @@ public class TestPubSubFunction
         
         var lambdaContext = new TestLambdaContext();
         
-        string connectionId = "test-id";
+        const string connectionId = "test-id";
         
         var request = new APIGatewayCustomAuthorizerRequest
         {
             RequestContext = new APIGatewayProxyRequest.ProxyRequestContext
             {
                 ConnectionId = connectionId,
-                Authorizer = new APIGatewayCustomAuthorizerContext
-                {
-                    
-                }
+                Authorizer = new APIGatewayCustomAuthorizerContext()
             },
             QueryStringParameters = new Dictionary<string, string>()
         };
@@ -426,14 +410,14 @@ public class TestPubSubFunction
         var options = function.PubSubOpt.Value;
 
         request.QueryStringParameters.Add("hub", "Hub");
-        request.QueryStringParameters.Add("access_token", GenerateToken("bad_issuer", options.ValidAudiences!, "userId", new List<string>(), options.Secret! ,null));
+        request.QueryStringParameters.Add("access_token", GenerateToken("bad_issuer", options.ValidAudiences!, "userId", new List<string>(), options.Secret!));
         
         var res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
         
         Assert.Equal("user", res.PrincipalID);
     }
-    
-    string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
+
+    private static string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
     {
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
@@ -444,7 +428,7 @@ public class TestPubSubFunction
             {
                 new Claim("sub", userId),
                 new Claim("test", "test"),
-                new Claim("test", "test2"),
+                new Claim("test", "test2")
             }),
             Expires = DateTime.UtcNow.Add(expireDelay ?? TimeSpan.FromDays(1)),
             Issuer = issuer,

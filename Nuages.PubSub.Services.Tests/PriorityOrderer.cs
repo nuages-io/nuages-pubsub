@@ -56,5 +56,5 @@ public class TestPriorityAttribute : Attribute
     }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
-    public int Priority { get; private set; }
+    public int Priority { get; private init; }
 }

@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
@@ -75,7 +74,7 @@ class Program
 
         LogData(url);
             
-        await Connect(url);
+        await ConnectAsync(url);
     }
 
     private static IPubSubService PubSubService { get; set; }
@@ -92,7 +91,7 @@ class Program
             TimeSpan.FromDays(1));
     }
     
-    private static async Task Connect(string uri)
+    private static async Task ConnectAsync(string uri)
     {
         try
         {
@@ -105,7 +104,7 @@ class Program
             var msg = new {type = "echo", data = ""};
             await SendMessageToSocketAsync(_webSocket, msg);
 
-            await Task.WhenAll(ReceiveFromSocket(_webSocket), SendToSocket(_webSocket));
+            await Task.WhenAll(ReceiveFromSocketAsync(_webSocket), SendToSocketAsync(_webSocket));
         }
         catch (Exception ex)
         {
@@ -125,7 +124,7 @@ class Program
         }
     }
 
-    private static async Task SendToSocket(ClientWebSocket webSocket)
+    private static async Task SendToSocketAsync(ClientWebSocket webSocket)
     {
         while (webSocket.State == WebSocketState.Open)
         {
@@ -153,7 +152,7 @@ class Program
         await webSocket.SendAsync(dataToSend, WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
-    private static async Task ReceiveFromSocket(ClientWebSocket webSocket)
+    private static async Task ReceiveFromSocketAsync(ClientWebSocket webSocket)
     {
         var buffer = new byte[1024];
         while (webSocket.State == WebSocketState.Open)

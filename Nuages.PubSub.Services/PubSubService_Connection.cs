@@ -28,7 +28,7 @@ public partial class PubSubService
         try
         {
             using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
-            var response = await apiGateway.GetConnectionAsync(new GetConnectionRequest
+            await apiGateway.GetConnectionAsync(new GetConnectionRequest
             {
                 ConnectionId = connectionId
             });
