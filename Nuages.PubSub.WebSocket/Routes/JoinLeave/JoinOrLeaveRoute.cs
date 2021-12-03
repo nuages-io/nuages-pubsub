@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
@@ -91,13 +92,11 @@ public class JoinOrLeaveRoute
         }
     }
 
+    [ExcludeFromCodeCoverage]
     private static PubSubInboundGroupMessage GetInboundMessage(APIGatewayProxyRequest request)
     {
         var inMessage = JsonSerializer.Deserialize<PubSubInboundGroupMessage>(request.Body);
-        
-        if (inMessage == null)
-            throw new NullReferenceException("message is null");
-        
+
         if (string.IsNullOrEmpty(inMessage.group) )
             throw new NullReferenceException("group must be provided");
         

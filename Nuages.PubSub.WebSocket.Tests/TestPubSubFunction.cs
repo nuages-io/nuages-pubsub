@@ -52,13 +52,15 @@ public class TestPubSubFunction
         request.RequestContext.Authorizer["nuageshub"] = hub;
         request.RequestContext.Authorizer["roles"] = "JoinOrLeaveGroup";
         
+        //Ok
         var res = await function.OnConnectHandlerAsync(request, lambdaContext);
 
         Assert.Equal(200, res.StatusCode);
         
+        //Throw
         pubSubService.Setup(c => c.ConnectAsync(hub, connectionId, sub, It.IsAny<TimeSpan?>())).ThrowsAsync(new Exception());
 
-         res = await function.OnConnectHandlerAsync(request, lambdaContext);
+        res = await function.OnConnectHandlerAsync(request, lambdaContext);
         
         Assert.Equal(500, res.StatusCode);
     }
@@ -92,9 +94,12 @@ public class TestPubSubFunction
         request.RequestContext.Authorizer["sub"] = sub;
         request.RequestContext.Authorizer["nuageshub"] = hub;
         
+        //Ok
         var res = await function.OnDisconnectHandlerAsync(request, lambdaContext);
         Assert.Equal(200, res.StatusCode);
         
+        
+        //Throw
         pubSubService.Setup(c => c.CloseConnectionAsync(hub, connectionId)).ThrowsAsync(new Exception());
         res = await function.OnDisconnectHandlerAsync(request, lambdaContext);
         
@@ -125,6 +130,8 @@ public class TestPubSubFunction
             }
         };
 
+        
+        //Ok
         pubSubService.Setup(c => c.SendToConnectionAsync(It.IsAny<string>(), connectionId, It.IsAny<PubSubMessage>())).ReturnsAsync(
         new APIGatewayProxyResponse
         {
@@ -134,6 +141,7 @@ public class TestPubSubFunction
         var  res = await function.EchoHandlerAsync(request, lambdaContext);
         Assert.Equal(200, res.StatusCode);
         
+        //Throw
         pubSubService.Setup(c => c.SendToConnectionAsync(It.IsAny<string>(), connectionId, It.IsAny<PubSubMessage>())).ThrowsAsync(new Exception());
 
         res = await function.EchoHandlerAsync(request, lambdaContext);
@@ -182,14 +190,30 @@ public class TestPubSubFunction
         pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.JoinOrLeaveGroup, connectionId, group))
             .ReturnsAsync(true);
         
+        
+        //ok
         var res = await function.JoinHandlerAsync(request, lambdaContext);
         Assert.Equal(200, res.StatusCode);
         
-        pubSubService.Setup(c => c.AddConnectionToGroupAsync(hub, group, connectionId, user)).ThrowsAsync(new Exception());
-
-        res = await function.JoinHandlerAsync(request, lambdaContext);
+       
+        //Throw
         
+        pubSubService.Setup(c => c.AddConnectionToGroupAsync(hub, group, connectionId, user)).ThrowsAsync(new Exception());
+        res = await function.JoinHandlerAsync(request, lambdaContext);
         Assert.Equal(500, res.StatusCode);
+        
+        //Not authorized
+        pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.JoinOrLeaveGroup, connectionId, group))
+            .ReturnsAsync(false);
+        
+        res = await function.JoinHandlerAsync(request, lambdaContext);
+        Assert.Equal(403, res.StatusCode);
+        
+        //Ack not valid
+        pubSubService.Setup(c => c.CreateAckAsync(hub, connectionId, It.IsAny<string?>())).ReturnsAsync(false);
+        
+        res = await function.JoinHandlerAsync(request, lambdaContext);
+        Assert.Equal(400, res.StatusCode);
     }
     
     [Fact]
@@ -232,14 +256,29 @@ public class TestPubSubFunction
         pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.JoinOrLeaveGroup, connectionId, group))
             .ReturnsAsync(true);
         
+        //ok
         var res = await function.LeaveHandlerAsync(request, lambdaContext);
         Assert.Equal(200, res.StatusCode);
-        
+
+        //Throw 
         pubSubService.Setup(c => c.RemoveConnectionFromGroupAsync(hub, group, connectionId)).ThrowsAsync(new Exception());
 
         res = await function.LeaveHandlerAsync(request, lambdaContext);
         
         Assert.Equal(500, res.StatusCode);
+        
+        //Not authorized
+        pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.JoinOrLeaveGroup, connectionId, group))
+            .ReturnsAsync(false);
+        
+        res = await function.LeaveHandlerAsync(request, lambdaContext);
+        Assert.Equal(403, res.StatusCode);
+        
+        //Ack invalid
+        pubSubService.Setup(c => c.CreateAckAsync(hub, connectionId, It.IsAny<string?>())).ReturnsAsync(false);
+        
+        res = await function.LeaveHandlerAsync(request, lambdaContext);
+        Assert.Equal(400, res.StatusCode);
     }
     
     [Fact]
@@ -266,8 +305,6 @@ public class TestPubSubFunction
             },
             ackId = "$"
         };
-
-        
         
         var request = new APIGatewayProxyRequest
         {
@@ -292,10 +329,28 @@ public class TestPubSubFunction
             StatusCode = 200
         });
 
+        //Ok 
         var res = await function.SendHandlerAsync(request, lambdaContext);
         Assert.Equal(200, res.StatusCode);
-        
 
+        //Throw exception
+        pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.SendMessageToGroup, connectionId, group)).ThrowsAsync(new Exception());
+        
+        res = await function.SendHandlerAsync(request, lambdaContext);
+        Assert.Equal(500, res.StatusCode);
+        
+        //Not authorized
+        pubSubService.Setup(c => c.CheckPermissionAsync(hub, PubSubPermission.SendMessageToGroup, connectionId, group))
+            .ReturnsAsync(false);
+        
+        res = await function.SendHandlerAsync(request, lambdaContext);
+        Assert.Equal(403, res.StatusCode);
+        
+        //Ack not valid
+        pubSubService.Setup(c => c.CreateAckAsync(hub, connectionId, It.IsAny<string?>())).ReturnsAsync(false);
+        
+        res = await function.SendHandlerAsync(request, lambdaContext);
+        Assert.Equal(400, res.StatusCode);
     }
     
     [Fact]

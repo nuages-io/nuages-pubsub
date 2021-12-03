@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
@@ -94,6 +95,7 @@ public class SendRoute : ISendRoute
         }
     }
 
+    [ExcludeFromCodeCoverage]
     private static PubSubInboundGroupMessage GetInboundMessage(APIGatewayProxyRequest request)
     {
         var inMessage = JsonSerializer.Deserialize<PubSubInboundGroupMessage>(request.Body);
