@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
@@ -22,14 +23,14 @@ public class AuthorizeRoute : IAuthorizeRoute
     public async Task<APIGatewayCustomAuthorizerResponse> AuthorizeAsync(APIGatewayCustomAuthorizerRequest input,
         ILambdaContext context)
     {
-        var token = input.QueryStringParameters["access_token"];
+        var token = input.QueryStringParameters.ContainsKey("access_token") ? input.QueryStringParameters["access_token"] : null;
         if (string.IsNullOrEmpty(token))
         {
             context.Logger.LogLine("Token (access_token query parameter) was not provided. Exiting.");
             return CreateResponse(false, input.MethodArn);
         }
 
-        var hub = input.QueryStringParameters["hub"];
+        var hub = input.QueryStringParameters.ContainsKey("hub") ? input.QueryStringParameters["hub"] : null;
 
         if (string.IsNullOrEmpty(hub))
         {
@@ -47,6 +48,24 @@ public class AuthorizeRoute : IAuthorizeRoute
         var validIssuers = _pubSubOptions.ValidIssuers.Split(",");
         var validAudiences = _pubSubOptions.ValidAudiences?.Split(",").ToList();
 
+        var keys = await LoadKeys(context, jwtToken);
+
+        try
+        {
+            ValidateToken(token, keys, validIssuers, validAudiences);
+
+            return CreateResponse(true, input.MethodArn, claimDict);
+        }
+        catch (Exception ex)
+        {
+            context.Logger.Log(ex.Message);
+            return CreateResponse(false, input.MethodArn);
+        }
+    }
+
+    [ExcludeFromCodeCoverage]
+    private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context, JwtSecurityToken jwtToken)
+    {
         var keys = new List<SecurityKey>();
 
         var secret = _pubSubOptions.Secret;
@@ -70,20 +89,10 @@ public class AuthorizeRoute : IAuthorizeRoute
             }
         }
 
-        try
-        {
-            ValidateToken(token, keys, validIssuers, validAudiences);
-
-            return CreateResponse(true, input.MethodArn, claimDict);
-        }
-        catch (Exception ex)
-        {
-            context.Logger.Log(ex.Message);
-        }
-
-        return CreateResponse(false, input.MethodArn);
+        return keys;
     }
 
+    [ExcludeFromCodeCoverage]
     protected virtual void ValidateToken(string token, IEnumerable<SecurityKey> keys, IEnumerable<string> validIssuers,
         List<string>? validAudiences)
     {
@@ -98,6 +107,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         }, out _);
     }
 
+    [ExcludeFromCodeCoverage]
     private static string GetEndpoint(string issuer)
     {
         var endpoint = issuer;
@@ -108,6 +118,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         return endpoint;
     }
 
+    [ExcludeFromCodeCoverage]
     protected virtual async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
     {
         var jsonWebKeySetUrl = $"{GetEndpoint(issuer)}{_pubSubOptions.JsonWebKeySetUrlPath}";

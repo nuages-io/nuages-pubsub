@@ -380,10 +380,57 @@ public class TestPubSubFunction
         var options = function.PubSubOpt.Value;
 
         request.QueryStringParameters.Add("hub", "Hub");
-        request.QueryStringParameters.Add("access_token", GenerateToken(options.Issuer!, options.ValidAudiences!, "user", new List<string>(), options.Secret! ,null));
+        request.QueryStringParameters.Add("access_token", GenerateToken(options.Issuer!, options.ValidAudiences!, "userId", new List<string>(), options.Secret! ,null));
         
-        await function.OnAuthorizeHandlerAsync(request, lambdaContext);
+        var res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
         
+        Assert.NotNull(res.PrincipalID);
+
+        request.QueryStringParameters.Remove("hub");
+        
+        res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
+        
+        Assert.Equal("user", res.PrincipalID);
+        
+        request.QueryStringParameters.Remove("access_token");
+        
+        res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
+        
+        Assert.Equal("user", res.PrincipalID);
+    }
+    
+    [Fact]
+    public async Task TestAuthorizeFailedBadIssuer()
+    {
+        var pubSubService = new Mock<IPubSubService>();
+        
+        var function = new CustomPubSubFunction(pubSubService.Object);
+        
+        var lambdaContext = new TestLambdaContext();
+        
+        string connectionId = "test-id";
+        
+        var request = new APIGatewayCustomAuthorizerRequest
+        {
+            RequestContext = new APIGatewayProxyRequest.ProxyRequestContext
+            {
+                ConnectionId = connectionId,
+                Authorizer = new APIGatewayCustomAuthorizerContext
+                {
+                    
+                }
+            },
+            QueryStringParameters = new Dictionary<string, string>()
+        };
+
+        var options = function.PubSubOpt.Value;
+
+        request.QueryStringParameters.Add("hub", "Hub");
+        request.QueryStringParameters.Add("access_token", GenerateToken("bad_issuer", options.ValidAudiences!, "userId", new List<string>(), options.Secret! ,null));
+        
+        var res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
+        
+        Assert.Equal("user", res.PrincipalID);
     }
     
     string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
@@ -395,7 +442,9 @@ public class TestPubSubFunction
         {
             Subject = new ClaimsIdentity(new []
             {
-                new Claim("sub", userId)
+                new Claim("sub", userId),
+                new Claim("test", "test"),
+                new Claim("test", "test2"),
             }),
             Expires = DateTime.UtcNow.Add(expireDelay ?? TimeSpan.FromDays(1)),
             Issuer = issuer,

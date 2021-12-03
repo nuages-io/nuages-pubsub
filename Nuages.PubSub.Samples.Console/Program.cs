@@ -2,12 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
@@ -20,6 +22,7 @@ namespace Nuages.PubSub.Samples.Console;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 // ReSharper disable once ArrangeTypeModifiers
+[ExcludeFromCodeCoverage]
 class Program
 {
     private static readonly object ConsoleLock = new();

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,10 +38,7 @@ public class PubSubFunction
     public async Task<APIGatewayProxyResponse> EchoHandlerAsync(APIGatewayProxyRequest request,
         ILambdaContext context)
     {
-        if (_echoRoute == null)
-            throw new NullReferenceException("_echoService is null");
-        
-        return await _echoRoute.EchoAsync(request, context);
+        return await _echoRoute!.EchoAsync(request, context);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -49,14 +47,12 @@ public class PubSubFunction
     {
         await OnBeforeDisconnectAsync(request, context);
         
-        if (_disconnectRoute == null)
-            throw new NullReferenceException("_disconnectService is null");
-        
-        var res = await _disconnectRoute.DisconnectAsync(request, context);
+        var res = await _disconnectRoute!.DisconnectAsync(request, context);
 
         return await OnAfterDisconnectAsync(request, context, res);
     }
 
+    
     protected virtual async Task<APIGatewayProxyResponse> OnAfterDisconnectAsync(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
     {
         return await Task.FromResult(res);
@@ -73,10 +69,7 @@ public class PubSubFunction
     {
         await OnBeforeConnectAsync(request, context);
         
-        if (_connectRoute == null)
-            throw new NullReferenceException("_connectService is null");
-        
-        var res = await _connectRoute.ConnectAsync(request, context);
+        var res = await _connectRoute!.ConnectAsync(request, context);
         
         return await OnAfterConnectAsync(request, context, res);
         
@@ -97,10 +90,7 @@ public class PubSubFunction
     {
         await OnBeforeAuthorize(input, context);
         
-        if (_authorizeRoute == null)
-            throw new NullReferenceException("_authorizeService is null");
-        
-        var res = await _authorizeRoute.AuthorizeAsync(input, context);
+        var res = await _authorizeRoute!.AuthorizeAsync(input, context);
         
         return await OnAfterAuthorize(input, context, res);
         
@@ -122,10 +112,7 @@ public class PubSubFunction
     {
         await OnBeforeSend(request, context);
         
-        if (_sendMessageRoute == null)
-            throw new NullReferenceException("_sendMessageRoute is null");
-        
-        var res = await _sendMessageRoute.SendAsync(request, context);
+        var res = await _sendMessageRoute!.SendAsync(request, context);
         
         return await OnAfterSend(request, context, res);
 
@@ -147,10 +134,7 @@ public class PubSubFunction
     {
         await OnBeforeJoin(request, context);
         
-        if (_joinRoute == null)
-            throw new NullReferenceException("_echoService is null");
-        
-        var res = await _joinRoute.JoinAsync(request, context);
+        var res = await _joinRoute!.JoinAsync(request, context);
         
         return await OnAfterJoin(request, context, res);
     }
@@ -171,10 +155,7 @@ public class PubSubFunction
     {
         await OnBeforeLeave(request, context);
         
-        if (_leaveRoute == null)
-            throw new NullReferenceException("_echoService is null");
-        
-        var res = await _leaveRoute.LeaveAsync(request, context);
+        var res = await _leaveRoute!.LeaveAsync(request, context);
         
         return await OnAfterLeave(request, context, res);
     }
