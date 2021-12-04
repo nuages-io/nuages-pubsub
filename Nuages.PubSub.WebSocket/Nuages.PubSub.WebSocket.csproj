@@ -4,8 +4,29 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
 
+        <Title>Nuages.PubSub.WebSocket</Title>
+        <Authors>Nuages.io</Authors>
+        <Description>Nuages.PubSub.WebSocket</Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>nuages.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+
+        <None Include="../LICENSE">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="../nuages.png">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+
+    </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.4.0" />
       <PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
@@ -17,6 +38,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="README.md">
+        <Pack>true</Pack>
+        <PackagePath>/</PackagePath>
+      </None>
     </ItemGroup>
    
 </Project>

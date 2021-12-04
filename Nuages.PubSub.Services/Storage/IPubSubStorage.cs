@@ -14,8 +14,6 @@ public interface IPubSubStorage
     Task<bool> UserHasConnectionsAsync(string hub, string userId);
     Task<bool> ConnectionExistsAsync(string hub, string connectionid);
     
-    Task InitializeAsync();
-
     Task AddPermissionAsync(string hub, string connectionId, string permissionString);
     Task RemovePermissionAsync(string hub, string connectionId, string permissionString);
     

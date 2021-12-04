@@ -26,12 +26,13 @@
             <Pack>true</Pack>
             <PackagePath>/</PackagePath>
         </None>
+        
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.WebSocket\Nuages.PubSub.WebSocket.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Storage\Nuages.PubSub.Storage.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
     </ItemGroup>
 </Project>

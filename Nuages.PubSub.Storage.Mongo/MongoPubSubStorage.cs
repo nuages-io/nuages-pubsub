@@ -26,7 +26,8 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         _pubSubGroupConnectionCollection = database.GetCollection<PubSubGroupConnection>("pub_sub_group_connection");
         _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>("pub_sub_group_use");
         _pubSubAckCollection = database.GetCollection<PubSubAck>("pub_sub_ack");
-        
+
+        Initialize();
     }
     
     
@@ -73,9 +74,9 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
             .Any(c => c.Hub == hub && c.ConnectionId == connectionid));
     }
 
-    public async Task InitializeAsync()
+    public void Initialize()
     {
-        await _pubSubAckCollection.Indexes.CreateOneAsync(
+         _pubSubAckCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubAck>(
                 Builders<PubSubAck>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -88,7 +89,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 })
         );
         
-        await _pubSubConnectionCollection.Indexes.CreateOneAsync(
+         _pubSubConnectionCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubConnection>(
                 Builders<PubSubConnection>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -100,7 +101,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 })
         );
         
-        await _pubSubConnectionCollection.Indexes.CreateOneAsync(
+         _pubSubConnectionCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubConnection>(
                 Builders<PubSubConnection>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -111,7 +112,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 })
         );
         
-        await _pubSubConnectionCollection.Indexes.CreateOneAsync(
+         _pubSubConnectionCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubConnection>(
                 Builders<PubSubConnection>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -124,7 +125,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         );
 
         
-        await _pubSubGroupConnectionCollection.Indexes.CreateOneAsync(
+         _pubSubGroupConnectionCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubGroupConnection>(
                 Builders<PubSubGroupConnection>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -137,7 +138,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 })
         );
         
-        await _pubSubGroupConnectionCollection.Indexes.CreateOneAsync(
+         _pubSubGroupConnectionCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubGroupConnection>(
                 Builders<PubSubGroupConnection>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -149,7 +150,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 })
         );
         
-        await _pubSubGroupUserCollection.Indexes.CreateOneAsync(
+         _pubSubGroupUserCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubGroupUser>(
                 Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -162,7 +163,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 })
         );
         
-        await _pubSubGroupUserCollection.Indexes.CreateOneAsync(
+         _pubSubGroupUserCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubGroupUser>(
                 Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
@@ -174,7 +175,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 })
         );
         
-        await _pubSubGroupUserCollection.Indexes.CreateOneAsync(
+         _pubSubGroupUserCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubGroupUser>(
                 Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)

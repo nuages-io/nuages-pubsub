@@ -113,11 +113,6 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         return await Task.FromResult(GetHubConnections(hub).Any(c => c.ConnectionId == connectionid));
     }
 
-    [ExcludeFromCodeCoverage]
-    public async Task InitializeAsync()
-    {
-        await Task.CompletedTask;
-    }
 
     public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
     {

@@ -34,7 +34,7 @@ public class TestMongoPubSubStorage
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
         _pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
-        _pubSubStorage.InitializeAsync();
+        
         
         _hub = "Hub";
         _sub = "sub-test";

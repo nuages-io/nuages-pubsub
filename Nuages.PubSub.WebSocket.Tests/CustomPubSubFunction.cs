@@ -35,7 +35,7 @@ public class CustomPubSubFunction : PubSubFunction
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        GetRequiredServices(serviceProvider);
+        LoadRoutes(serviceProvider);
 
         PubSubOpt = serviceProvider.GetRequiredService<IOptions<PubSubOptions>>();
     }

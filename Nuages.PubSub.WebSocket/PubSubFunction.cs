@@ -22,7 +22,7 @@ public class PubSubFunction
     private IJoinRoute? _joinRoute;
     private ILeaveRoute? _leaveRoute;
 
-    protected void GetRequiredServices(ServiceProvider serviceProvider)
+    protected void LoadRoutes(ServiceProvider serviceProvider)
     {
         _echoRoute = serviceProvider.GetRequiredService<IEchoRoute>();
         _disconnectRoute = serviceProvider.GetRequiredService<IDisconnectRoute>();
@@ -50,7 +50,6 @@ public class PubSubFunction
 
         return await OnAfterDisconnectAsync(request, context, res);
     }
-
     
     protected virtual async Task<APIGatewayProxyResponse> OnAfterDisconnectAsync(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
     {
@@ -69,9 +68,8 @@ public class PubSubFunction
         await OnBeforeConnectAsync(request, context);
         
         var res = await _connectRoute!.ConnectAsync(request, context);
-        
+
         return await OnAfterConnectAsync(request, context, res);
-        
     }
 
     protected virtual async Task<APIGatewayProxyResponse> OnAfterConnectAsync(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
@@ -92,7 +90,6 @@ public class PubSubFunction
         var res = await _authorizeRoute!.AuthorizeAsync(input, context);
         
         return await OnAfterAuthorize(input, context, res);
-        
     }
 
     protected virtual async Task<APIGatewayCustomAuthorizerResponse> OnAfterAuthorize(APIGatewayCustomAuthorizerRequest input, ILambdaContext context, APIGatewayCustomAuthorizerResponse res)
@@ -114,7 +111,6 @@ public class PubSubFunction
         var res = await _sendMessageRoute!.SendAsync(request, context);
         
         return await OnAfterSend(request, context, res);
-
     }
 
     protected virtual async Task<APIGatewayProxyResponse> OnAfterSend(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)

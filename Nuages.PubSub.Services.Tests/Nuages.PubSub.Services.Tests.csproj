@@ -25,7 +25,6 @@
     
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Storage.InMemory\Nuages.PubSub.Storage.InMemory.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj" />
     </ItemGroup>
 

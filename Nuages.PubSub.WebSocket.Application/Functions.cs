@@ -15,7 +15,6 @@ using Nuages.PubSub.Storage.Mongo;
 
 #endregion
 
-
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
@@ -60,19 +59,6 @@ public class Functions : PubSubFunction
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        GetRequiredServices(serviceProvider);
-
-        var pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
-        pubSubStorage.InitializeAsync();
-    }
-
-    protected override async Task<APIGatewayProxyResponse> OnAfterConnectAsync(APIGatewayProxyRequest request, ILambdaContext context, APIGatewayProxyResponse res)
-    {
-        if (res.StatusCode == 200)
-        {
-            context.Logger.LogLine("200 connected!");
-        }
-        
-        return await Task.FromResult(res);
+        LoadRoutes(serviceProvider);
     }
 }
