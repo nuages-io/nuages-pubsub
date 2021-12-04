@@ -4,8 +4,29 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <Title>Nuages.PubSub.Services</Title>
+        <Authors>Nuages.io</Authors>
+        <Description>Nuages.PubSub.Service provides BackEnd services for NUages.PubSub</Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>nuages.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+
+        <None Include="../LICENSE">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="../nuages.png">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+    </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.4.0" />
       <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.30" />

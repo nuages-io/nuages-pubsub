@@ -73,11 +73,6 @@ public partial class PubSubService : IPubSubService
         }
     }
 
-    // private async Task DisconnectAsync(string hub, string connectionId)
-    // {
-    //     await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
-    // }
-
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         var permissionString = GetPermissionString(permission, target);
