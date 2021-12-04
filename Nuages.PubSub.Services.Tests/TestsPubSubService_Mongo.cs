@@ -53,12 +53,10 @@ public class TestsPubSubServiceMongo : IDisposable
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();
         
         var connectionString = configuration.GetSection("Nuages:Mongo:Connection").Value;
-        var dbName = configuration.GetSection("Nuages:DbName").Value;
+        _dbName = configuration.GetSection("Nuages:DbName").Value;
         
         _client = new MongoClient(connectionString);
         
-        _dbName = configuration.GetSection("Nuages:DbName").Value ;
-      
         _client.DropDatabase(_dbName);
         
         _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -417,7 +415,7 @@ public class TestsPubSubServiceMongo : IDisposable
         }, out _);
     }
 
-    public virtual void Dispose()
+    public void Dispose()
     {
         _client.DropDatabase(_dbName);
         _serviceProvider.Dispose();

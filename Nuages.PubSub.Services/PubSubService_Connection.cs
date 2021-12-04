@@ -43,7 +43,7 @@ public partial class PubSubService
             // from our collection.
             if (e.StatusCode == HttpStatusCode.Gone)
             {
-                await DisconnectAsync(hub, connectionId);
+                await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
             }
 
             return false;

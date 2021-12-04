@@ -73,10 +73,10 @@ public partial class PubSubService : IPubSubService
         }
     }
 
-    public async Task DisconnectAsync(string hub, string connectionId)
-    {
-        await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
-    }
+    // private async Task DisconnectAsync(string hub, string connectionId)
+    // {
+    //     await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
+    // }
 
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
@@ -145,7 +145,7 @@ public partial class PubSubService : IPubSubService
                 // from our collection.
                 if (e.StatusCode == HttpStatusCode.Gone)
                 {
-                    await DisconnectAsync(hub, postConnectionRequest.ConnectionId);
+                    await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
                 }
             }
         }
@@ -168,8 +168,8 @@ public partial class PubSubService : IPubSubService
             {
                 Console.WriteLine(e);
             }
-           
-            await DisconnectAsync(hub, connectionId);
+
+            await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
         }
     }
     
