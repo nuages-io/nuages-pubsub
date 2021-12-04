@@ -11,9 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using Nuages.MongoDB;
-using Nuages.MongoDB.DatabaseProvider;
-using Nuages.PubSub.Storage.InMemory.DataModel;
 using Nuages.PubSub.Storage.Mongo;
 using Xunit;
 
@@ -29,8 +26,8 @@ public class TestsPubSubServiceMongo : IDisposable
     private readonly string _connectionId;
     private readonly string _sub;
     private readonly ServiceProvider _serviceProvider;
-    private readonly IMongoClient _client;
     private readonly string _dbName;
+    private readonly MongoClient _client;
 
     public TestsPubSubServiceMongo()
     {
@@ -55,17 +52,19 @@ public class TestsPubSubServiceMongo : IDisposable
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();
         
-        _dbName = configuration.GetSection("Nuages:DbName").Value + "-" + Guid.NewGuid().ToString().Split("-").First() ;
-
-        serviceCollection.AddSingleton<IMongoDatabaseNameProvider>(new TestDbNameProvider(_dbName));
+        var connectionString = configuration.GetSection("Nuages:Mongo:Connection").Value;
+        var dbName = configuration.GetSection("Nuages:DbName").Value;
+        
+        _client = new MongoClient(connectionString);
+        
+        _dbName = configuration.GetSection("Nuages:DbName").Value ;
+      
+        _client.DropDatabase(_dbName);
         
         _serviceProvider = serviceCollection.BuildServiceProvider();
         
         _pubSubService = _serviceProvider.GetRequiredService<IPubSubService>();
-        
-        var clientProvider = _serviceProvider.GetRequiredService<IMongoClientProvider>();
-        _client = clientProvider.CreateClient<PubSubConnection>();
-        
+
         _pubSubService.ConnectAsync(_hub, _connectionId, _sub);
         
         System.Threading.Thread.Sleep(200);
@@ -422,20 +421,5 @@ public class TestsPubSubServiceMongo : IDisposable
     {
         _client.DropDatabase(_dbName);
         _serviceProvider.Dispose();
-    }
-}
-
-internal class TestDbNameProvider : IMongoDatabaseNameProvider
-{
-    private readonly string _name;
-
-    public TestDbNameProvider(string name)
-    {
-        _name = name;
-    }
-    
-    public string GetDatabaseName<TDocument>()
-    {
-        return _name;
     }
 }

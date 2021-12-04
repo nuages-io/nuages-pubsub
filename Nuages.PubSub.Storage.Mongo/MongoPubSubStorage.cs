@@ -1,108 +1,196 @@
+
+
+using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 
 namespace Nuages.PubSub.Storage.Mongo;
 
 public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
-    private readonly IPubSubConnectionRepository _pubSubConnectionRepository;
-    private readonly IPubSubGroupConnectionRepository _pubSubGroupConnectionRepository;
-    private readonly IPubSubGroupUserRepository _pubSubGroupUserRepository;
-    private readonly IPubSubAckRepository _pubSubAckRepository;
-
-    public MongoPubSubStorage(IPubSubConnectionRepository pubSubConnectionRepository, 
-        IPubSubGroupConnectionRepository pubSubGroupConnectionRepository, IPubSubGroupUserRepository pubSubGroupUserRepository,
-        IPubSubAckRepository pubSubAckRepository)
+    private readonly IMongoCollection<PubSubConnection> _pubSubConnectionCollection;
+    private readonly IMongoCollection<PubSubGroupConnection> _pubSubGroupConnectionCollection;
+    private readonly IMongoCollection<PubSubGroupUser> _pubSubGroupUserCollection;
+    private readonly IMongoCollection<PubSubAck> _pubSubAckCollection;
+    
+    public MongoPubSubStorage(IConfiguration configuration)
     {
-        _pubSubConnectionRepository = pubSubConnectionRepository;
-        _pubSubGroupConnectionRepository = pubSubGroupConnectionRepository;
-        _pubSubGroupUserRepository = pubSubGroupUserRepository;
-        _pubSubAckRepository = pubSubAckRepository;
+        var connectionString = configuration.GetSection("Nuages:Mongo:Connection").Value;
+        var dbName = configuration.GetSection("Nuages:DbName").Value;
+        
+        var mongoCLient = new MongoClient(connectionString);
+        var database = mongoCLient.GetDatabase(dbName);
+
+        _pubSubConnectionCollection = database.GetCollection<PubSubConnection>("pub_sub_connection");
+        _pubSubGroupConnectionCollection = database.GetCollection<PubSubGroupConnection>("pub_sub_group_connection");
+        _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>("pub_sub_group_use");
+        _pubSubAckCollection = database.GetCollection<PubSubAck>("pub_sub_ack");
+        
     }
     
-    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
-    {
-        var list = await _pubSubGroupUserRepository.GetGroupsForUserAsync(hub, sub);
-        
-        return list.Select(c => c.Group);
-    }
-
-    protected override string GetNewId()
-    {
-        return ObjectId.GenerateNewId().ToString();
-    }
-
-    private async Task DeleteConnectionFromAllGroupsAsync(string hub, string connectionId)
-    {
-        await _pubSubGroupConnectionRepository.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
-    }
-
-    public async Task DeleteConnectionAsync(string hub, string connectionId)
-    {
-        await _pubSubConnectionRepository.DeleteByConnectionIdAsync(hub, connectionId);
-        
-        await DeleteConnectionFromAllGroupsAsync(hub, connectionId);
-    }
-
+    
     public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
     {
-        return await Task.FromResult(_pubSubConnectionRepository.GetAllConnectionForHub(hub));
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub));
+    }
+
+    public override async Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
+    {
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId));
     }
 
     public async Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group)
     {
-        var query = _pubSubGroupConnectionRepository.GetConnectionsForGroup(hub, group).ToList();
-        var connections = _pubSubConnectionRepository.AsQueryable().Where(c => query.Contains(c.ConnectionId) && c.Hub == hub);
+        var ids = _pubSubGroupConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.Group == group).Select(c => c.ConnectionId).ToList();
         
-        return await Task.FromResult(connections);
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => ids.Contains(c.ConnectionId)));
     }
-    
+
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
     {
-        return await Task.FromResult(_pubSubGroupConnectionRepository.GroupHasConnections(hub, group));
-    }
-
-    public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
-    {
-        return await Task.FromResult( _pubSubConnectionRepository.GetConnectionsForUser(hub, userId));
-    }
-
-    public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
-    {
-        return await Task.FromResult(_pubSubConnectionRepository.UserHasConnections(hub, userId));
-    }
-    
-    public async Task<bool> ConnectionExistsAsync(string hub, string connectionId)
-    {
-        return await Task.FromResult(
-            _pubSubConnectionRepository.ConnectionExists(hub, connectionId)
-        );
-    }
-
-    public async Task InitializeAsync()
-    {
-        await Task.Run(() =>
-        {
-            _pubSubConnectionRepository.InitializeIndexes();
-            _pubSubGroupConnectionRepository.InitializeIndexes();
-            _pubSubGroupUserRepository.InitializeIndexes();
-            _pubSubAckRepository.InitializeIndexes();
-        });
+        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable().Any(c => c.Hub == hub && c.Group == group));
     }
 
     protected override async Task UpdateAsync(IPubSubConnection connection)
     {
-        await _pubSubConnectionRepository.ReplaceOneAsync((PubSubConnection) connection);
+        await _pubSubConnectionCollection.ReplaceOneAsync(Builders<PubSubConnection>.Filter.Eq(doc => doc.Id, connection.Id), (PubSubConnection) connection);
     }
-    
-    public override async Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
+
+    public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
-        return await Task.FromResult(_pubSubConnectionRepository.GetConnectionByConnectionId(hub, connectionId));
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.Sub == userId));
+    }
+
+    public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
+    {
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Any(c => c.Hub == hub && c.Sub == userId));
+    }
+
+    public async Task<bool> ConnectionExistsAsync(string hub, string connectionid)
+    {
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable()
+            .Any(c => c.Hub == hub && c.ConnectionId == connectionid));
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _pubSubAckCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubAck>(
+                Builders<PubSubAck>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.ConnectionId)
+                    .Ascending(p => p.AckId)
+                , new CreateIndexOptions
+                {
+                    Name = "UK_Id",
+                    Unique = true
+                })
+        );
+        
+        await _pubSubConnectionCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubConnection>(
+                Builders<PubSubConnection>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.ConnectionId)
+                , new CreateIndexOptions
+                {
+                    Name = "UK_Id",
+                    Unique = true
+                })
+        );
+        
+        await _pubSubConnectionCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubConnection>(
+                Builders<PubSubConnection>.IndexKeys
+                    .Ascending(p => p.Hub)
+                , new CreateIndexOptions
+                {
+                    Name = "IX_Hub",
+                    Unique = false
+                })
+        );
+        
+        await _pubSubConnectionCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubConnection>(
+                Builders<PubSubConnection>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.Sub)
+                , new CreateIndexOptions
+                {
+                    Name = "IX_Sub",
+                    Unique = false
+                })
+        );
+
+        
+        await _pubSubGroupConnectionCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubGroupConnection>(
+                Builders<PubSubGroupConnection>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.Group)
+                    .Ascending(p => p.ConnectionId)
+                , new CreateIndexOptions
+                {
+                    Name = "UK_HubGroupId",
+                    Unique = true
+                })
+        );
+        
+        await _pubSubGroupConnectionCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubGroupConnection>(
+                Builders<PubSubGroupConnection>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.Group)
+                , new CreateIndexOptions
+                {
+                    Name = "IX_HubGroup",
+                    Unique = false
+                })
+        );
+        
+        await _pubSubGroupUserCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubGroupUser>(
+                Builders<PubSubGroupUser>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.Group)
+                    .Ascending(p => p.Sub)
+                , new CreateIndexOptions
+                {
+                    Name = "UK_HubGroupId",
+                    Unique = true
+                })
+        );
+        
+        _pubSubGroupUserCollection.Indexes.CreateOne(
+            new CreateIndexModel<PubSubGroupUser>(
+                Builders<PubSubGroupUser>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.Group)
+                , new CreateIndexOptions
+                {
+                    Name = "IX_HubGroup",
+                    Unique = false
+                })
+        );
+        
+        await _pubSubGroupUserCollection.Indexes.CreateOneAsync(
+            new CreateIndexModel<PubSubGroupUser>(
+                Builders<PubSubGroupUser>.IndexKeys
+                    .Ascending(p => p.Hub)
+                    .Ascending(p => p.Sub)
+                , new CreateIndexOptions
+                {
+                    Name = "IX_HubUser",
+                    Unique = false
+                })
+        );
+
     }
 
     public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
     {
-        var existing = _pubSubGroupConnectionRepository.AsQueryable()
+        var existing = _pubSubGroupConnectionCollection.AsQueryable()
             .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
 
         if (existing == null)
@@ -117,18 +205,18 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 Sub = userId
             };
 
-            await _pubSubGroupConnectionRepository.InsertOneAsync(groupConnection);
+            await _pubSubGroupConnectionCollection.InsertOneAsync(groupConnection);
         }
     }
 
-    public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
+    public async Task RemoveConnectionFromGroupAsync(string hub, string @group, string connectionId)
     {
-        await _pubSubGroupConnectionRepository.DeleteConnectionFromGroupAsync(hub, group, connectionId);
+        await _pubSubGroupConnectionCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
     }
 
-    public async Task AddUserToGroupAsync(string hub, string group, string userId)
+    public async Task AddUserToGroupAsync(string hub, string @group, string userId)
     {
-        var existing = _pubSubGroupUserRepository.AsQueryable()
+        var existing = _pubSubGroupUserCollection.AsQueryable()
             .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.Sub == userId);
 
         if (existing == null)
@@ -142,7 +230,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 CreatedOn = DateTime.Now
             };
 
-            await _pubSubGroupUserRepository.InsertOneAsync(userConnection);
+            await _pubSubGroupUserCollection.InsertOneAsync(userConnection);
         }
 
         await AddConnectionToGroupFromUserGroups(hub, group, userId);
@@ -150,24 +238,33 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
     public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
-        await _pubSubGroupUserRepository.DeleteUserFromGroupAsync(hub, group, userId);
-        await _pubSubGroupConnectionRepository.DeleteUserConnectionFromGroupAsync(hub, group, userId);
+        await _pubSubGroupUserCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Sub == userId);
+        await _pubSubGroupConnectionCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Sub == userId);
     }
 
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
-        await _pubSubGroupUserRepository.DeleteUserFromAllGroupsAsync(hub, userId);
-        await _pubSubGroupConnectionRepository.DeleteAllUserConnectionsFromGroupAsync(hub, userId);
+        await _pubSubGroupUserCollection.DeleteManyAsync(c => c.Hub == hub &&c.Sub == userId);
+        await _pubSubGroupConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.Sub == userId);
     }
 
-    protected override async Task InsertAsync(IPubSubConnection connection)
+    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
     {
-        await _pubSubConnectionRepository.InsertOneAsync((PubSubConnection) connection);
+        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.Sub == sub)
+            .Select(c => c.Group));
     }
-    
+
+    public async Task DeleteConnectionAsync(string hub, string connectionId)
+    {
+        await _pubSubConnectionCollection.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
+        
+        await _pubSubConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
+    }
+
     public async Task<bool> ExistAckAsync(string hub, string connectionId, string ackId)
     {
-        return await _pubSubAckRepository.ExistsAsync(hub, connectionId, ackId);
+        return await Task.FromResult(_pubSubAckCollection.AsQueryable()
+            .Any(c => c.Hub == hub && c.ConnectionId == connectionId && c.AckId == ackId));
     }
 
     public async Task InsertAckAsync(string hub, string connectionId, string ackId)
@@ -180,12 +277,23 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
             Hub = hub
         };
 
-        await _pubSubAckRepository.InsertOneAsync(pubSubAck);
+        await _pubSubAckCollection.InsertOneAsync(pubSubAck);
+    
     }
 
     public async Task<bool> IsConnectionInGroup(string hub, string group, string connectionId)
     {
-        return await Task.FromResult(_pubSubGroupConnectionRepository.AsQueryable()
+        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable()
             .Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
+    }
+
+    protected override async Task InsertAsync(IPubSubConnection conn)
+    {
+        await _pubSubConnectionCollection.InsertOneAsync((PubSubConnection) conn);
+    }
+
+    protected override string GetNewId()
+    {
+        return ObjectId.GenerateNewId().ToString();
     }
 }

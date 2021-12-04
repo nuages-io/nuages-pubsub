@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.MongoDB;
+using MongoDB.Driver;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Storage.Mongo.DataModel;
 using Xunit;
 
 namespace Nuages.PubSub.Storage.Mongo.Tests;
@@ -40,12 +39,14 @@ public class TestMongoPubSubStorage
         _hub = "Hub";
         _sub = "sub-test";
 
-        var clientProvider = serviceProvider.GetRequiredService<IMongoClientProvider>();
-        var client = clientProvider.CreateClient<PubSubConnection>();
+        // var clientProvider = serviceProvider.GetRequiredService<IMongoClientProvider>();
+        // var client = clientProvider.CreateClient<PubSubConnection>();
 
+        var connectionString = configuration.GetSection("Nuages:Mongo:Connection").Value;
         var dbName = configuration.GetSection("Nuages:DbName").Value;
         
-        client.DropDatabase(dbName);
+        var mongoCLient = new MongoClient(connectionString);
+        mongoCLient.DropDatabase(dbName);
     }
     
     [Fact]
