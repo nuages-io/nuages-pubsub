@@ -13,7 +13,7 @@
   "s3-prefix": "ENTER-S3-PREFIX-HERE", 
   "template": "serverless.template.json",
     
-  "template-parameters": "Issuers=ENTER_ISSUERS_HERE_COMMA_SEPARATED;Audiences=ENTER_AUDIENCES_HERE_COMMA_SEPARATED;MongoConnectionString=ENTER_CONNECTION_STRING_HERE;DisableSslCheck=false",
+  "template-parameters": "HostedZoneId=ENTER_ROUTE_53_ZONE_ID;CertificateArn=ENTER_CERTIFICATE_ARN;DomainName=DOMAIN_NAME;Secret=ENTER_SECRET_OPTIONAL;ConfigurationManagerPath=ENTER_CONFIGURATION_MANAGER_PATH_OPTIONAL;ValidIssuers=ENTER_ISSUERS_HERE_COMMA_SEPARATED;ValidAudiences=ENTER_AUDIENCES_HERE_COMMA_SEPARATED;MongoConnectionString=ENTER_CONNECTION_STRING_OPTIONAL;DisableSslCheck=false",
   "s3-bucket": "ENTER-S3-BUCKET-HERE",
   "stack-name": "ENTER-STACK-NAME-HERE"
 }

@@ -6,9 +6,7 @@ namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
 public class PubSubGroupUser 
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } = null!;
+    public ObjectId Id { get; set; } 
     
     public string Group { get; set; } = "";
     public string Sub { get; set; } = "";

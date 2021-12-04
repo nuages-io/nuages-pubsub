@@ -8,9 +8,7 @@ namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
 public class PubSubAck 
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } = null!;
+    public ObjectId Id { get; set; } 
     
     public string ConnectionId { get; set; } = "";
     public string Hub { get; set; } = "";

@@ -3,39 +3,6 @@
   "Transform": "AWS::Serverless-2016-10-31",
   "Description": "An AWS Serverless Application.",
   "Parameters": {
-    
-    "MongoConnectionString": {
-      "Type": "String",
-      "Description": "Mongo ConnectionString"
-    },
-    "ValidIssuers": {
-      "Type": "String",
-      "Description": "List of valid issuers"
-    },
-    "ValidAudiences": {
-      "Type": "String",
-      "Description": "List of valid audiences. Leave blank if you do not want to validate",
-      "Default" : ""
-    },
-    "DisableSslCheck": {
-      "Type": "String",
-      "Description": "Disable SSL check when loading signing key set"
-    },
-    "ConfigurationManagerPath": {
-      "Type": "String",
-      "Description": "Path of the Configuration Manager section to load into the configuration",
-      "Default" : ""
-    },
-    "Secret": {
-      "Type": "String",
-      "Description": "Secret ket used when signing the JWT. LEave blank to use ",
-      "Default" : ""
-    },
-    "JsonWebKeySetUrlPath": {
-      "Type": "String",
-      "Description": "Url used to retrieve signing key when no secret is provided ",
-      "Default" : ".well-known/jwks.json"
-    },
     "DomainName": {
       "Type": "String",
       "Description": "Public DomainName"
@@ -48,7 +15,43 @@
     {
       "Type": "String",
       "Description": "Route53 zone id"
+    },
+    "ConfigurationManagerPath": {
+      "Type": "String",
+      "Description": "Path of the Configuration Manager section to load into the configuration. Required if ParameterStore is used",
+      "Default" : ""
+    },
+    "MongoConnectionString": {
+      "Type": "String",
+      "Description": "OPTIONAL - AppSettings - Mongo ConnectionString",
+      "Default" : "?"
+    },
+    "ValidIssuers": {
+      "Type": "String",
+      "Description": "OPTIONAL - AppSettings - List of valid issuers",
+      "Default" : "?"
+    },
+    "ValidAudiences": {
+      "Type": "String",
+      "Description": "OPTIONAL - AppSettings - List of valid audiences. Leave blank if you do not want to validate",
+      "Default" : "?"
+    },
+    "DisableSslCheck": {
+      "Type": "String",
+      "Description": "OPTIONAL - AppSettings - Disable SSL check when loading signing key set",
+      "Default" : "false"
+    },
+    "Secret": {
+      "Type": "String",
+      "Description": "OPTIONAL - AppSettings - Secret ket used when signing the JWT. LEave blank to use ",
+      "Default" : "?"
+    },
+    "JsonWebKeySetUrlPath": {
+      "Type": "String",
+      "Description": "AppSettings - Url used to retrieve signing key when no secret is provider. Required if toklen is signed using RS256 ",
+      "Default" : ".well-known/jwks.json"
     }
+    
   },
   "Resources": {
     "NuagesDomainName": {

@@ -197,7 +197,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         {
             var groupConnection = new PubSubGroupConnection
             {
-                Id = ObjectId.GenerateNewId().ToString(),
+                Id = ObjectId.GenerateNewId(),
                 ConnectionId = connectionId,
                 Group = group,
                 Hub = hub,
@@ -223,7 +223,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         {
             var userConnection = new PubSubGroupUser
             {
-                Id = ObjectId.GenerateNewId().ToString(),
+                Id = ObjectId.GenerateNewId(),
                 Sub = userId,
                 Group = group,
                 Hub = hub,
@@ -271,7 +271,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     {
         var pubSubAck = new PubSubAck
         {
-            Id = ObjectId.GenerateNewId().ToString(),
+            Id = ObjectId.GenerateNewId(),
             AckId = ackId,
             ConnectionId = connectionId,
             Hub = hub
