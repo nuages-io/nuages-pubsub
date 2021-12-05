@@ -15,3 +15,4 @@ node_modules
 tailwind-output.css
 /packages/
 .DS_Store
+cdk.out
