@@ -12,7 +12,6 @@ namespace NuagesPubSubWebSocketCdk
         {
             var app = new App();
             
-            
             new NuagesPubSubWebSocketCdkStack(app, "NuagesPubSubWebSocketCdkStack", new StackProps
             {
                 // If you don't specify 'env', this stack will be environment-agnostic.
@@ -39,6 +38,7 @@ namespace NuagesPubSubWebSocketCdk
                 }
                 */
 
+                
                 // For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
             });
             app.Synth();
