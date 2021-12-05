@@ -7,13 +7,13 @@ namespace Nuages.PubSub.Services;
 [ExcludeFromCodeCoverage]
 public class PubSubBuilder : IPubSubBuilder
 {
-    public PubSubBuilder(IServiceCollection services, IConfiguration configuration)
+    public PubSubBuilder(IServiceCollection services, IConfiguration? configuration = null)
     {
         Services = services;
         Configuration = configuration;
     }
 
-    public IConfiguration Configuration { get; set; }
+    public IConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public IServiceCollection Services { get; }

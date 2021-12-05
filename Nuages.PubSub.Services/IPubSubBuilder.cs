@@ -6,5 +6,5 @@ namespace Nuages.PubSub.Services;
 public interface IPubSubBuilder
 {
     IServiceCollection Services { get; }
-    IConfiguration Configuration { get; }
+    IConfiguration? Configuration { get; }
 }

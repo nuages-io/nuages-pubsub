@@ -13,10 +13,9 @@ using Routes.Echo;
 
 public static class PubSubLambdaConfigExtension
 {
-    public static IPubSubBuilder AddPubSubLambdaRoutes(this IServiceCollection serviceCollection, IConfiguration configuration)
+   
+    public static IPubSubBuilder AddPubSubLambdaRoutes(this IServiceCollection serviceCollection, IConfiguration? configuration = null)
     {
-    
-        
         serviceCollection.AddScoped<IAuthorizeRoute, AuthorizeRoute>();
         serviceCollection.AddScoped<IConnectRoute, ConnectRoute>();
         serviceCollection.AddScoped<IDisconnectRoute, DisconnectRoute>();

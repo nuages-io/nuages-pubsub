@@ -16,10 +16,13 @@ public static class PubSubServiceConfigExtension
     }
     
     // ReSharper disable once UnusedMember.Global
-    public static IPubSubBuilder AddPubSubService(this IServiceCollection services, IConfiguration configuration, Action<PubSubOptions>? configureOptions = null) 
+    public static IPubSubBuilder AddPubSubService(this IServiceCollection services, IConfiguration? configuration = null, Action<PubSubOptions>? configureOptions = null) 
     {
-        services.Configure<PubSubOptions>(configuration.GetSection("Nuages:PubSub"));
-
+        if (configuration != null)
+        {
+            services.Configure<PubSubOptions>(configuration.GetSection("Nuages:PubSub"));
+        }
+        
         if (configureOptions != null)
             services.Configure(configureOptions);
         
