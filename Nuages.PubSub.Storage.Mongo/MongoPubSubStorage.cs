@@ -186,7 +186,6 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                     Unique = false
                 })
         );
-
     }
 
     public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
@@ -279,7 +278,6 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         };
 
         await _pubSubAckCollection.InsertOneAsync(pubSubAck);
-    
     }
 
     public async Task<bool> IsConnectionInGroup(string hub, string group, string connectionId)
