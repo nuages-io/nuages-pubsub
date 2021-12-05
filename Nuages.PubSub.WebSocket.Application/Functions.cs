@@ -45,14 +45,12 @@ public class Functions : PubSubFunction
             });
         }
 
-        IConfiguration configuration = builder
-            .Build();
+        var configuration = builder.Build();
             
         var serviceCollection = new ServiceCollection();
 
-        serviceCollection.AddSingleton(configuration);
-            
         serviceCollection
+            .AddSingleton(configuration)
             .AddPubSubLambdaRoutes(configuration)
             .AddPubSubService()
             .AddPubSubMongoStorage();

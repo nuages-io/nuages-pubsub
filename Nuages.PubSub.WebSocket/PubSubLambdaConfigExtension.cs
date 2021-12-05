@@ -13,7 +13,7 @@ using Routes.Echo;
 
 public static class PubSubLambdaConfigExtension
 {
-    public static IPubSubBuilder AddPubSubLambdaRoutes(this ServiceCollection serviceCollection, IConfiguration configuration)
+    public static IPubSubBuilder AddPubSubLambdaRoutes(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
     
         
