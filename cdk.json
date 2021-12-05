@@ -19,6 +19,9 @@
     "@aws-cdk/core:stackRelativeExports": true,
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": true,
     "@aws-cdk/aws-lambda:recognizeVersionProps": true,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true,
+    "Nuages/PubSub/DomainName" : "websocket2.nuages.org",
+    "Nuages/PubSub/CertificateArn" : "arn:aws:acm:ca-central-1:817771063649:certificate/171f4112-235a-4e76-9e01-6c73454e2bbe",
+    "Nuages/PubSub/HostedZoneId" : "Z1RBRZAY41KIO0"
   }
 }
