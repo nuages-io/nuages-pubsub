@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.S3;
 using Constructs;
+// ReSharper disable ObjectCreationAsStatement
 
 namespace Nuages.PubSub.WebSocket.Cdk
 {
@@ -8,10 +9,13 @@ namespace Nuages.PubSub.WebSocket.Cdk
     {
         internal NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
-            var bucket = new Bucket(this, "MyFirstBucket", new BucketProps
+            
+            new CfnParameter(this, "DomainName", new CfnParameterProps
             {
-                Versioned = true
+                Type = "String",
+                Description = "Public DomainName"
             });
+
         }
     }
 }

@@ -11,6 +11,8 @@ namespace NuagesPubSubWebSocketCdk
         public static void Main(string[] args)
         {
             var app = new App();
+            
+            
             new NuagesPubSubWebSocketCdkStack(app, "NuagesPubSubWebSocketCdkStack", new StackProps
             {
                 // If you don't specify 'env', this stack will be environment-agnostic.
