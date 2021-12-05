@@ -14,12 +14,13 @@ namespace Nuages.PubSub.WebSocket.Cdk
 {
     public class NuagesPubSubWebSocketCdkStack : Stack
     {
-        internal NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+        public  virtual void BuildTheThing()
         {
-            var domainName = (string)scope.Node.TryGetContext("Nuages/PubSub/DomainName");
-            var certficateArn = (string)scope.Node.TryGetContext("Nuages/PubSub/CertificateArn");
-            var hostedZoneId = (string)scope.Node.TryGetContext("Nuages/PubSub/HostedZoneId");
+            var domainName = (string) Node.TryGetContext("Nuages/PubSub/DomainName");
+            var certficateArn = (string) Node.TryGetContext("Nuages/PubSub/CertificateArn");
+            var hostedZoneId = (string) Node.TryGetContext("Nuages/PubSub/HostedZoneId");
 
+            
             Console.WriteLine($"HostedZoneUId = {hostedZoneId}");
             var apiGatewayDomainName = GetApiGatewayDomainName(certficateArn, domainName);
 
@@ -37,6 +38,11 @@ namespace Nuages.PubSub.WebSocket.Cdk
             //Permissions
             //Api Mapping
             //Outputs
+        }
+        
+        internal NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+        {
+            
         }
 
         private Role GetRole()
