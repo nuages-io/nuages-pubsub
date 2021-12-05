@@ -159,7 +159,7 @@
     "OnConnectFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::OnConnectHandlerAsync",
+        "Handler": "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::OnConnectHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -205,7 +205,7 @@
     "OnDisconnectFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::OnDisconnectHandlerAsync",
+        "Handler": "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::OnDisconnectHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -251,7 +251,7 @@
     "OnAuthorizeFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::OnAuthorizeHandlerAsync",
+        "Handler": "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::OnAuthorizeHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -292,7 +292,7 @@
     "SendToGroupFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::SendHandlerAsync",
+        "Handler": "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::SendHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -339,7 +339,7 @@
     "EchoFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::EchoHandlerAsync",
+        "Handler": "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::EchoHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -385,7 +385,7 @@
     "JoinGroupFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::JoinHandlerAsync",
+        "Handler": "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::JoinHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,
@@ -431,7 +431,7 @@
     "LeaveGroupFunction": {
       "Type": "AWS::Serverless::Function",
       "Properties": {
-        "Handler": "Nuages.PubSub.WebSocket.Application::Nuages.PubSub.WebSocket.Application.Functions::LeaveHandlerAsync",
+        "Handler": "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::LeaveHandlerAsync",
         "Runtime": "dotnetcore3.1",
         "CodeUri": "",
         "MemorySize": 256,

@@ -12,13 +12,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.Mongo;
+using Nuages.PubSub.WebSocket;
 
 #endregion
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-namespace Nuages.PubSub.WebSocket.Application;
+namespace Nuages.PubSub.Samples.Lambda;
 
 // ReSharper disable once UnusedType.Global
 [ExcludeFromCodeCoverage]
@@ -45,7 +46,7 @@ public class Functions : PubSubFunction
             });
         }
 
-        var configuration = builder.Build();
+        IConfiguration configuration = builder.Build();
             
         var serviceCollection = new ServiceCollection();
 

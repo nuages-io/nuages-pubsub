@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Application", "Nuages.PubSub.WebSocket.Application\Nuages.PubSub.WebSocket.Application.csproj", "{113A1ED3-E35B-44E8-9D28-DFEC19280D58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Samples.Lambda", "Nuages.PubSub.Samples.Lambda\Nuages.PubSub.Samples.Lambda.csproj", "{113A1ED3-E35B-44E8-9D28-DFEC19280D58}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Samples.Console", "Nuages.PubSub.Samples.Console\Nuages.PubSub.Samples.Console.csproj", "{90032C05-C7FF-4AD6-B7D5-1CF271AD9A29}"
 EndProject

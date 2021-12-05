@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Amazon.ApiGatewayManagementApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Nuages.PubSub.Storage.Mongo;
@@ -51,15 +52,16 @@ public class TestsPubSubServiceMongo : IDisposable
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();
+        _serviceProvider = serviceCollection.BuildServiceProvider();
+
+        var options = _serviceProvider.GetRequiredService<IOptions<PubSubMongoOptions>>().Value;
         
-        var connectionString = configuration.GetSection("Nuages:Mongo:Connection").Value;
-        _dbName = configuration.GetSection("Nuages:DbName").Value;
+        var connectionString = options.ConnectionString;
+        _dbName = options.DatabaseName;
         
         _client = new MongoClient(connectionString);
         
         _client.DropDatabase(_dbName);
-        
-        _serviceProvider = serviceCollection.BuildServiceProvider();
         
         _pubSubService = _serviceProvider.GetRequiredService<IPubSubService>();
 

@@ -8,8 +8,13 @@ namespace Nuages.PubSub.Storage.Mongo;
 public static class PubSubMongoConfigExtensions
 {
     // ReSharper disable once UnusedMember.Global
-    public static void AddPubSubMongoStorage(this IPubSubBuilder builder)
+    public static void AddPubSubMongoStorage(this IPubSubBuilder builder, Action<PubSubMongoOptions>? options = null)
     {
-    builder.Services.AddScoped<IPubSubStorage, MongoPubSubStorage>();
+        builder.Services.Configure<PubSubMongoOptions>(builder.Configuration.GetSection("Nuages:Mongo"));
+
+        if (options != null)
+            builder.Services.Configure(options);
+        
+        builder.Services.AddScoped<IPubSubStorage, MongoPubSubStorage>();
     }
 }
