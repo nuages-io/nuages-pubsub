@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Tests", "Nuages.PubSub.WebSocket.Tests\Nuages.PubSub.WebSocket.Tests.csproj", "{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Cdk", "Nuages.PubSub.WebSocket.Cdk\Nuages.PubSub.WebSocket.Cdk.csproj", "{C6310F1B-B43C-4C4B-A290-341D43198E47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{90032C05-C7FF-4AD6-B7D5-1CF271AD9A29} = {E97A975A-2951-452E-8080-891F5D6D9347}
