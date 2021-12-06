@@ -24,4 +24,8 @@
         <None Remove="appsettings.json" />
         <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     </ItemGroup>
+    <ItemGroup>
+        <None Remove="appsettings.prod.json" />
+        <Content Include="appsettings.prod.json" CopyToOutputDirectory="Always" />
+    </ItemGroup>
 </Project>

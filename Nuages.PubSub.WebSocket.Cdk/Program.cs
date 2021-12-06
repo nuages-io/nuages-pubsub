@@ -1,25 +1,27 @@
 ﻿using Amazon.CDK;
 
-namespace Nuages.PubSub.WebSocket.Cdk
+namespace Nuages.PubSub.WebSocket.Cdk;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+// ReSharper disable once ArrangeTypeModifiers
+sealed class Program
 {
-    sealed class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var app = new App();
+            
+        var stack = new NuagesPubSubWebSocketCdkStack(app, "NuagesPubSubWebSocketCdkStack", new StackProps
         {
-            var app = new App();
-            
-            var stack = new NuagesPubSubWebSocketCdkStack(app, "NuagesPubSubWebSocketCdkStack", new StackProps
+            Env = new Environment
             {
-                Env = new Amazon.CDK.Environment
-                {
-                    Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),
-                    Region = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_REGION"),
-                }
-            });
+                Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),
+                Region = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_REGION")
+            }
+        });
             
-            stack.BuildTheThing();
+        stack.BuildTheThing();
             
-            app.Synth();
-        }
+        
+        app.Synth();
     }
 }

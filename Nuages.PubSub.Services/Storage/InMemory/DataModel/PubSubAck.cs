@@ -1,5 +1,5 @@
 
-namespace Nuages.PubSub.Storage.InMemory.DataModel;
+namespace Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
 public class PubSubAck 
 {

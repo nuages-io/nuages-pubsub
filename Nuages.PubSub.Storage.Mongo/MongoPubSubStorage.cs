@@ -1,9 +1,7 @@
-
-
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 
 namespace Nuages.PubSub.Storage.Mongo;
@@ -15,7 +13,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     private readonly IMongoCollection<PubSubGroupUser> _pubSubGroupUserCollection;
     private readonly IMongoCollection<PubSubAck> _pubSubAckCollection;
     
-    public MongoPubSubStorage(IConfiguration configuration, IOptions<PubSubMongoOptions> options)
+    public MongoPubSubStorage(IOptions<PubSubMongoOptions> options)
     {
         var mongoOptions = options.Value;
         

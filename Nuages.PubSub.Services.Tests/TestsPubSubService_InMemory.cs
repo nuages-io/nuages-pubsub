@@ -10,7 +10,7 @@ using Amazon.ApiGatewayManagementApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Nuages.PubSub.Storage.InMemory;
+using Nuages.PubSub.Services.Storage.InMemory;
 using Xunit;
 
 namespace Nuages.PubSub.Services.Tests;

@@ -1,5 +1,5 @@
 {
-  "app": "dotnet run --project Nuages.PubSub.WebSocket.Cdk/Nuages.PubSub.WebSocket.Cdk.csproj",
+  "app": "dotnet publish -c Release /Users/martin/nuages-io/nuages-pubsub/Nuages.PubSub.Samples.Lambda/Nuages.PubSub.Samples.Lambda.csproj --framework net6.0 --self-contained true; dotnet run --project Nuages.PubSub.WebSocket.Cdk/Nuages.PubSub.WebSocket.Cdk.csproj",
   "watch": {
     "include": [
       "**"
@@ -21,7 +21,6 @@
     "@aws-cdk/aws-lambda:recognizeVersionProps": true,
     "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true,
     "Nuages/PubSub/DomainName" : "websocket2.nuages.org",
-    "Nuages/PubSub/CertificateArn" : "arn:aws:acm:ca-central-1:817771063649:certificate/171f4112-235a-4e76-9e01-6c73454e2bbe",
-    "Nuages/PubSub/HostedZoneId" : "Z1RBRZAY41KIO0"
+    "Nuages/PubSub/CertificateArn" : "arn:aws:acm:ca-central-1:817771063649:certificate/171f4112-235a-4e76-9e01-6c73454e2bbe"
   }
 }

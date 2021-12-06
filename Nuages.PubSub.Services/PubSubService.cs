@@ -9,7 +9,7 @@ using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Runtime;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Nuages.PubSub.Storage;
+using Nuages.PubSub.Services.Storage;
 
 namespace Nuages.PubSub.Services;
 

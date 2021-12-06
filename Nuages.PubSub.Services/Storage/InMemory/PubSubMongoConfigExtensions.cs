@@ -1,8 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.Services;
 
-namespace Nuages.PubSub.Storage.InMemory;
+namespace Nuages.PubSub.Services.Storage.InMemory;
 
 [ExcludeFromCodeCoverage]
 public static class PubSubMemoryConfigExtensions

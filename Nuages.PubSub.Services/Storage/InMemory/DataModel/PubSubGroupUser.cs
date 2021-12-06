@@ -1,7 +1,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Nuages.PubSub.Storage.InMemory.DataModel;
+namespace Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
 [ExcludeFromCodeCoverage]
 public class PubSubGroupUser

@@ -172,9 +172,7 @@
         },
         "Environment": {
           "Variables": {
-            "Nuages__Mongo__Connection": {
-              "Ref": "MongoConnectionString"
-            },
+            
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
@@ -218,9 +216,7 @@
         },
         "Environment": {
           "Variables": {
-            "Nuages__Mongo__Connection": {
-              "Ref": "MongoConnectionString"
-            },
+           
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
@@ -264,26 +260,9 @@
         },
         "Environment": {
           "Variables": {
-            "Nuages__Mongo__Connection": {
-              "Ref": "MongoConnectionString"
-            },
+           
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
-            },
-            "Nuages__PubSub__ValidIssuers": {
-              "Ref": "ValidIssuers"
-            },
-            "Nuages__PubSub__ValidAudiences": {
-              "Ref": "ValidAudiences"
-            },
-            "Nuages__PubSub__Secret": {
-              "Ref": "Secret"
-            },
-            "Nuages__PubSub__JsonWebKeySetUrlPath": {
-              "Ref": "JsonWebKeySetUrlPath"
-            },
-            "Nuages__Auth_DisableSslCheck": {
-              "Ref": "DisableSslCheck"
             }
           }
         }
@@ -306,9 +285,7 @@
         ,
         "Environment": {
           "Variables": {
-            "Nuages__Mongo__Connection": {
-              "Ref": "MongoConnectionString"
-            },
+           
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },
@@ -352,9 +329,7 @@
         },
         "Environment": {
           "Variables": {
-            "Nuages__Mongo__Connection": {
-              "Ref": "MongoConnectionString"
-            },
+           
             "Nuages__ConfigurationManagerPath": {
               "Ref": "ConfigurationManagerPath"
             },

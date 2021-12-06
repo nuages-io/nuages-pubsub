@@ -3,14 +3,11 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading.Tasks;
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.Mongo;
 using Nuages.PubSub.WebSocket;
 
@@ -32,6 +29,7 @@ public class Functions : PubSubFunction
         var builder = configManager
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json",  false, true)
+            .AddJsonFile("appsettings.prod.json",  true, true)
             .AddEnvironmentVariables();
 
         var configurationManagerPath = configManager.GetValue<string>("Nuages:ConfigurationManagerPath");

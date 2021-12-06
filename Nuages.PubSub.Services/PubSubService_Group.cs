@@ -1,6 +1,6 @@
 using System.Net;
 using Amazon.Lambda.APIGatewayEvents;
-using Nuages.PubSub.Storage;
+using Nuages.PubSub.Services.Storage;
 
 namespace Nuages.PubSub.Services;
 

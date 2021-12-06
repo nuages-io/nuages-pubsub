@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using Nuages.PubSub.Storage.InMemory.DataModel;
+using Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
-namespace Nuages.PubSub.Storage.InMemory;
+namespace Nuages.PubSub.Services.Storage.InMemory;
 
 public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {

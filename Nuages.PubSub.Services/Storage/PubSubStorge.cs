@@ -1,4 +1,6 @@
-namespace Nuages.PubSub.Storage;
+
+
+namespace Nuages.PubSub.Services.Storage;
 
 public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
 {
