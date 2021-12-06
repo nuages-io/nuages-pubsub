@@ -1,8 +1,0 @@
-{
-  "app": "sh build.sh;dotnet run --project Nuages.PubSub.WebSocket.Cdk/Nuages.PubSub.WebSocket.Cdk.csproj",
-  "context": {
-    "Nuages/PubSub/UseCustomDomainName" : true,
-    "Nuages/PubSub/DomainName" : "websocket3.nuages.org",
-    "Nuages/PubSub/CertificateArn" : "arn:aws:acm:ca-central-1:817771063649:certificate/171f4112-235a-4e76-9e01-6c73454e2bbe"
-  }
-}
