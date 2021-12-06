@@ -1,13 +1,11 @@
 
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Route53;
-using Amazon.CDK.AWS.Route53.Targets;
 using Constructs;
 using CfnAuthorizer = Amazon.CDK.AWS.Apigatewayv2.CfnAuthorizer;
 using CfnDeployment = Amazon.CDK.AWS.Apigatewayv2.CfnDeployment;
@@ -113,13 +111,13 @@ public class NuagesPubSubWebSocketCdkStack : Stack
 
         var stage = CreateStage(api, deployment);
 
-        CreatePermission("OnConnectPermission",api, onConnectFunction);
-        CreatePermission("OnDisconnectPermission",api, onDisconnectFunction);
-        CreatePermission("OnAuthorizePermission",api, onAuthorizeFunction);
-        CreatePermission("SendPermission",api, sendFunction);
-        CreatePermission("EchoPermission",api, echoFunction);
-        CreatePermission("JoinPermission",api, joinFunction);
-        CreatePermission("LeavePermission",api, leaveFunction);
+        CreatePermission(onConnectFunction);
+        CreatePermission(onDisconnectFunction);
+        CreatePermission(onAuthorizeFunction);
+        CreatePermission(sendFunction);
+        CreatePermission(echoFunction);
+        CreatePermission(joinFunction);
+        CreatePermission(leaveFunction);
 
         CreateApiMapping(apiGatewayDomainName, api, stage);
 
@@ -131,7 +129,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    private void CreateApiMapping(IDomainName apiGatewayDomainName, CfnApi api, CfnStage stage)
+    private void CreateApiMapping(CfnDomainName apiGatewayDomainName, CfnApi api, CfnStage stage)
     {
         // ReSharper disable once UnusedVariable
         var apiMapping = new CfnApiMapping(this, "NUagesApiMapping", new CfnApiMappingProps
@@ -142,22 +140,22 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    private void CreatePermission(string name, CfnApi api, CfnFunction func)
-    {
-        var permission = new CfnPermission(this, name, new CfnPermissionProps
-        {
-            Action = "lambda:InvokeFunction",
-            FunctionName = func.Ref,
-            Principal = "apigateway.amazonaws.com"
-        });
-            
-        permission.AddDependsOn(func);
-        permission.AddDependsOn(api);
-    }
+    // private void CreatePermission(string name, CfnApi api, CfnFunction func)
+    // {
+    //     var permission = new CfnPermission(this, name, new CfnPermissionProps
+    //     {
+    //         Action = "lambda:InvokeFunction",
+    //         FunctionName = func.Ref,
+    //         Principal = "apigateway.amazonaws.com"
+    //     });
+    //         
+    //     permission.AddDependsOn(func);
+    //     permission.AddDependsOn(api);
+    // }
     
-    private void CreatePermission(string name, CfnApi api, Function func)
+    public virtual void CreatePermission(Function func)
     {
-        ServicePrincipal principal = new ServicePrincipal("apigateway.amazonaws.com");
+        var principal = new ServicePrincipal("apigateway.amazonaws.com");
             
         func.GrantInvoke(principal);
             
@@ -229,7 +227,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     private CfnAuthorizer CreateAuthorizer(CfnApi api, Function onAuthorizeFunction)
     {
         var authorizer = new CfnAuthorizer(this, AuthorizerName,
-            new Amazon.CDK.AWS.Apigatewayv2.CfnAuthorizerProps
+            new CfnAuthorizerProps
             {
                 Name = AuthorizerName,
                 ApiId = api.Ref,
@@ -271,7 +269,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             MemorySize = 256,
             Role = role,
             Timeout = Duration.Seconds(30),
-            Environment =new Dictionary<string, string>
+            Environment = new Dictionary<string, string>
             {
                 {"Nuages__PubSub__Region", Aws.REGION},
                 {"Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/Prod"}
@@ -352,7 +350,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return tok[0] + "." + tok[1];                                
     }
         
-    private void CreateS3RecordSet( string domainName, DomainName_ apiGatewayDomainName)
+    private void CreateS3RecordSet( string domainName, CfnDomainName apiGatewayDomainName)
     {
         var hostedZone = HostedZone.FromLookup(this, "Lookup", new HostedZoneProviderProps
         {
@@ -360,23 +358,37 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
 
         // ReSharper disable once UnusedVariable
-        var recordSet = new RecordSet(this, "Route53RecordSetGroup", new RecordSetProps
+        var recordSet = new CfnRecordSet(this, "Route53RecordSetGroup", new CfnRecordSetProps
         {
-            RecordName = domainName,
-            RecordType = RecordType.A,
-            Zone = hostedZone,
-            Target = RecordTarget.FromAlias(new ApiGatewayDomain(apiGatewayDomainName))
+            AliasTarget = new CfnRecordSet.AliasTargetProperty
+            {
+                DnsName = apiGatewayDomainName.AttrRegionalDomainName,
+                HostedZoneId = apiGatewayDomainName.AttrRegionalHostedZoneId
+            },
+            
+            HostedZoneId = hostedZone.HostedZoneId,
+           
+            Name = domainName,
+            
+            Type = "A"
+           
         });
     }
 
-    private DomainName_ CreateApiGatewayDomainName(string certficateArn, string domainName)
+    private CfnDomainName CreateApiGatewayDomainName(string certficateArn, string domainName)
     {
+        // ReSharper disable once UnusedVariable
         var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
-        var apiGatewayDomainName = new DomainName_(this, "NuagesDomainName", new DomainNameProps
+        var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps
         {
             DomainName = domainName,
-            EndpointType = EndpointType.REGIONAL,
-            Certificate = cert
+            DomainNameConfigurations = new [] { new CfnDomainName.DomainNameConfigurationProperty
+            {
+                EndpointType = "REGIONAL",
+                CertificateArn = certficateArn
+                
+            }}
+            
         });
         return apiGatewayDomainName;
     }
