@@ -1,5 +1,5 @@
 {
-  "app": "dotnet publish -c Release /Users/martin/nuages-io/nuages-pubsub/Nuages.PubSub.Samples.Lambda/Nuages.PubSub.Samples.Lambda.csproj --framework net6.0 --self-contained true; dotnet run --project Nuages.PubSub.WebSocket.Cdk/Nuages.PubSub.WebSocket.Cdk.csproj",
+  "app": "dotnet publish /Users/martin/nuages-io/nuages-pubsub/Nuages.PubSub.Samples.Lambda/Nuages.PubSub.Samples.Lambda.csproj --configuration Release --framework net6.0 --self-contained true /p:GenerateRuntimeConfigurationFiles=true --runtime linux-x64; dotnet run --project Nuages.PubSub.WebSocket.Cdk/Nuages.PubSub.WebSocket.Cdk.csproj",
   "watch": {
     "include": [
       "**"

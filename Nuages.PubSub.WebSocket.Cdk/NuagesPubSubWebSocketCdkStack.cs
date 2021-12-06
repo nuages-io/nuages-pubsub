@@ -22,7 +22,7 @@ namespace Nuages.PubSub.WebSocket.Cdk;
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class NuagesPubSubWebSocketCdkStack : Stack
 {
-    public string Asset { get; set; } = "/Users/martin/nuages-io/nuages-pubsub/Nuages.PubSub.Samples.Lambda/bin/Release/net6.0/publish";
+    public string Asset { get; set; } = "/Users/martin/nuages-io/nuages-pubsub/Nuages.PubSub.Samples.Lambda/bin/Release/net6.0/linux-x64/publish";
         
     public string OnConnectHandler { get; set; } =
         "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::OnConnectHandlerAsync";
