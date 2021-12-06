@@ -75,7 +75,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
             .Any(c => c.Hub == hub && c.ConnectionId == connectionid));
     }
 
-    public void Initialize()
+    private void Initialize()
     {
          _pubSubAckCollection.Indexes.CreateOne(
             new CreateIndexModel<PubSubAck>(

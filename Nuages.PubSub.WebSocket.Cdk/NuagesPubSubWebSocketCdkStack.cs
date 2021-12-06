@@ -21,32 +21,21 @@ using CfnStageProps = Amazon.CDK.AWS.Apigatewayv2.CfnStageProps;
 namespace Nuages.PubSub.WebSocket.Cdk;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
+// ReSharper disable once UnusedType.Global
 public class NuagesPubSubWebSocketCdkStack : Stack
 {
     public string Asset { get; set; } = "/Users/martin/nuages-io/nuages-pubsub/Nuages.PubSub.Samples.Lambda/bin/Release/net6.0/linux-x64/publish";
         
-    public string OnConnectHandler { get; set; } =
-        "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::OnConnectHandlerAsync";
-
-    public string OnDisconnectHandler { get; set; }=
-        "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::OnDisconnectHandlerAsync";
-        
-    public string OnAuthrorizeHandler { get; set; }=
-        "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::OnAuthorizeHandlerAsync";
-
-    public string SendHandler { get; set; }=
-        "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::SendHandlerAsync";
-
-    public string EchoHandler { get; set; }=
-        "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::EchoHandlerAsync";
-        
-    public string JoinHandler { get; set; }=
-        "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::JoinHandlerAsync";
-        
-    public string LeaveHandler { get; set; }=
-        "Nuages.PubSub.Samples.Lambda::Nuages.PubSub.Samples.Lambda.Functions::LeaveHandlerAsync";
-        
+    public string? OnConnectHandler { get; set; }
+    public string? OnDisconnectHandler { get; set; }
+    public string? OnAuthrorizeHandler { get; set; }
+    public string? SendHandler { get; set; }
+    public string? EchoHandler { get; set; }
+    public string? JoinHandler { get; set; }
+    public string? LeaveHandler { get; set;}
+    
     public string ApiName { get; set; } = "NuagesPubSub";
+    
     public string RouteSelectionExpression { get; set; } = "$request.body.type";
 
     public string[] IdentitySource { get; set; } = { "route.request.querystring.access_token" } ;
@@ -73,12 +62,17 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     {
             
     }
+
+    public const string ContextDomainName = "Nuages/PubSub/DomainName";
+    public const string ContextCertificateArn = "Nuages/PubSub/CertificateArn";
+    public const string ContextUseCustomDomainName = "Nuages/PubSub/UseCustomDomainName";
     
+    // ReSharper disable once UnusedMember.Global
     public  virtual void CreateTemplate()
     {
-        var domainName = (string) Node.TryGetContext("Nuages/PubSub/DomainName");
-        var certficateArn = (string) Node.TryGetContext("Nuages/PubSub/CertificateArn");
-        var useCustomDomain = Convert.ToBoolean(Node.TryGetContext("Nuages/PubSub/UseCustomDomainName"));
+        var domainName = (string) Node.TryGetContext(ContextDomainName);
+        var certficateArn = (string) Node.TryGetContext(ContextCertificateArn);
+        var useCustomDomain = Convert.ToBoolean(Node.TryGetContext(ContextUseCustomDomainName));
         
         var role = CreateRole();
         
@@ -245,8 +239,11 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return api;
     }
 
-    protected virtual Function CreateFunction(string name, string handler, Role role, CfnApi api)
+    protected virtual Function CreateFunction(string name, string? handler, Role role, CfnApi api)
     {
+        if (string.IsNullOrEmpty(handler))
+            throw new Exception($"Handler for {name} must be set");
+        
         var func = new Function(this, name, new FunctionProps
         {
             Code = Code.FromAsset(Asset),

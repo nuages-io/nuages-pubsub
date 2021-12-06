@@ -14,6 +14,7 @@ using Routes.Echo;
 public static class PubSubLambdaConfigExtension
 {
    
+    // ReSharper disable once UnusedMethodReturnValue.Global
     public static IPubSubBuilder AddPubSubLambdaRoutes(this IServiceCollection serviceCollection, IConfiguration? configuration = null)
     {
         serviceCollection.AddScoped<IAuthorizeRoute, AuthorizeRoute>();
