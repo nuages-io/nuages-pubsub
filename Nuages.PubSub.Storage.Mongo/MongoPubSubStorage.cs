@@ -25,7 +25,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
         _pubSubConnectionCollection = database.GetCollection<PubSubConnection>("pub_sub_connection");
         _pubSubGroupConnectionCollection = database.GetCollection<PubSubGroupConnection>("pub_sub_group_connection");
-        _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>("pub_sub_group_use");
+        _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>("pub_sub_group_user");
         _pubSubAckCollection = database.GetCollection<PubSubAck>("pub_sub_ack");
 
         Initialize();

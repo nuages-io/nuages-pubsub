@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.CertificateManager;
+using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Route53;
@@ -120,6 +121,8 @@ public class NuagesPubSubWebSocketCdkStack : Stack
                 Description = "The Custom WSS Protocol URI to connect to"
             });
         }
+
+        CreateTables();
 
         // ReSharper disable once UnusedVariable
         var output = new CfnOutput(this, "NuagesPubSubURI", new CfnOutputProps
@@ -376,4 +379,56 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
         return apiGatewayDomainName;
     }
+
+    void CreateTables()
+    {
+        new Table(this, "pub_sub_connection", new TableProps
+        {
+            TableName = "pub_sub_connection",
+            BillingMode = BillingMode.PAY_PER_REQUEST,
+            PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "Hub",
+                Type = AttributeType.STRING
+            },
+            RemovalPolicy= RemovalPolicy.DESTROY
+        });
+        
+        new Table(this, "pub_sub_ack", new TableProps
+        {
+            TableName = "pub_sub_connection",
+            BillingMode = BillingMode.PAY_PER_REQUEST,
+            PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "Hub",
+                Type = AttributeType.STRING
+            },
+            RemovalPolicy= RemovalPolicy.DESTROY
+        });
+        
+        new Table(this, "pub_group_connection", new TableProps
+        {
+            TableName = "pub_group_connection",
+            BillingMode = BillingMode.PAY_PER_REQUEST,
+            PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "Hub",
+                Type = AttributeType.STRING
+            },
+            RemovalPolicy= RemovalPolicy.DESTROY
+        });
+        
+        new Table(this, "pub_sub_group_user", new TableProps
+        {
+            TableName = "pub_sub_group_user",
+            BillingMode = BillingMode.PAY_PER_REQUEST,
+            PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "Hub",
+                Type = AttributeType.STRING
+            },
+            RemovalPolicy= RemovalPolicy.DESTROY
+        });
+
+    }   
 }
