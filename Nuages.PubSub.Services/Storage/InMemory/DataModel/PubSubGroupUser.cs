@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
+#if DEBUG
 [ExcludeFromCodeCoverage]
 public class PubSubGroupUser
 {
@@ -11,3 +12,4 @@ public class PubSubGroupUser
     public DateTime CreatedOn { get; set; }
     public string Hub { get; set; } = "";
 }
+#endif

@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
+#if DEBUG
 [ExcludeFromCodeCoverage]
 public class PubSubConnection : IPubSubConnection
 {
@@ -17,3 +18,4 @@ public class PubSubConnection : IPubSubConnection
 
 
 }
+#endif
