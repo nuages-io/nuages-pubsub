@@ -226,4 +226,12 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
     {
         return await Task.FromResult(GetHubConnectionsAndGroups(hub).Any(c => c.Group == group && c.ConnectionId == connectionId));
     }
+
+    public void DeleteAll()
+    {
+        HubAck.Clear();
+        HubConnections.Clear();
+        HubConnectionsAndGroups.Clear();
+        HubUsersAndGroups.Clear();
+    }
 }

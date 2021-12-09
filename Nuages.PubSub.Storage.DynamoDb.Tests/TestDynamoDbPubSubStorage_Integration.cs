@@ -36,17 +36,11 @@ public class TestDynamoDbPubSubStorage_Integration
         
         _hub = "Hub";
         _sub = "sub-test";
-
-        // var clientProvider = serviceProvider.GetRequiredService<IMongoClientProvider>();
-        // var client = clientProvider.CreateClient<PubSubConnection>();
-
-        // var connectionString = options.ConnectionString;
-        // var dbName = options.DatabaseName;
-        //
-        // var mongoCLient = new MongoClient(connectionString);
-        // mongoCLient.DropDatabase(dbName);
         
         _pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
+        
+        
+        _pubSubStorage.DeleteAll();
     }
     
     [Fact]
@@ -58,26 +52,28 @@ public class TestDynamoDbPubSubStorage_Integration
 
         Assert.False(connection.IsExpired());
         
-        // var exists = await _pubSubStorage.ConnectionExistsAsync(_hub, connectionId);
-        // Assert.True(exists);
-        //
-        // var existsNull = await _pubSubStorage.ConnectionExistsAsync("Bad_Hub", connectionId);
-        // Assert.False(existsNull);
-        //
-        // var coll = await _pubSubStorage.GetAllConnectionAsync(_hub);
-        // Assert.Single(coll);
-        //
-        // var collEmpty = await _pubSubStorage.GetAllConnectionAsync("Bad_Hub");
-        // Assert.Empty(collEmpty);
-        //
-        // var userConnections = await _pubSubStorage.GetConnectionsForUserAsync(_hub, _sub);
-        // Assert.Single(userConnections);
-        //
-        // var userConnectionsEmpty = await _pubSubStorage.GetConnectionsForUserAsync("Bad_Hub", _sub);
-        // Assert.Empty(userConnectionsEmpty);
-        //
-        // Assert.True(await _pubSubStorage.UserHasConnectionsAsync(_hub, _sub));
-        //
-        // Assert.False(await _pubSubStorage.UserHasConnectionsAsync("Bad_Hub", _sub));
+        var exists = await _pubSubStorage.ConnectionExistsAsync(_hub, connectionId);
+        Assert.True(exists);
+        
+        var existsNull = await _pubSubStorage.ConnectionExistsAsync("Bad_Hub", connectionId);
+        Assert.False(existsNull);
+        
+        var coll = await _pubSubStorage.GetAllConnectionAsync(_hub);
+        Assert.Single(coll);
+        
+        var collEmpty = await _pubSubStorage.GetAllConnectionAsync("Bad_Hub");
+        Assert.Empty(collEmpty);
+        
+        var userConnections = await _pubSubStorage.GetConnectionsForUserAsync(_hub, _sub);
+        Assert.Single(userConnections);
+        
+        var userConnectionsEmpty = await _pubSubStorage.GetConnectionsForUserAsync("Bad_Hub", _sub);
+        Assert.Empty(userConnectionsEmpty);
+        
+        Assert.True(await _pubSubStorage.UserHasConnectionsAsync(_hub, _sub));
+        
+        Assert.False(await _pubSubStorage.UserHasConnectionsAsync("Bad_Hub", _sub));
     }
+    
+    
 }

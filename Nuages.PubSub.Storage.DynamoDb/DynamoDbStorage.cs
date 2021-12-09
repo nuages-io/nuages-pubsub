@@ -1,5 +1,7 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Net;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.DynamoDb.DataModel;
 
@@ -14,17 +16,65 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         _client = new AmazonDynamoDBClient();
         _context = new DynamoDBContext(_client);
+
     }
 
-    public Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
+    public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
     {
-        throw new NotImplementedException();
+        var res = _context.ScanAsync<PubSubConnection>(
+            new List<ScanCondition>
+            {
+                new ("Hub",  ScanOperator.Equal, new object[] { hub })
+            }
+        );
+
+        List<PubSubConnection> connection = new List<PubSubConnection>();
+        
+        while (!res.IsDone)
+        {
+            var list = await res.GetNextSetAsync();
+            connection.AddRange(list);
+        }
+
+        return connection;
     }
 
 
-    public Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string @group)
+    public async Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group)
     {
-        throw new NotImplementedException();
+        var res = _context.ScanAsync<PubSubGroupConnection>(
+            new List<ScanCondition>
+            {
+                new ("Group",  ScanOperator.Equal, new object[] { group }),
+                new ("Hub",  ScanOperator.Equal, new object[] { hub })
+            }
+        );
+
+        List<PubSubGroupConnection> groupConnections = new List<PubSubGroupConnection>();
+        
+        while (!res.IsDone)
+        {
+            var list = await res.GetNextSetAsync();
+            groupConnections.AddRange(list);
+        }
+
+        var res2 = _context.ScanAsync<PubSubConnection>(
+            new List<ScanCondition>
+            {
+                new ("ConnectionId",  ScanOperator.Equal, groupConnections.Select(g => g.ConnectionId)),
+                new ("Hub",  ScanOperator.Equal, new object[] { hub })
+            }
+        );
+
+        List<PubSubConnection> connections = new List<PubSubConnection>();
+        
+        while (!res2.IsDone)
+        {
+            var list = await res2.GetNextSetAsync();
+            connections.AddRange(list);
+        }
+        
+        return connections;
     }
 
     public Task<bool> GroupHasConnectionsAsync(string hub, string @group)
@@ -33,14 +83,33 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     }
 
 
-    public Task<bool> UserHasConnectionsAsync(string hub, string userId)
+    public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
     {
-        throw new NotImplementedException();
+        var res = _context.ScanAsync<PubSubConnection>(
+            new List<ScanCondition>
+            {
+                new ("Sub",  ScanOperator.Equal, userId),
+                new ("Hub",  ScanOperator.Equal, hub)
+            }
+        );
+        
+        var list = await res.GetNextSetAsync();
+
+        return list?.Any() ?? false;
+
     }
 
-    public Task<bool> ConnectionExistsAsync(string hub, string connectionid)
+    public async Task<bool> ConnectionExistsAsync(string hub, string connectionid)
     {
-        throw new NotImplementedException();
+        var res =  _context.ScanAsync<PubSubConnection>(new List<ScanCondition>
+        {
+            new ("ConnectionId",  ScanOperator.Equal, new object[] { connectionid }),
+            new ("Hub",  ScanOperator.Equal, new object[] { hub })
+        });
+
+        var nextSet = await res.GetNextSetAsync();
+
+        return nextSet?.Any() ?? false;
     }
 
     public Task RemoveConnectionFromGroupAsync(string hub, string @group, string connectionId)
@@ -98,9 +167,25 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         throw new NotImplementedException();
     }
 
-    public override Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
-        throw new NotImplementedException();
+        var res = _context.ScanAsync<PubSubConnection>(
+            new List<ScanCondition>
+            {
+                new ("Sub",  ScanOperator.Equal, userId),
+                new ("Hub",  ScanOperator.Equal, hub)
+            }
+        );
+
+        List<PubSubConnection> connections = new List<PubSubConnection>();
+        
+        while (!res.IsDone)
+        {
+            var list = await res.GetNextSetAsync();
+            connections.AddRange(list);
+        }
+        
+        return connections;
     }
 
     public override Task AddConnectionToGroupAsync(string hub, string @group, string connectionId, string userId)
@@ -116,5 +201,32 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     protected override string GetNewId()
     {
         return Guid.NewGuid().ToString();
+    }
+
+    public void DeleteAll()
+    {
+        var list =  _context.ScanAsync<PubSubConnection>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        list.ForEach(c =>
+        {
+            _context.DeleteAsync(c).Wait();
+        });
+        
+        var list2 = _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        list2.ForEach(c =>
+        {
+            _context.DeleteAsync(c).Wait();
+        });
+        
+        var list3 = _context.ScanAsync<PubSubAck>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        list3.ForEach(c =>
+        {
+            _context.DeleteAsync(c).Wait();
+        });
+        
+        var list4 = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        list4.ForEach(c =>
+        {
+            _context.DeleteAsync(c).Wait();
+        });
     }
 }

@@ -406,9 +406,9 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             RemovalPolicy= RemovalPolicy.DESTROY
         });
         
-        new Table(this, "pub_group_connection", new TableProps
+        new Table(this, "pub_sub_group_connection", new TableProps
         {
-            TableName = "pub_group_connection",
+            TableName = "pub_sub_group_connection",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {

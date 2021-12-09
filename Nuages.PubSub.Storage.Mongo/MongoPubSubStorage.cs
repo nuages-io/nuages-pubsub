@@ -287,6 +287,11 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
             .Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
     }
 
+    public void DeleteAll()
+    {
+        throw new NotImplementedException();
+    }
+
     protected override async Task InsertAsync(IPubSubConnection conn)
     {
         await _pubSubConnectionCollection.InsertOneAsync((PubSubConnection) conn);

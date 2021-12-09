@@ -34,4 +34,6 @@ public interface IPubSubStorage
 
 
     Task<bool> IsConnectionInGroup(string hub, string group, string connectionId);
+
+    void DeleteAll();
 }
