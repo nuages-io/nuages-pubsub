@@ -139,16 +139,16 @@ public class TestMongoPubSubStorage
 
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
 
-        var collOne = await _pubSubStorage.GetConnectionsForGroupAsync(_hub, group);
+        var collOne = await _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
         Assert.Single(collOne);
         
-        var collEmpty = await _pubSubStorage.GetConnectionsForGroupAsync("Bad_Hub", group);
+        var collEmpty = await _pubSubStorage.GetConnectionsIdsForGroupAsync("Bad_Hub", group);
         Assert.Empty(collEmpty);
         
         await _pubSubStorage.DeleteConnectionAsync("Bad_Hub", connectionId);
         await _pubSubStorage.DeleteConnectionAsync(_hub, connectionId);
 
-        var coll = await _pubSubStorage.GetConnectionsForGroupAsync(_hub, group);
+        var coll = await _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
         Assert.Empty(coll);
 
         

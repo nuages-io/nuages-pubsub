@@ -8,16 +8,14 @@ public partial class PubSubService
 {
     public async Task<APIGatewayProxyResponse> SendToGroupAsync(string hub, string group, PubSubMessage message, List<string>? excludedIds = null)
     {
-        var connections = await _pubSubStorage.GetConnectionsForGroupAsync(hub, group);
+        var connections = await _pubSubStorage.GetConnectionsIdsForGroupAsync(hub, group);
 
         if (excludedIds != null)
         {
-            connections = connections.Where(i => !excludedIds.Contains(i.ConnectionId));
+            connections = connections.Where(i => !excludedIds.Contains(i));
         }
-
-        connections = connections.Where(c => !c.IsExpired());
         
-        await SendMessageAsync(hub, connections.Select(c => c.ConnectionId),  message);
+        await SendMessageAsync(hub, connections,  message);
         
         return new APIGatewayProxyResponse
         {
@@ -27,9 +25,9 @@ public partial class PubSubService
 
     public async Task CloseGroupConnectionsAsync(string hub, string group)
     {
-        var connections = await _pubSubStorage.GetConnectionsForGroupAsync(hub, group);
+        var connections = await _pubSubStorage.GetConnectionsIdsForGroupAsync(hub, group);
 
-        await CloseConnectionsAsync(hub, connections.Select(c => c.ConnectionId));
+        await CloseConnectionsAsync(hub, connections);
     }
 
     public async Task<bool> GroupExistsAsync(string hub, string group)

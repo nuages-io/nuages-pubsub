@@ -85,10 +85,10 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         return await Task.FromResult(connection);
     }
 
-    public async Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group)
+    public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
-        var coll = GetHubConnectionsAndGroups(hub).Where(c => c.Group == group).Select(c => c.ConnectionId);
-        return await Task.FromResult(GetHubConnections(hub).Where(c => coll.Contains(c.ConnectionId)));
+        return await Task.FromResult(GetHubConnectionsAndGroups(hub).Where(c => c.Group == group)
+            .Select(c => c.ConnectionId));
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)

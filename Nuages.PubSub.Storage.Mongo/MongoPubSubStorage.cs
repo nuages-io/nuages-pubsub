@@ -42,11 +42,10 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId));
     }
 
-    public async Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group)
+    public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
-        var ids = _pubSubGroupConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.Group == group).Select(c => c.ConnectionId).ToList();
-        
-        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => ids.Contains(c.ConnectionId)));
+        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable()
+            .Where(c => c.Hub == hub && c.Group == group).Select(c => c.ConnectionId));
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
@@ -259,7 +258,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     {
         await _pubSubConnectionCollection.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
         
-        await _pubSubConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
+        await _pubSubGroupConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
 
     public async Task<bool> ExistAckAsync(string hub, string connectionId, string ackId)

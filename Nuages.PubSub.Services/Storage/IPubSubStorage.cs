@@ -8,7 +8,7 @@ public interface IPubSubStorage
     Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub);
     Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId);
     
-    Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group);
+    Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group);
     Task<bool> GroupHasConnectionsAsync(string hub, string group);
     
     Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId);

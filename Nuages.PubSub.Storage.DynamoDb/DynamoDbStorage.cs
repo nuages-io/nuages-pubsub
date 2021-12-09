@@ -32,7 +32,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     }
 
 
-    public async Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string group)
+    public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
         var res = _context.ScanAsync<PubSubGroupConnection>(
             new List<ScanCondition>
@@ -44,20 +44,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
         var groupConnections = await res.GetRemainingAsync();
 
-        if (groupConnections.Any())
-        {
-            var res2 = _context.ScanAsync<PubSubConnection>(
-                new List<ScanCondition>
-                {
-                    new ("ConnectionId",  ScanOperator.In, groupConnections.Select(g => (object)g.ConnectionId).ToArray()),
-                    new ("Hub",  ScanOperator.Equal, new object[] { hub })
-                }
-            );
-
-            return  await res2.GetRemainingAsync();
-        }
-
-        return new List<IPubSubConnection>();
+        return  groupConnections.Select(c => c.ConnectionId);
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string @group)
