@@ -321,6 +321,20 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             }),
             ManagedPolicyName = GetNormalizedName("ExecuteApiConnectionRole")
         }));
+        
+        role.AddManagedPolicy(new ManagedPolicy(this, GetNormalizedName("DynamoDbRole"), new ManagedPolicyProps
+        {
+            Document = new PolicyDocument(new PolicyDocumentProps
+            {
+                Statements = new []{ new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Actions = new []{"dynamodb:*"},
+                    Resources = new []{"*"}
+                })}
+            }),
+            ManagedPolicyName = GetNormalizedName("DynamoDbRole")
+        }));
             
         return role;
 

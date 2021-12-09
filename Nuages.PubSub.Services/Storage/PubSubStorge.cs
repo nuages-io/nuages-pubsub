@@ -56,6 +56,9 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
         {
             connection.Permissions.Remove(permissionString);
             
+            if (!connection.Permissions.Any())
+                connection.Permissions = null;
+            
             await UpdateAsync(connection);
         }
     }
