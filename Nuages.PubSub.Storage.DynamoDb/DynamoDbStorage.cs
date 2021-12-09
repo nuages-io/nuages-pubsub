@@ -1,12 +1,19 @@
-﻿using Nuages.PubSub.Services.Storage;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using Nuages.PubSub.Services.Storage;
+using Nuages.PubSub.Storage.DynamoDb.DataModel;
 
 namespace Nuages.PubSub.Storage.DynamoDb;
 
-public class DynamoDbStorage : IPubSubStorage
+public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
-    public Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay)
+    private readonly AmazonDynamoDBClient _client;
+    private readonly DynamoDBContext _context;
+
+    public DynamoDbStorage()
     {
-        throw new NotImplementedException();
+        _client = new AmazonDynamoDBClient();
+        _context = new DynamoDBContext(_client);
     }
 
     public Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
@@ -14,10 +21,6 @@ public class DynamoDbStorage : IPubSubStorage
         throw new NotImplementedException();
     }
 
-    public Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
-    {
-        throw new NotImplementedException();
-    }
 
     public Task<IEnumerable<IPubSubConnection>> GetConnectionsForGroupAsync(string hub, string @group)
     {
@@ -29,10 +32,6 @@ public class DynamoDbStorage : IPubSubStorage
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
-    {
-        throw new NotImplementedException();
-    }
 
     public Task<bool> UserHasConnectionsAsync(string hub, string userId)
     {
@@ -40,26 +39,6 @@ public class DynamoDbStorage : IPubSubStorage
     }
 
     public Task<bool> ConnectionExistsAsync(string hub, string connectionid)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddPermissionAsync(string hub, string connectionId, string permissionString)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemovePermissionAsync(string hub, string connectionId, string permissionString)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> HasPermissionAsync(string hub, string connectionId, string permissionString)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddConnectionToGroupAsync(string hub, string @group, string connectionId, string userId)
     {
         throw new NotImplementedException();
     }
@@ -107,5 +86,35 @@ public class DynamoDbStorage : IPubSubStorage
     public Task<bool> IsConnectionInGroup(string hub, string @group, string connectionId)
     {
         throw new NotImplementedException();
+    }
+
+    public override Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override Task UpdateAsync(IPubSubConnection connection)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task AddConnectionToGroupAsync(string hub, string @group, string connectionId, string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override async Task InsertAsync(IPubSubConnection conn)
+    {
+        await _context.SaveAsync((PubSubConnection) conn);
+    }
+
+    protected override string GetNewId()
+    {
+        return Guid.NewGuid().ToString();
     }
 }

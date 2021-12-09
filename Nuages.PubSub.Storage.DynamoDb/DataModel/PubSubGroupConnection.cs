@@ -1,8 +1,12 @@
 
+using Amazon.DynamoDBv2.DataModel;
+
 namespace Nuages.PubSub.Storage.DynamoDb.DataModel;
 
+[DynamoDBTable("pub_sub_group_connection")]
 public class PubSubGroupConnection 
 {
+    [DynamoDBHashKey]
     public string Id { get; set; } = null!;
     
     public string Group { get; set; } = null!;
