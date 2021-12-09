@@ -1,20 +1,17 @@
-
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using Nuages.PubSub.Services.Storage;
 
-namespace Nuages.PubSub.Storage.Mongo.DataModel;
+namespace Nuages.PubSub.Storage.DynamoDb.DataModel;
 
 
 public class PubSubConnection : IPubSubConnection
 {
-    public string Id { get; set; } = null!;
+    public string Id { get; set; } = null!; 
     
-    public string ConnectionId { get; set; } = "";
-    public string Sub { get; set; } = "";
+    public string ConnectionId { get; set; } = null!;
+    public string Sub { get; set; }= null!;
     public DateTime CreatedOn { get; set; }
     public DateTime? ExpireOn { get; set; }
-    public string Hub { get; set; } = "";
+    public string Hub { get; set; } = null!;
 
     // ReSharper disable once MemberCanBePrivate.Global
     public List<string>? Permissions { get; set; }

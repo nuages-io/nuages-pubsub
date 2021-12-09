@@ -380,7 +380,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return apiGatewayDomainName;
     }
 
-    void CreateTables()
+    public virtual void CreateTables()
     {
         new Table(this, "pub_sub_connection", new TableProps
         {
@@ -388,7 +388,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Hub",
+                Name = "Id",
                 Type = AttributeType.STRING
             },
             RemovalPolicy= RemovalPolicy.DESTROY
@@ -396,11 +396,11 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         
         new Table(this, "pub_sub_ack", new TableProps
         {
-            TableName = "pub_sub_connection",
+            TableName = "pub_sub_ack",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Hub",
+                Name = "Id",
                 Type = AttributeType.STRING
             },
             RemovalPolicy= RemovalPolicy.DESTROY
@@ -412,7 +412,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Hub",
+                Name = "Id",
                 Type = AttributeType.STRING
             },
             RemovalPolicy= RemovalPolicy.DESTROY
@@ -424,7 +424,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Hub",
+                Name = "Id",
                 Type = AttributeType.STRING
             },
             RemovalPolicy= RemovalPolicy.DESTROY
