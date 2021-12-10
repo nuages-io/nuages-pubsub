@@ -20,8 +20,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Tests", "Nuages.PubSub.WebSocket.Tests\Nuages.PubSub.WebSocket.Tests.csproj", "{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Cdk", "Nuages.PubSub.WebSocket.Cdk\Nuages.PubSub.WebSocket.Cdk.csproj", "{C6310F1B-B43C-4C4B-A290-341D43198E47}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.DynamoDb", "Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj", "{F4413E7A-9225-4D7E-9242-1E28432635B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.DynamoDb.Tests", "Nuages.PubSub.Storage.DynamoDb.Tests\Nuages.PubSub.Storage.DynamoDb.Tests.csproj", "{505B99E3-BC2B-4A39-97CE-62510615954D}"
@@ -60,10 +58,6 @@ Global
 		{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6310F1B-B43C-4C4B-A290-341D43198E47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4413E7A-9225-4D7E-9242-1E28432635B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4413E7A-9225-4D7E-9242-1E28432635B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4413E7A-9225-4D7E-9242-1E28432635B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
