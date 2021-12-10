@@ -34,16 +34,11 @@ public class TestMongoPubSubStorage
             .AddPubSubMongoStorage();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        
-        
 
         var options = serviceProvider.GetRequiredService<IOptions<PubSubMongoOptions>>().Value;
         
         _hub = "Hub";
         _sub = "sub-test";
-
-        // var clientProvider = serviceProvider.GetRequiredService<IMongoClientProvider>();
-        // var client = clientProvider.CreateClient<PubSubConnection>();
 
         var connectionString = options.ConnectionString;
         var dbName = options.DatabaseName;

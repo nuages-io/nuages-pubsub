@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.CertificateManager;
@@ -9,13 +10,8 @@ using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
-using CfnAuthorizer = Amazon.CDK.AWS.Apigatewayv2.CfnAuthorizer;
-using CfnDeployment = Amazon.CDK.AWS.Apigatewayv2.CfnDeployment;
-using CfnDeploymentProps = Amazon.CDK.AWS.Apigatewayv2.CfnDeploymentProps;
-using CfnStage = Amazon.CDK.AWS.Apigatewayv2.CfnStage;
-using CfnStageProps = Amazon.CDK.AWS.Apigatewayv2.CfnStageProps;
-// ReSharper disable MemberCanBeProtected.Global
 
+// ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ObjectCreationAsStatement
@@ -26,15 +22,15 @@ namespace Nuages.PubSub.WebSocket.Cdk;
 // ReSharper disable once UnusedType.Global
 public class NuagesPubSubWebSocketCdkStack : Stack
 {
-    public string Asset { get; set; } = "/Users/martin/nuages-io/nuages-pubsub/Nuages.PubSub.Samples.Lambda/bin/Release/net6.0/linux-x64/publish";
+    public string? Asset { get; set; } = null;
         
-    public string? OnConnectHandler { get; set; }
-    public string? OnDisconnectHandler { get; set; }
-    public string? OnAuthrorizeHandler { get; set; }
-    public string? SendHandler { get; set; }
-    public string? EchoHandler { get; set; }
-    public string? JoinHandler { get; set; }
-    public string? LeaveHandler { get; set;}
+    private string? OnConnectHandler { get; set; }
+    private string? OnDisconnectHandler { get; set; }
+    private string? OnAuthrorizeHandler { get; set; }
+    private string? SendHandler { get; set; }
+    private string? EchoHandler { get; set; }
+    private string? JoinHandler { get; set; }
+    private string? LeaveHandler { get; set;}
     
     public string ApiName { get; set; } = "NuagesPubSub";
     
@@ -75,6 +71,8 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     // ReSharper disable once UnusedMember.Global
     public  virtual void CreateTemplate()
     {
+        NormalizeHandlerName();
+
         var role = CreateRole();
         
         var api = CreateApi();
@@ -137,6 +135,34 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             Value = $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{stage.Ref}",
             Description = "The WSS Protocol URI to connect to"
         });
+    }
+
+    private void NormalizeHandlerName()
+    {
+        var type = GetType();
+
+        var functionName = $"{Path.GetFileNameWithoutExtension(type.Module.Name)}::{type.Namespace}.{type.Name}";
+
+        if (string.IsNullOrEmpty(OnConnectHandler))
+            OnConnectHandler = $"{functionName}::OnConnectHandlerAsync";
+
+        if (string.IsNullOrEmpty(OnDisconnectHandler))
+            OnDisconnectHandler = $"{functionName}::OnDisconnectHandlerAsync";
+
+        if (string.IsNullOrEmpty(OnAuthrorizeHandler))
+            OnAuthrorizeHandler = $"{functionName}::OnAuthorizeHandlerAsync";
+
+        if (string.IsNullOrEmpty(SendHandler))
+            SendHandler = $"{functionName}::SendHandlerAsync";
+
+        if (string.IsNullOrEmpty(EchoHandler))
+            EchoHandler = $"{functionName}::EchoHandlerAsync";
+
+        if (string.IsNullOrEmpty(JoinHandler))
+            JoinHandler = $"{functionName}::JoinHandlerAsync";
+
+        if (string.IsNullOrEmpty(LeaveHandler))
+            LeaveHandler = $"{functionName}::LeaveHandlerAsync";
     }
 
     protected virtual void CreateAdditionalFunctionsAndRoutes(CfnApi api)
@@ -261,6 +287,9 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         if (string.IsNullOrEmpty(handler))
             throw new Exception($"Handler for {name} must be set");
         
+        if (string.IsNullOrEmpty(Asset))
+            throw new Exception($"Asset  must be set");
+        
         var func = new Function(this, name, new FunctionProps
         {
             Code = Code.FromAsset(Asset),
@@ -296,7 +325,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
 
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy());
             
-        role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy());
+        //role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy());
             
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy());
         
@@ -340,22 +369,22 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy()
-    {
-        return new ManagedPolicy(this, GetNormalizedName("SystemsManagerParametersRole"), new ManagedPolicyProps
-        {
-            Document = new PolicyDocument(new PolicyDocumentProps
-            {
-                Statements = new []{ new PolicyStatement(new PolicyStatementProps
-                {
-                    Effect = Effect.ALLOW,
-                    Actions = new []{"ssm:GetParametersByPath"},
-                    Resources = new []{"*"}
-                })}
-            }),
-            ManagedPolicyName = GetNormalizedName("SystemsManagerParametersRole")
-        });
-    }
+    // protected virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy()
+    // {
+    //     return new ManagedPolicy(this, GetNormalizedName("SystemsManagerParametersRole"), new ManagedPolicyProps
+    //     {
+    //         Document = new PolicyDocument(new PolicyDocumentProps
+    //         {
+    //             Statements = new []{ new PolicyStatement(new PolicyStatementProps
+    //             {
+    //                 Effect = Effect.ALLOW,
+    //                 Actions = new []{"ssm:GetParametersByPath"},
+    //                 Resources = new []{"*"}
+    //             })}
+    //         }),
+    //         ManagedPolicyName = GetNormalizedName("SystemsManagerParametersRole")
+    //     });
+    // }
 
     protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy()
     {
