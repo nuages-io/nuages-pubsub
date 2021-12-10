@@ -29,8 +29,7 @@ public class Startup
             {
                 document.Info.Version = "v1";
                 document.Info.Title = "Nuages WebSocket Service";
-                //document.Info.Description = "A simple ASP.NET Core web API";
-                //document.Info.TermsOfService = "None";
+
                 document.Info.Contact = new NSwag.OpenApiContact
                 {
                     Name = "Nuages.io",
@@ -44,13 +43,6 @@ public class Startup
                 };
             };
         });
-        
-        //services.AddMvc();
-        
-         // services.AddSwaggerGen(c =>
-        // {
-        //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Nuages WebSocket Service API", Version = "v1" });
-        // });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -76,20 +68,9 @@ public class Startup
                 {
                     await context.Response.WriteAsync("Welcome to running ASP.NET Core on AWS Lambda");
                 });
-            //endpoints.MapSwagger();
-            
         });
         
         app.UseOpenApi();
         app.UseSwaggerUi3();
-
-        //app.UseMvc();
-        
-        // app.UseSwagger();
-        //
-        // app.UseSwaggerUI(c =>
-        // {
-        //     c.SwaggerEndpoint("v1/swagger.json", "My API V1");
-        // });
     }
 }
