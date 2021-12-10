@@ -139,12 +139,12 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    public virtual void CreateAdditionalFunctionsAndRoutes(CfnApi api)
+    protected virtual void CreateAdditionalFunctionsAndRoutes(CfnApi api)
     {
         
     }
 
-    private CfnDeployment CreateDeployment(CfnApi api)
+    protected virtual CfnDeployment CreateDeployment(CfnApi api)
     {
         var deployment = new CfnDeployment(this, "NuagesPubSubDeployment", new CfnDeploymentProps
         {
@@ -245,7 +245,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return authorizer;
     }
 
-    private CfnApi CreateApi()
+    protected virtual CfnApi CreateApi()
     {
         var api = new CfnApi(this, ApiName, new CfnApiProps
         {
@@ -306,7 +306,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
 
     }
 
-    public virtual ManagedPolicy CreateDynamoDbRolePolicy()
+    protected virtual ManagedPolicy CreateDynamoDbRolePolicy()
     {
         return new ManagedPolicy(this, GetNormalizedName("DynamoDbRole"), new ManagedPolicyProps
         {
@@ -323,7 +323,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    public virtual ManagedPolicy CreateExecuteApiConnectionRolePolicy()
+    protected virtual ManagedPolicy CreateExecuteApiConnectionRolePolicy()
     {
         return new ManagedPolicy(this, GetNormalizedName("ExecuteApiConnectionRole"), new ManagedPolicyProps
         {
@@ -340,7 +340,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    public virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy()
+    protected virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy()
     {
         return new ManagedPolicy(this, GetNormalizedName("SystemsManagerParametersRole"), new ManagedPolicyProps
         {
@@ -357,7 +357,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    public virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy()
+    protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy()
     {
         return new ManagedPolicy(this, GetNormalizedName("LambdaBasicExecutionRole"), new ManagedPolicyProps
         {
@@ -430,7 +430,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return apiGatewayDomainName;
     }
 
-    public virtual void CreateTables()
+    protected virtual void CreateTables()
     {
         // ReSharper disable once UnusedVariable
         var pubSubConnection = new Table(this, "pub_sub_connection", new TableProps
