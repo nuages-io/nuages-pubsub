@@ -85,7 +85,7 @@ public class TestsPubSubServiceInMemory
         
         await _pubSubService.CloseConnectionAsync(_hub, _connectionId);
         
-        Assert.True(gateway.DeleteRequestResponse.Count( c => c.Item1.ConnectionId == _connectionId) == 0);
+        Assert.Contains(gateway.DeleteRequestResponse, c => c.Item1.ConnectionId == _connectionId);
         
         Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
     }

@@ -100,7 +100,7 @@ public class TestsPubSubServiceMongo : IDisposable
         
         await _pubSubService.CloseConnectionAsync(_hub, _connectionId);
         
-        Assert.True(gateway.DeleteRequestResponse.Count( c => c.Item1.ConnectionId == _connectionId) == 0);
+        Assert.Contains(gateway.DeleteRequestResponse, c => c.Item1.ConnectionId == _connectionId);
         
         Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
     }
@@ -419,6 +419,8 @@ public class TestsPubSubServiceMongo : IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
+        
         _client.DropDatabase(_dbName);
         _serviceProvider.Dispose();
     }

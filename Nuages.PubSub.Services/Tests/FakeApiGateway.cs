@@ -24,7 +24,7 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
     
     public void Dispose()
     {
-        
+     GC.SuppressFinalize(this);   
     }
 
     public async Task<DeleteConnectionResponse> DeleteConnectionAsync(DeleteConnectionRequest request,

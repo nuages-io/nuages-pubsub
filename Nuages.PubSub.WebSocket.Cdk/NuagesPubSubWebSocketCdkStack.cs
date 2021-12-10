@@ -8,8 +8,11 @@ using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
+using CfnRoute = Amazon.CDK.AWS.Apigatewayv2.CfnRoute;
+using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
 
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable SuggestBaseTypeForParameter
@@ -20,9 +23,12 @@ namespace Nuages.PubSub.WebSocket.Cdk;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 // ReSharper disable once UnusedType.Global
-public class NuagesPubSubWebSocketCdkStack : Stack
+public class NuagesPubSubWebSocketCdkStack<T> : Stack
 {
-    public string? Asset { get; set; } = null;
+    public string? WebApiAsset { get; set; }
+    
+    
+    public string? Asset { get; set; } 
         
     private string? OnConnectHandler { get; set; }
     private string? OnDisconnectHandler { get; set; }
@@ -64,7 +70,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     public const string ContextDomainName = "Nuages/PubSub/DomainName";
     public const string ContextCertificateArn = "Nuages/PubSub/CertificateArn";
     public const string ContextUseCustomDomainName = "Nuages/PubSub/UseCustomDomainName";
-    public const string UseDynamoDb = "Nuages/PubSub/UseDynamoDb";
+    public const string ContextUseDynamoDb = "Nuages/PubSub/UseDynamoDb";
     
     public List<CfnRoute> Routes { get; set; } = new ();
     
@@ -73,9 +79,9 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     {
         NormalizeHandlerName();
 
-        var role = CreateRole();
+        var role = CreateWebSocketRole();
         
-        var api = CreateApi();
+        var api = CreateWebSocketApi();
 
         var onAuthorizeFunction = CreateFunction(OnAuthorizeFunctionName, OnAuthrorizeHandler, role, api);
         var authorizer = CreateAuthorizer(api, onAuthorizeFunction);
@@ -123,12 +129,14 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             });
         }
 
-        var useDynamoDb = Convert.ToBoolean(Node.TryGetContext(UseDynamoDb));
+        var useDynamoDb = Convert.ToBoolean(Node.TryGetContext(ContextUseDynamoDb));
         if (useDynamoDb)
         {
             CreateTables();
         }
 
+        CreateWebApi();
+        
         // ReSharper disable once UnusedVariable
         var output = new CfnOutput(this, "NuagesPubSubURI", new CfnOutputProps
         {
@@ -137,9 +145,11 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
+   
+
     private void NormalizeHandlerName()
     {
-        var type = GetType();
+        var type = typeof(T);
 
         var functionName = $"{Path.GetFileNameWithoutExtension(type.Module.Name)}::{type.Namespace}.{type.Name}";
 
@@ -165,6 +175,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             LeaveHandler = $"{functionName}::LeaveHandlerAsync";
     }
 
+    // ReSharper disable once UnusedParameter.Global
     protected virtual void CreateAdditionalFunctionsAndRoutes(CfnApi api)
     {
         
@@ -213,7 +224,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual CfnRoute CreateConnectRoute(CfnApi api, CfnAuthorizer authorizer, Function onConnectFunction)
+    protected virtual void CreateConnectRoute(CfnApi api, CfnAuthorizer authorizer, Function onConnectFunction)
     {
         var route = new CfnRoute(this, "ConnectRoute", new CfnRouteProps
         {
@@ -227,13 +238,12 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
 
         Routes.Add(route);
-        
-        return route;
     }
         
-    protected virtual CfnRoute CreateRoute(string name, string key, CfnApi api, Function func)
+    protected virtual void CreateRoute(string name, string key, CfnApi api, Function func)
     {
-        return new CfnRoute(this, name + "Route", new CfnRouteProps
+        // ReSharper disable once UnusedVariable
+        var route = new CfnRoute(this, name + "Route", new CfnRouteProps
         {
             ApiId = api.Ref,
             AuthorizationType = "NONE",
@@ -271,7 +281,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return authorizer;
     }
 
-    protected virtual CfnApi CreateApi()
+    protected virtual CfnApi CreateWebSocketApi()
     {
         var api = new CfnApi(this, ApiName, new CfnApiProps
         {
@@ -288,7 +298,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             throw new Exception($"Handler for {name} must be set");
         
         if (string.IsNullOrEmpty(Asset))
-            throw new Exception($"Asset  must be set");
+            throw new Exception("Asset  must be set");
         
         var func = new Function(this, name, new FunctionProps
         {
@@ -306,6 +316,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             }
         });
 
+        
         GrantPermissions(func);
         
         return func;
@@ -316,7 +327,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return $"{StackName}_{name}";
     }
     
-    protected virtual Role CreateRole()
+    protected virtual Role CreateWebSocketRole()
     {
         var role = new Role(this, NuagesPubSubRole, new RoleProps
         {
@@ -325,8 +336,6 @@ public class NuagesPubSubWebSocketCdkStack : Stack
 
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy());
             
-        //role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy());
-            
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy());
         
         role.AddManagedPolicy(CreateDynamoDbRolePolicy());
@@ -334,6 +343,76 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         return role;
 
     }
+    
+    private void CreateWebApi()
+    {
+        var role = CreateWebApiRole();
+
+        if (string.IsNullOrEmpty(WebApiAsset))
+        {
+            throw new Exception("WebApiAsset must be assigned");
+        }
+
+        var apiEventSource = new ApiEventSource("ANY", "/{proxy+}");
+        var apiEventSource2 = new ApiEventSource("ANY", "/");
+        
+        // ReSharper disable once UnusedVariable
+        var func = new Function(this, "AspNetCoreFunction", new FunctionProps
+        {
+            Code = Code.FromAsset(WebApiAsset),
+            Handler = "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync",
+            Runtime = Runtime.DOTNET_CORE_3_1,
+            Events = new IEventSource[]
+            {
+                apiEventSource, apiEventSource2
+            },
+            Role = role
+        });
+
+       // var domainName = (string) Node.TryGetContext(ContextDomainName);
+        var certficateArn = (string) Node.TryGetContext(ContextCertificateArn);
+        
+        var domainName = "websocket4-api.nuages.org";
+        
+        var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
+        var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps
+        {
+            DomainName = domainName,
+            DomainNameConfigurations = new [] { new CfnDomainName.DomainNameConfigurationProperty
+            {
+                EndpointType = "REGIONAL",
+                CertificateArn = certficateArn
+                
+            }}
+            
+        });
+
+        CreateS3RecordSet(domainName, apiGatewayDomainName);
+        
+        var apiMapping = new CfnApiMapping(this, "NuagesApiMapping", new CfnApiMappingProps
+        {
+            DomainName = apiGatewayDomainName.DomainName,
+            ApiId = "ServerlessRestApi",
+            Stage = StageName
+        });
+    }
+    
+    protected virtual Role CreateWebApiRole()
+    {
+        var role = new Role(this, "RoleWebApi", new RoleProps
+        {
+            AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+        });
+
+        role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy("API"));
+        
+        role.AddManagedPolicy(CreateLambdaFullAccessRolePolicy());
+            
+        return role;
+
+    }
+
+  
 
     protected virtual ManagedPolicy CreateDynamoDbRolePolicy()
     {
@@ -368,6 +447,71 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             ManagedPolicyName = GetNormalizedName("ExecuteApiConnectionRole")
         });
     }
+    
+    private IManagedPolicy CreateLambdaFullAccessRolePolicy()
+    {
+        return new ManagedPolicy(this, GetNormalizedName("LambdaFullAccessRole"), new ManagedPolicyProps
+        {
+            Document = new PolicyDocument(new PolicyDocumentProps
+            {
+                Statements = new []{ new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Actions = new []{"cloudformation:DescribeStacks",
+                        "cloudformation:ListStackResources",
+                        "cloudwatch:ListMetrics",
+                        "cloudwatch:GetMetricData",
+                        "ec2:DescribeSecurityGroups",
+                        "ec2:DescribeSubnets",
+                        "ec2:DescribeVpcs",
+                        "kms:ListAliases",
+                        "iam:GetPolicy",
+                        "iam:GetPolicyVersion",
+                        "iam:GetRole",
+                        "iam:GetRolePolicy",
+                        "iam:ListAttachedRolePolicies",
+                        "iam:ListRolePolicies",
+                        "iam:ListRoles",
+                        "lambda:*",
+                        "logs:DescribeLogGroups",
+                        "states:DescribeStateMachine",
+                        "states:ListStateMachines",
+                        "tag:GetResources",
+                        "xray:GetTraceSummaries",
+                        "xray:BatchGetTraces"},
+                    Resources = new []{"*"}
+                }),
+                    new PolicyStatement(new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new []{"iam:PassRole"},
+                        Resources = new []{"*"},
+                        Conditions = new Dictionary<string, object>
+                        {
+                            { 
+                                "StringEquals",  new Dictionary<string, string>
+                                {
+                                    { "iam:PassedToService", "lambda.amazonaws.com" }
+                                }
+                                
+                            }
+                           
+                        }
+                    }),
+                    new PolicyStatement(new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new []{"logs:DescribeLogStreams",
+                            "logs:GetLogEvents",
+                            "logs:FilterLogEvents"},
+                        Resources = new []{"arn:aws:logs:*:*:log-group:/aws/lambda/*"}
+                    })
+                }
+                
+            }),
+            ManagedPolicyName = GetNormalizedName("LambdaFullAccessRole")
+        });
+    }
 
     // protected virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy()
     // {
@@ -386,9 +530,9 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     //     });
     // }
 
-    protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy()
+    protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
-        return new ManagedPolicy(this, GetNormalizedName("LambdaBasicExecutionRole"), new ManagedPolicyProps
+        return new ManagedPolicy(this, GetNormalizedName("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -401,7 +545,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
                     Resources = new []{"*"}
                 })}
             }),
-            ManagedPolicyName = GetNormalizedName("LambdaBasicExecutionRole")
+            ManagedPolicyName = GetNormalizedName("LambdaBasicExecutionRole" + suffix)
         });
     }
 
@@ -426,6 +570,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             DomainName = GetBaseDomain(domainName)
         });
 
+        
         // ReSharper disable once UnusedVariable
         var recordSet = new CfnRecordSet(this, "Route53RecordSetGroup", new CfnRecordSetProps
         {
