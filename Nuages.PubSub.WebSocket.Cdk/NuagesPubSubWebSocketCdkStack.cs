@@ -14,6 +14,7 @@ using CfnDeployment = Amazon.CDK.AWS.Apigatewayv2.CfnDeployment;
 using CfnDeploymentProps = Amazon.CDK.AWS.Apigatewayv2.CfnDeploymentProps;
 using CfnStage = Amazon.CDK.AWS.Apigatewayv2.CfnStage;
 using CfnStageProps = Amazon.CDK.AWS.Apigatewayv2.CfnStageProps;
+// ReSharper disable MemberCanBeProtected.Global
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable MemberCanBePrivate.Global
@@ -51,7 +52,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     public string LeaveFunctionName { get; set; } = "LeaveFunction";
         
     public string EchoRouteKey { get; set; } = "echo";
-    public string SendROuteKey { get; set; } = "send";
+    public string SendRouteKey { get; set; } = "send";
     public string JoinRouteKey { get; set; } = "join";
     public string LeaveRouteKey { get; set; } = "leave";
         
@@ -67,49 +68,51 @@ public class NuagesPubSubWebSocketCdkStack : Stack
     public const string ContextDomainName = "Nuages/PubSub/DomainName";
     public const string ContextCertificateArn = "Nuages/PubSub/CertificateArn";
     public const string ContextUseCustomDomainName = "Nuages/PubSub/UseCustomDomainName";
+    public const string UseDynamoDb = "Nuages/PubSub/UseDynamoDb";
+    
+    public List<CfnRoute> Routes { get; set; } = new ();
     
     // ReSharper disable once UnusedMember.Global
     public  virtual void CreateTemplate()
     {
-        var domainName = (string) Node.TryGetContext(ContextDomainName);
-        var certficateArn = (string) Node.TryGetContext(ContextCertificateArn);
-        var useCustomDomain = Convert.ToBoolean(Node.TryGetContext(ContextUseCustomDomainName));
-        
         var role = CreateRole();
         
         var api = CreateApi();
 
-        var onConnectFunction = CreateFunction(OnConnectFunctionName, OnConnectHandler, role, api);
-        var onDisconnectFunction = CreateFunction(OnDisconnectFunctionName, OnDisconnectHandler, role, api);
         var onAuthorizeFunction = CreateFunction(OnAuthorizeFunctionName, OnAuthrorizeHandler, role, api);
-        var sendFunction = CreateFunction(SendToGroupFunctionName, SendHandler, role, api);
-        var echoFunction = CreateFunction(EchoFunctionName, EchoHandler, role, api);
-        var joinFunction = CreateFunction(JoinFunctionName, JoinHandler, role, api);
-        var leaveFunction = CreateFunction(LeaveFunctionName, LeaveHandler, role, api);
-
         var authorizer = CreateAuthorizer(api, onAuthorizeFunction);
-            
-        var onConnectRoute = CreateConnectRoute(api, authorizer, onConnectFunction);
-        var onDisconnectRoute = CreateRoute("Disconnect", "$disconnect", api, onDisconnectFunction);
-        var echoRoute = CreateRoute("Echo", EchoRouteKey, api, echoFunction);
-        var sendRoute = CreateRoute("Send", SendROuteKey, api, sendFunction);
-        var joinRoute = CreateRoute("Join", JoinRouteKey, api, joinFunction);
-        var leavenRoute = CreateRoute("Leave", LeaveRouteKey, api, leaveFunction);
 
-        var deployment = CreateDeployment(api, onConnectRoute, onDisconnectRoute, echoRoute, sendRoute, joinRoute, leavenRoute);
+        var onConnectFunction = CreateFunction(OnConnectFunctionName, OnConnectHandler, role, api);
+        CreateConnectRoute(api, authorizer, onConnectFunction);
+        
+        var onDisconnectFunction = CreateFunction(OnDisconnectFunctionName, OnDisconnectHandler, role, api);
+        CreateRoute("Disconnect", "$disconnect", api, onDisconnectFunction);
+        
+        var sendFunction = CreateFunction(SendToGroupFunctionName, SendHandler, role, api);
+        CreateRoute("Send", SendRouteKey, api, sendFunction);
+        
+        var echoFunction = CreateFunction(EchoFunctionName, EchoHandler, role, api);
+        CreateRoute("Echo", EchoRouteKey, api, echoFunction);
+        
+        var joinFunction = CreateFunction(JoinFunctionName, JoinHandler, role, api);
+        CreateRoute("Join", JoinRouteKey, api, joinFunction);
+        
+        var leaveFunction = CreateFunction(LeaveFunctionName, LeaveHandler, role, api);
+        CreateRoute("Leave", LeaveRouteKey, api, leaveFunction);
+
+        CreateAdditionalFunctionsAndRoutes(api);
+        
+        var deployment = CreateDeployment(api);
 
         var stage = CreateStage(api, deployment);
 
-        CreatePermission(onConnectFunction);
-        CreatePermission(onDisconnectFunction);
-        CreatePermission(onAuthorizeFunction);
-        CreatePermission(sendFunction);
-        CreatePermission(echoFunction);
-        CreatePermission(joinFunction);
-        CreatePermission(leaveFunction);
+        var useCustomDomain = Convert.ToBoolean(Node.TryGetContext(ContextUseCustomDomainName));
 
         if (useCustomDomain)
         {
+            var domainName = (string) Node.TryGetContext(ContextDomainName);
+            var certficateArn = (string) Node.TryGetContext(ContextCertificateArn);
+            
             var apiGatewayDomainName = CreateApiGatewayDomainName(certficateArn, domainName);
             CreateS3RecordSet(domainName, apiGatewayDomainName);
             CreateApiMapping(apiGatewayDomainName, api, stage);
@@ -122,7 +125,11 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             });
         }
 
-        CreateTables();
+        var useDynamoDb = Convert.ToBoolean(Node.TryGetContext(UseDynamoDb));
+        if (useDynamoDb)
+        {
+            CreateTables();
+        }
 
         // ReSharper disable once UnusedVariable
         var output = new CfnOutput(this, "NuagesPubSubURI", new CfnOutputProps
@@ -132,20 +139,23 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    private CfnDeployment CreateDeployment(CfnApi api, CfnRoute onConnectRoute, CfnRoute onDisconnectRoute,
-        CfnRoute echoRoute, CfnRoute sendRoute, CfnRoute joinRoute, CfnRoute leavenRoute)
+    public virtual void CreateAdditionalFunctionsAndRoutes(CfnApi api)
+    {
+        
+    }
+
+    private CfnDeployment CreateDeployment(CfnApi api)
     {
         var deployment = new CfnDeployment(this, "NuagesPubSubDeployment", new CfnDeploymentProps
         {
             ApiId = api.Ref
         });
 
-        deployment.AddDependsOn(onConnectRoute);
-        deployment.AddDependsOn(onDisconnectRoute);
-        deployment.AddDependsOn(echoRoute);
-        deployment.AddDependsOn(sendRoute);
-        deployment.AddDependsOn(joinRoute);
-        deployment.AddDependsOn(leavenRoute);
+        foreach (var route in Routes)
+        {
+            deployment.AddDependsOn(route);
+        }
+
         return deployment;
     }
 
@@ -160,7 +170,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual void CreatePermission(Function func)
+    protected virtual void GrantPermissions(Function func)
     {
         var principal = new ServicePrincipal("apigateway.amazonaws.com");
             
@@ -179,7 +189,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
 
     protected virtual CfnRoute CreateConnectRoute(CfnApi api, CfnAuthorizer authorizer, Function onConnectFunction)
     {
-        return new CfnRoute(this, "ConnectRoute", new CfnRouteProps
+        var route = new CfnRoute(this, "ConnectRoute", new CfnRouteProps
         {
             ApiId = api.Ref,
             AuthorizationType = "CUSTOM",
@@ -189,6 +199,10 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             RouteResponseSelectionExpression = null,
             Target =  Fn.Join("/",  new [] { "integrations",CreateIntegration("ConnectInteg", api.Ref, onConnectFunction).Ref})
         });
+
+        Routes.Add(route);
+        
+        return route;
     }
         
     protected virtual CfnRoute CreateRoute(string name, string key, CfnApi api, Function func)
@@ -263,6 +277,8 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             }
         });
 
+        GrantPermissions(func);
+        
         return func;
     }
 
@@ -278,7 +294,72 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
         });
 
-        role.AddManagedPolicy(new ManagedPolicy(this, GetNormalizedName("LambdaBasicExecutionRole"), new ManagedPolicyProps
+        role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy());
+            
+        role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy());
+            
+        role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy());
+        
+        role.AddManagedPolicy(CreateDynamoDbRolePolicy());
+            
+        return role;
+
+    }
+
+    public virtual ManagedPolicy CreateDynamoDbRolePolicy()
+    {
+        return new ManagedPolicy(this, GetNormalizedName("DynamoDbRole"), new ManagedPolicyProps
+        {
+            Document = new PolicyDocument(new PolicyDocumentProps
+            {
+                Statements = new []{ new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Actions = new []{"dynamodb:*"},
+                    Resources = new []{"*"}
+                })}
+            }),
+            ManagedPolicyName = GetNormalizedName("DynamoDbRole")
+        });
+    }
+
+    public virtual ManagedPolicy CreateExecuteApiConnectionRolePolicy()
+    {
+        return new ManagedPolicy(this, GetNormalizedName("ExecuteApiConnectionRole"), new ManagedPolicyProps
+        {
+            Document = new PolicyDocument(new PolicyDocumentProps
+            {
+                Statements = new []{ new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Actions = new []{"execute-api:ManageConnections"},
+                    Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
+                })}
+            }),
+            ManagedPolicyName = GetNormalizedName("ExecuteApiConnectionRole")
+        });
+    }
+
+    public virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy()
+    {
+        return new ManagedPolicy(this, GetNormalizedName("SystemsManagerParametersRole"), new ManagedPolicyProps
+        {
+            Document = new PolicyDocument(new PolicyDocumentProps
+            {
+                Statements = new []{ new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Actions = new []{"ssm:GetParametersByPath"},
+                    Resources = new []{"*"}
+                })}
+            }),
+            ManagedPolicyName = GetNormalizedName("SystemsManagerParametersRole")
+        });
+    }
+
+    public virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy()
+    {
+        return new ManagedPolicy(this, GetNormalizedName("LambdaBasicExecutionRole"), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -292,52 +373,7 @@ public class NuagesPubSubWebSocketCdkStack : Stack
                 })}
             }),
             ManagedPolicyName = GetNormalizedName("LambdaBasicExecutionRole")
-        }));
-            
-        role.AddManagedPolicy(new ManagedPolicy(this, GetNormalizedName("SystemsManagerParametersRole"), new ManagedPolicyProps
-        {
-            Document = new PolicyDocument(new PolicyDocumentProps
-            {
-                Statements = new []{ new PolicyStatement(new PolicyStatementProps
-                {
-                    Effect = Effect.ALLOW,
-                    Actions = new []{"ssm:GetParametersByPath"},
-                    Resources = new []{"*"}
-                })}
-            }),
-            ManagedPolicyName = GetNormalizedName("SystemsManagerParametersRole")
-        }));
-            
-        role.AddManagedPolicy(new ManagedPolicy(this, GetNormalizedName("ExecuteApiConnectionRole"), new ManagedPolicyProps
-        {
-            Document = new PolicyDocument(new PolicyDocumentProps
-            {
-                Statements = new []{ new PolicyStatement(new PolicyStatementProps
-                {
-                    Effect = Effect.ALLOW,
-                    Actions = new []{"execute-api:ManageConnections"},
-                    Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
-                })}
-            }),
-            ManagedPolicyName = GetNormalizedName("ExecuteApiConnectionRole")
-        }));
-        
-        role.AddManagedPolicy(new ManagedPolicy(this, GetNormalizedName("DynamoDbRole"), new ManagedPolicyProps
-        {
-            Document = new PolicyDocument(new PolicyDocumentProps
-            {
-                Statements = new []{ new PolicyStatement(new PolicyStatementProps
-                {
-                    Effect = Effect.ALLOW,
-                    Actions = new []{"dynamodb:*"},
-                    Resources = new []{"*"}
-                })}
-            }),
-            ManagedPolicyName = GetNormalizedName("DynamoDbRole")
-        }));
-            
-        return role;
-
+        });
     }
 
     protected static string GetBaseDomain(string domainName)
@@ -396,7 +432,8 @@ public class NuagesPubSubWebSocketCdkStack : Stack
 
     public virtual void CreateTables()
     {
-        new Table(this, "pub_sub_connection", new TableProps
+        // ReSharper disable once UnusedVariable
+        var pubSubConnection = new Table(this, "pub_sub_connection", new TableProps
         {
             TableName = "pub_sub_connection",
             BillingMode = BillingMode.PAY_PER_REQUEST,
@@ -408,7 +445,8 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             RemovalPolicy= RemovalPolicy.DESTROY
         });
         
-        new Table(this, "pub_sub_ack", new TableProps
+        // ReSharper disable once UnusedVariable
+        var pubSubAck = new Table(this, "pub_sub_ack", new TableProps
         {
             TableName = "pub_sub_ack",
             BillingMode = BillingMode.PAY_PER_REQUEST,
@@ -420,7 +458,8 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             RemovalPolicy= RemovalPolicy.DESTROY
         });
         
-        new Table(this, "pub_sub_group_connection", new TableProps
+        // ReSharper disable once UnusedVariable
+        var pubSubGroupConnection = new Table(this, "pub_sub_group_connection", new TableProps
         {
             TableName = "pub_sub_group_connection",
             BillingMode = BillingMode.PAY_PER_REQUEST,
@@ -432,7 +471,8 @@ public class NuagesPubSubWebSocketCdkStack : Stack
             RemovalPolicy= RemovalPolicy.DESTROY
         });
         
-        new Table(this, "pub_sub_group_user", new TableProps
+        // ReSharper disable once UnusedVariable
+        var pubSubGroupUser = new Table(this, "pub_sub_group_user", new TableProps
         {
             TableName = "pub_sub_group_user",
             BillingMode = BillingMode.PAY_PER_REQUEST,

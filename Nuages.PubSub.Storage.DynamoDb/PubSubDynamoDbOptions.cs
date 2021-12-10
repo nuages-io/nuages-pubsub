@@ -1,4 +1,4 @@
-namespace Nuages.PubSub.Storage.Mongo;
+namespace Nuages.PubSub.Storage.DynamoDb;
 
 public class PubSubDynamoDbOptions
 {

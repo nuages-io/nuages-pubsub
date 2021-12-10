@@ -6,11 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Services.Storage;
-using Nuages.PubSub.Storage.Mongo;
 using Xunit;
 
 namespace Nuages.PubSub.Storage.DynamoDb.Tests;
 
+// ReSharper disable once InconsistentNaming
 public class TestDynamoDbPubSubStorage_Integration
 {
     private readonly string _sub;

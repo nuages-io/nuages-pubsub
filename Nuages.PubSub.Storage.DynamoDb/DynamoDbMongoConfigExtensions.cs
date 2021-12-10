@@ -2,9 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Services.Storage;
-using Nuages.PubSub.Storage.DynamoDb;
 
-namespace Nuages.PubSub.Storage.Mongo;
+namespace Nuages.PubSub.Storage.DynamoDb;
 
 [ExcludeFromCodeCoverage]
 public static class DynamoDbMongoConfigExtensions
