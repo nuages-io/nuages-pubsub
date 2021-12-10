@@ -374,8 +374,8 @@ public class NuagesPubSubWebSocketCdkStack<T> : Stack
         
         var domainName = "websocket4-api.nuages.org";
         
-        var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
-        var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps
+        //var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
+        var apiGatewayDomainName = new CfnDomainName(this, "NuagesApiDomainName", new CfnDomainNameProps
         {
             DomainName = domainName,
             DomainNameConfigurations = new [] { new CfnDomainName.DomainNameConfigurationProperty
@@ -389,7 +389,7 @@ public class NuagesPubSubWebSocketCdkStack<T> : Stack
 
         CreateS3RecordSet(domainName, apiGatewayDomainName);
         
-        var apiMapping = new CfnApiMapping(this, "NuagesApiMapping", new CfnApiMappingProps
+        var apiMapping = new CfnApiMapping(this, "NuagesRestApiMapping", new CfnApiMappingProps
         {
             DomainName = apiGatewayDomainName.DomainName,
             ApiId = "ServerlessRestApi",
@@ -589,7 +589,7 @@ public class NuagesPubSubWebSocketCdkStack<T> : Stack
     protected virtual CfnDomainName CreateApiGatewayDomainName(string certficateArn, string domainName)
     {
         // ReSharper disable once UnusedVariable
-        var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
+        //var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
         var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps
         {
             DomainName = domainName,
