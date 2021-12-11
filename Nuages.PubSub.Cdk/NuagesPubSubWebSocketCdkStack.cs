@@ -1,7 +1,6 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.DynamoDB;
-using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Route53;
@@ -368,7 +367,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Actions = new []{"dynamodb:*"},
                     Resources = new []{"*"}
                 })}
-            }),
+            })
             //ManagedPolicyName = MakeId("DynamoDbRole")
         });
     }
@@ -385,7 +384,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Actions = new []{"execute-api:ManageConnections"},
                     Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
                 })}
-            }),
+            })
             //ManagedPolicyName = MakeId("ExecuteApiConnectionRole")
         });
     }
@@ -421,7 +420,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                         "logs:PutLogEvents"},
                     Resources = new []{"*"}
                 })}
-            }),
+            })
             //ManagedPolicyName = MakeId("LambdaBasicExecutionRole" + suffix)
         });
     }

@@ -94,7 +94,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
            
             });
 
-            var webApi = (RestApi) Node.Children.Single(c => c.GetType() == typeof( Amazon.CDK.AWS.APIGateway.RestApi));
+            var webApi = (RestApi) Node.Children.Single(c => c.GetType() == typeof(RestApi));
         
             // ReSharper disable once UnusedVariable
             var usagePlan = new UsagePlan(this, MakeId("WebApiUsagePlan"), new UsagePlanProps
@@ -110,10 +110,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             });
         
             // ReSharper disable once UnusedVariable
-            var apiKey = new ApiKey(this, "WebApiKey", new ApiKeyProps
-            {
-            
-            });
+            var apiKey = new ApiKey(this, "WebApiKey");
 
             usagePlan.AddApiKey(apiKey);
             
@@ -167,7 +164,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                     Actions = new []{"execute-api:ManageConnections"},
                     Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
                 })}
-            }),
+            })
             //ManagedPolicyName = MakeId("ExecuteApiConnectionRoleWebApi")
         });
     }
@@ -252,7 +249,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                     })
                 }
                 
-            }),
+            })
             //ManagedPolicyName = MakeId("LambdaFullAccessRole")
         });
     }

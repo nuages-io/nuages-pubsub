@@ -11,19 +11,18 @@ namespace Nuages.PubSub.Storage.DynamoDb;
 public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
     private readonly DynamoDBContext _context;
-    private readonly PubSubOptions _options;
     private readonly DynamoDBOperationConfig _tableConfig;
 
     public DynamoDbStorage(IOptions<PubSubOptions> options)
     {
         var client = new AmazonDynamoDBClient();
         _context = new DynamoDBContext(client);
-        _options = options.Value;
+        var options1 = options.Value;
 
         _tableConfig =
             new DynamoDBOperationConfig
             {
-                TableNamePrefix = _options.TableNamePrefix
+                TableNamePrefix = options1.TableNamePrefix
             };
     }
 

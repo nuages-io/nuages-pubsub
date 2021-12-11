@@ -2,7 +2,7 @@ namespace Nuages.PubSub.Services.Storage;
 
 public interface IPubSubGroupConnection
 {
-    public DateTime? ExpireOn { get;  set;}
+    public DateTime? ExpireOn { get; }
 }
 
 public static class WebSocketGroupConnectionExtensions
