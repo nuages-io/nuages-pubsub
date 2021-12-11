@@ -61,7 +61,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextDomainNameApi = "Nuages/PubSub/DomainNameApi";
     public const string ContextCertificateArn = "Nuages/PubSub/CertificateArn";
     public const string ContextUseCustomDomainName = "Nuages/PubSub/UseCustomDomainName";
-    public const string ContextStorage = "Nuages/PubSub/Storage";
+    public const string ContextDynamoDb = "Nuages/PubSub/CreateDynamoDbStorage";
     
     public List<CfnRoute> Routes { get; set; } = new ();
     
@@ -122,8 +122,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
 
-        var useDynamoDb = Node.TryGetContext(ContextStorage).ToString() == "DynamoDb";
-        if (useDynamoDb)
+        var createDynamodb = Convert.ToBoolean(Node.TryGetContext(ContextDynamoDb));
+        if (createDynamodb)
         {
             CreateTables();
         }
