@@ -41,7 +41,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
         var groupConnections = await search.GetRemainingAsync();
 
-        return  groupConnections.Select(c => c.ConnectionId);
+        return  groupConnections.Where(c => !c.IsExpired()).Select(c => c.ConnectionId);
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
@@ -330,17 +330,24 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
         if (!list.Any())
         {
-            var groupConnection = new PubSubGroupConnection
-            {
-                Id = Guid.NewGuid().ToString(),
-                ConnectionId = connectionId,
-                Group = group,
-                Hub = hub,
-                CreatedOn = DateTime.UtcNow,
-                Sub = userId
-            };
 
-            await _context.SaveAsync(groupConnection);
+            var conn = await GetConnectionAsync(hub, connectionId);
+            if (conn != null)
+            {
+                var groupConnection = new PubSubGroupConnection
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ConnectionId = connectionId,
+                    Group = group,
+                    Hub = hub,
+                    CreatedOn = DateTime.UtcNow,
+                    Sub = userId,
+                    ExpireOn = conn.ExpireOn
+                };
+
+                await _context.SaveAsync(groupConnection);
+            }
+          
         }
     }
 

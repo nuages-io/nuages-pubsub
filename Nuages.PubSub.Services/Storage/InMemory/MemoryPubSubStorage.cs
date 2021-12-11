@@ -87,7 +87,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
 
     public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
-        return await Task.FromResult(GetHubConnectionsAndGroups(hub).Where(c => c.Group == group)
+        return await Task.FromResult(GetHubConnectionsAndGroups(hub).Where(c => c.Group == group && !c.IsExpired())
             .Select(c => c.ConnectionId));
     }
 
@@ -118,20 +118,22 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
 
     public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
     {
-        var connection = new PubSubGroupConnection
-        {
-            Id = GetNewId(),
-            Group = group,
-            Hub = hub,
-            ConnectionId = connectionId,
-            CreatedOn = DateTime.UtcNow,
-            Sub = userId
-        };
+        var conn = await GetConnectionAsync(hub, connectionId);
 
-        await Task.Run(() =>
+        if (conn != null)
         {
+            var connection = new PubSubGroupConnection
+            {
+                Id = GetNewId(),
+                Group = group,
+                Hub = hub,
+                ConnectionId = connectionId,
+                CreatedOn = DateTime.UtcNow,
+                Sub = userId
+            };
+            
             GetHubConnectionsAndGroups(hub).Add(connection);
-        });
+        }
     }
 
     public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)

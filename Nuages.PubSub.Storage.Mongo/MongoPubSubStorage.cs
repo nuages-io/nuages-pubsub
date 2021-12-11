@@ -45,7 +45,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
         return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable()
-            .Where(c => c.Hub == hub && c.Group == group).Select(c => c.ConnectionId));
+            .Where(c => c.Hub == hub && c.Group == group).ToList().Where(c => !c.IsExpired()).Select(c => c.ConnectionId));
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
@@ -195,17 +195,23 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
         if (existing == null)
         {
-            var groupConnection = new PubSubGroupConnection
+            var conn = await GetConnectionAsync(hub, connectionId);
+            if (conn != null)
             {
-                Id = ObjectId.GenerateNewId(),
-                ConnectionId = connectionId,
-                Group = group,
-                Hub = hub,
-                CreatedOn = DateTime.UtcNow,
-                Sub = userId
-            };
+                var groupConnection = new PubSubGroupConnection
+                {
+                    Id = ObjectId.GenerateNewId(),
+                    ConnectionId = connectionId,
+                    Group = group,
+                    Hub = hub,
+                    CreatedOn = DateTime.UtcNow,
+                    Sub = userId,
+                    ExpireOn = conn.ExpireOn
+                };
 
-            await _pubSubGroupConnectionCollection.InsertOneAsync(groupConnection);
+                await _pubSubGroupConnectionCollection.InsertOneAsync(groupConnection);
+            }
+           
         }
     }
 

@@ -23,6 +23,8 @@ public static class WebSocketConnectionExtensions
         return pubSubConnection.ExpireOn < DateTime.UtcNow;
     }
     
+   
+    
     public static void AddPermission(this IPubSubConnection pubSubConnection, string permissionString)
     {
         pubSubConnection.Permissions ??= new List<string>();

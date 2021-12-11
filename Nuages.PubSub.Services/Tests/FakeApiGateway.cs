@@ -30,18 +30,20 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
     public async Task<DeleteConnectionResponse> DeleteConnectionAsync(DeleteConnectionRequest request,
         CancellationToken cancellationToken = new ())
     {
-        if (HttpStatusCode != HttpStatusCode.OK)
-            throw new AmazonServiceException("Error")
-            {
-                StatusCode = HttpStatusCode
-            };
-
+        
         var response = new DeleteConnectionResponse
         {
             HttpStatusCode = HttpStatusCode
         };
 
         DeleteRequestResponse.Add((request, response));
+        
+        if (HttpStatusCode != HttpStatusCode.OK)
+            throw new AmazonServiceException("Error")
+            {
+                StatusCode = HttpStatusCode
+            };
+
         
         return await Task.FromResult(response);
     }

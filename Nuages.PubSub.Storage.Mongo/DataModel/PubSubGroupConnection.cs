@@ -1,9 +1,10 @@
 
 using MongoDB.Bson;
+using Nuages.PubSub.Services.Storage;
 
 namespace Nuages.PubSub.Storage.Mongo.DataModel;
 
-public class PubSubGroupConnection 
+public class PubSubGroupConnection : IPubSubGroupConnection
 {
     public ObjectId Id { get; set; } 
     
@@ -12,4 +13,5 @@ public class PubSubGroupConnection
     public DateTime CreatedOn { get; set; }
     public string Hub { get; set; } = "";
     public string Sub { get; set; } = "";
+    public DateTime? ExpireOn { get; set; }
 }
