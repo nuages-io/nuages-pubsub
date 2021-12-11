@@ -14,6 +14,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         var client = new AmazonDynamoDBClient();
         _context = new DynamoDBContext(client);
+        
     }
 
     public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)

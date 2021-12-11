@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.DynamoDB;
+using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Route53;
@@ -64,6 +65,11 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextDynamoDb = "Nuages/PubSub/CreateDynamoDbStorage";
     
     public List<CfnRoute> Routes { get; set; } = new ();
+
+    public virtual string MakeId(string id)
+    {
+        return $"{StackName}-{id}";
+    }
     
     // ReSharper disable once UnusedMember.Global
     public  virtual void CreateTemplate()
@@ -192,7 +198,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     protected virtual void CreateApiMapping(CfnDomainName apiGatewayDomainName, CfnApi api, CfnStage stage)
     {
         // ReSharper disable once UnusedVariable
-        var apiMapping = new CfnApiMapping(this, "NuagesApiMapping", new CfnApiMappingProps
+        var apiMapping = new CfnApiMapping(this, MakeId("NuagesApiMapping"), new CfnApiMappingProps
         {
             DomainName = apiGatewayDomainName.DomainName,
             ApiId = api.Ref,
@@ -224,7 +230,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             ApiId = api.Ref,
             AuthorizationType = "CUSTOM",
             AuthorizerId = authorizer.Ref,
-            OperationName = "ConnectRoute",
+            //OperationName = "ConnectRoute",
             RouteKey = "$connect",
             RouteResponseSelectionExpression = null,
             Target =  Fn.Join("/",  new [] { "integrations",CreateIntegration("ConnectInteg", api.Ref, onConnectFunction).Ref})
@@ -240,7 +246,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         {
             ApiId = api.Ref,
             AuthorizationType = "NONE",
-            OperationName = name + "Route",
+            //OperationName = name + "Route",
             RouteKey = key,
             RouteResponseSelectionExpression = null,
             Target = Fn.Join("/",  new [] { "integrations", CreateIntegration(name + "Integ", api.Ref, func).Ref}) 
@@ -260,10 +266,12 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         
     protected virtual CfnAuthorizer CreateAuthorizer(CfnApi api, Function onAuthorizeFunction)
     {
-        var authorizer = new CfnAuthorizer(this, AuthorizerName,
+        var name = MakeId(AuthorizerName);
+        
+        var authorizer = new CfnAuthorizer(this, name,
             new CfnAuthorizerProps
             {
-                Name = AuthorizerName,
+                Name = name,
                 ApiId = api.Ref,
                 AuthorizerType = "REQUEST",
                 IdentitySource = IdentitySource,
@@ -276,10 +284,12 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     protected virtual CfnApi CreateWebSocketApi()
     {
-        var api = new CfnApi(this, ApiName, new CfnApiProps
+        var name = MakeId(ApiName);
+        
+        var api = new CfnApi(this, name, new CfnApiProps
         {
             ProtocolType = "WEBSOCKET",
-            Name = ApiName,
+            Name = name ,
             RouteSelectionExpression = RouteSelectionExpression
         });
         return api;
@@ -298,7 +308,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             Code = Code.FromAsset(Asset),
             Handler = handler,
             Runtime = Runtime.DOTNET_CORE_3_1,
-            FunctionName = GetNormalizedName(name),
+            //FunctionName = MakeId(name),
             MemorySize = 256,
             Role = role,
             Timeout = Duration.Seconds(30),
@@ -316,10 +326,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         return func;
     }
 
-    protected virtual string GetNormalizedName(string name)
-    {
-        return $"{StackName}_{name}";
-    }
     
     protected virtual Role CreateWebSocketRole()
     {
@@ -339,7 +345,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     protected virtual ManagedPolicy CreateDynamoDbRolePolicy()
     {
-        return new ManagedPolicy(this, GetNormalizedName("DynamoDbRole"), new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("DynamoDbRole"), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -350,13 +356,13 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Resources = new []{"*"}
                 })}
             }),
-            ManagedPolicyName = GetNormalizedName("DynamoDbRole")
+            //ManagedPolicyName = MakeId("DynamoDbRole")
         });
     }
 
     protected virtual ManagedPolicy CreateExecuteApiConnectionRolePolicy()
     {
-        return new ManagedPolicy(this, GetNormalizedName("ExecuteApiConnectionRole"), new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("ExecuteApiConnectionRole"), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -367,7 +373,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
                 })}
             }),
-            ManagedPolicyName = GetNormalizedName("ExecuteApiConnectionRole")
+            //ManagedPolicyName = MakeId("ExecuteApiConnectionRole")
         });
     }
 
@@ -390,7 +396,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
-        return new ManagedPolicy(this, GetNormalizedName("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -403,7 +409,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Resources = new []{"*"}
                 })}
             }),
-            ManagedPolicyName = GetNormalizedName("LambdaBasicExecutionRole" + suffix)
+            //ManagedPolicyName = MakeId("LambdaBasicExecutionRole" + suffix)
         });
     }
 

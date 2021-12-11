@@ -1,9 +1,13 @@
 using Amazon.CDK;
+using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.Route53;
+using CfnDomainName = Amazon.CDK.AWS.Apigatewayv2.CfnDomainName;
+using CfnDomainNameProps = Amazon.CDK.AWS.Apigatewayv2.CfnDomainNameProps;
+
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace Nuages.PubSub.Cdk;
@@ -21,8 +25,16 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             throw new Exception("WebApiAsset must be assigned");
         }
 
-        var apiEventSource = new ApiEventSource("ANY", "/{proxy+}");
-        var apiEventSource2 = new ApiEventSource("ANY", "/");
+       
+        var apiEventSource = new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
+        {
+            ApiKeyRequired = true
+        });
+        
+        var apiEventSource2 = new ApiEventSource("ANY", "/", new MethodOptions
+        {
+            ApiKeyRequired = true
+        });
         
         // ReSharper disable once UnusedVariable
         var func = new Function(this, "AspNetCoreFunction", new FunctionProps
@@ -81,10 +93,31 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
            
             });
 
-            var webApi = (Amazon.CDK.AWS.APIGateway.RestApi) Node.Children.Single(c => c.GetType() == typeof( Amazon.CDK.AWS.APIGateway.RestApi));
+            var webApi = (RestApi) Node.Children.Single(c => c.GetType() == typeof( Amazon.CDK.AWS.APIGateway.RestApi));
         
             // ReSharper disable once UnusedVariable
-            var apiMapping = new CfnApiMapping(this, "NuagesRestApiMapping", new CfnApiMappingProps
+            var usagePlan = new UsagePlan(this, MakeId("WebApiUsagePlan"), new UsagePlanProps
+            {
+                ApiStages = new IUsagePlanPerApiStage[]
+                {
+                    new UsagePlanPerApiStage
+                    {
+                        Api = webApi,
+                        Stage = webApi.DeploymentStage
+                    }
+                }
+            });
+        
+            // ReSharper disable once UnusedVariable
+            var apiKey = new ApiKey(this, "WebApiKey", new ApiKeyProps
+            {
+            
+            });
+
+            usagePlan.AddApiKey(apiKey);
+            
+            // ReSharper disable once UnusedVariable
+            var apiMapping = new CfnApiMapping(this, MakeId("NuagesRestApiMapping"), new CfnApiMappingProps
             {
                 DomainName = apiGatewayDomainName.DomainName,
                 ApiId = webApi.RestApiId,
@@ -123,7 +156,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
 
     protected virtual ManagedPolicy CreateExecuteApiConnectionWebApiRolePolicy()
     {
-        return new ManagedPolicy(this, GetNormalizedName("ExecuteApiConnectionRoleWebApi"), new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("ExecuteApiConnectionRoleWebApi"), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -134,13 +167,15 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                     Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
                 })}
             }),
-            ManagedPolicyName = GetNormalizedName("ExecuteApiConnectionRoleWebApi")
+            //ManagedPolicyName = MakeId("ExecuteApiConnectionRoleWebApi")
         });
     }
     
     private IManagedPolicy CreateDynamoDbWebApiRolePolicy()
     {
-        return new ManagedPolicy(this, GetNormalizedName("DynamoDbRoleWebApi"), new ManagedPolicyProps
+        var id = MakeId("DynamoDbRoleWebApi");
+        
+        return new ManagedPolicy(this, id, new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -153,13 +188,12 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                         Resources = new[] { "*" }
                     })
                 }
-            }),
-            ManagedPolicyName = GetNormalizedName("DynamoDbRoleWebApi")
+            })
         });
     }
      private IManagedPolicy CreateLambdaFullAccessRolePolicy()
     {
-        return new ManagedPolicy(this, GetNormalizedName("LambdaFullAccessRole"), new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("LambdaFullAccessRole"), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -218,7 +252,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                 }
                 
             }),
-            ManagedPolicyName = GetNormalizedName("LambdaFullAccessRole")
+            //ManagedPolicyName = MakeId("LambdaFullAccessRole")
         });
     }
 }
