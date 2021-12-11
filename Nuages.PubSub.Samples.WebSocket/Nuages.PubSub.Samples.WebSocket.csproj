@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Nuages.PubSub.Storage.Mongo" Version="1.0.21" />
+      <PackageReference Include="Nuages.PubSub.Storage.DynamoDb" Version="1.0.21" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="appsettings.json" />
+        <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="appsettings.prod.json" />
+        <Content Include="appsettings.prod.json" CopyToOutputDirectory="Always" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj" />
+    </ItemGroup>
+</Project>

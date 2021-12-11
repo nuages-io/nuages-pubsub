@@ -40,11 +40,4 @@
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="README.md">
-        <Pack>true</Pack>
-        <PackagePath>/</PackagePath>
-      </None>
-    </ItemGroup>
-   
 </Project>

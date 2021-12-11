@@ -1,0 +1,2 @@
+dotnet publish ./Nuages.PubSub.Samples.WebSocket/Nuages.PubSub.Samples.WebSocket.csproj --configuration Release --framework net6.0 --self-contained true /p:GenerateRuntimeConfigurationFiles=true --runtime linux-x64
+dotnet publish ./Nuages.PubSub.Samples.API/Nuages.PubSub.Samples.API.csproj --configuration Release --framework net6.0 --self-contained true /p:GenerateRuntimeConfigurationFiles=true --runtime linux-x64

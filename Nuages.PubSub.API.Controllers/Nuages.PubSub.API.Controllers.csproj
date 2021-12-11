@@ -1,28 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
 
-        <Title>Nuages.PubSub.Storag.DynamoDb</Title>
+        <Title>Nuages.PubSub.API.Contollers</Title>
         <Authors>Nuages.io</Authors>
-        <Description>DynamoDb storage support for Nuages.PubSub</Description>
+        <Description> Backend for Nuages.PubSub.API</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageIcon>nuages.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
         <RepositoryType>GitHub</RepositoryType>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.2.1" />
-    </ItemGroup>
-
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
 
@@ -36,6 +29,8 @@
         </None>
 
     </ItemGroup>
-    
+    <ItemGroup>
+      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
+    </ItemGroup>
 
 </Project>

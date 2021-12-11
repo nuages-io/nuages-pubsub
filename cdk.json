@@ -1,0 +1,3 @@
+{
+  "app": "sh build.sh;dotnet run --project Nuages.PubSub.Samples.WebSocket.Deploy/Nuages.PubSub.Samples.WebSocket.Deploy.csproj"
+}
