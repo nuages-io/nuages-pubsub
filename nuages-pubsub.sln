@@ -40,6 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".CDK", ".CDK", "{0B49A1C7-3
 		cdk.json = cdk.json
 		deploy.sh = deploy.sh
 		synth.sh = synth.sh
+		diff.sh = diff.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Controllers", "Nuages.PubSub.API.Controllers\Nuages.PubSub.API.Controllers.csproj", "{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}"

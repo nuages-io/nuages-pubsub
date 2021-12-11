@@ -45,6 +45,8 @@ sealed class Program
         }
         
         stack.Node.SetContext("Nuages/PubSub/Storage", configuration.GetSection("Nuages:PubSub:Storage").Value);
+        stack.Node.SetContext("Nuages/PubSub/CreateDynamoDbStorage", configuration.GetSection("Nuages:PubSub:CreateDynamoDbStorage").Value);
+        stack.Node.SetContext("Nuages/PubSub/TableNamePrefix", configuration.GetSection("Nuages:PubSub:TableNamePrefix").Value);
         
         stack.CreateTemplate();
 

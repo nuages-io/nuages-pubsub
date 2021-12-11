@@ -63,6 +63,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextCertificateArn = "Nuages/PubSub/CertificateArn";
     public const string ContextUseCustomDomainName = "Nuages/PubSub/UseCustomDomainName";
     public const string ContextDynamoDb = "Nuages/PubSub/CreateDynamoDbStorage";
+    public const string ContextTableNamePrefix = "Nuages/PubSub/TableNamePrefix";
     
     public List<CfnRoute> Routes { get; set; } = new ();
 
@@ -76,6 +77,10 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     {
         NormalizeHandlerName();
 
+        TableNamePrefix = Node.TryGetContext(ContextTableNamePrefix) != null!
+            ? Node.TryGetContext(ContextTableNamePrefix).ToString()
+            : null;
+        
         var role = CreateWebSocketRole();
         
         var api = CreateWebSocketApi();
@@ -128,7 +133,12 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
 
+       
+        
+        
         var createDynamodb = Convert.ToBoolean(Node.TryGetContext(ContextDynamoDb));
+        
+        Console.WriteLine("createDynamodb = " + createDynamodb);
         if (createDynamodb)
         {
             CreateTables();
@@ -145,6 +155,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             Description = "The WSS Protocol URI to connect to"
         });
     }
+
+    public string? TableNamePrefix { get; set; }
 
     private void NormalizeHandlerName()
     {
@@ -315,7 +327,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             Environment = new Dictionary<string, string>
             {
                 {"Nuages__PubSub__Region", Aws.REGION},
-                {"Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}"}
+                {"Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}"},
+                {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });
@@ -471,7 +484,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         // ReSharper disable once UnusedVariable
         var pubSubConnection = new Table(this, "pub_sub_connection", new TableProps
         {
-            TableName = "pub_sub_connection",
+            TableName = TableNamePrefix + "pub_sub_connection",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
@@ -484,7 +497,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         // ReSharper disable once UnusedVariable
         var pubSubAck = new Table(this, "pub_sub_ack", new TableProps
         {
-            TableName = "pub_sub_ack",
+            TableName = TableNamePrefix + "pub_sub_ack",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
@@ -497,7 +510,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         // ReSharper disable once UnusedVariable
         var pubSubGroupConnection = new Table(this, "pub_sub_group_connection", new TableProps
         {
-            TableName = "pub_sub_group_connection",
+            TableName = TableNamePrefix + "pub_sub_group_connection",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
@@ -510,7 +523,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         // ReSharper disable once UnusedVariable
         var pubSubGroupUser = new Table(this, "pub_sub_group_user", new TableProps
         {
-            TableName = "pub_sub_group_user",
+            TableName = TableNamePrefix + "pub_sub_group_user",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {

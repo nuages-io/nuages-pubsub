@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Nuages.PubSub.Services;
 using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 
@@ -13,7 +14,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     private readonly IMongoCollection<PubSubGroupUser> _pubSubGroupUserCollection;
     private readonly IMongoCollection<PubSubAck> _pubSubAckCollection;
     
-    public MongoPubSubStorage(IOptions<PubSubMongoOptions> options)
+    public MongoPubSubStorage(IOptions<PubSubMongoOptions> options, IOptions<PubSubOptions> pubSubOptions)
     {
         var mongoOptions = options.Value;
         
@@ -23,10 +24,11 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         var mongoCLient = new MongoClient(connectionString);
         var database = mongoCLient.GetDatabase(dbName);
 
-        _pubSubConnectionCollection = database.GetCollection<PubSubConnection>("pub_sub_connection");
-        _pubSubGroupConnectionCollection = database.GetCollection<PubSubGroupConnection>("pub_sub_group_connection");
-        _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>("pub_sub_group_user");
-        _pubSubAckCollection = database.GetCollection<PubSubAck>("pub_sub_ack");
+        var prefix = pubSubOptions.Value.TableNamePrefix ?? "";
+        _pubSubConnectionCollection = database.GetCollection<PubSubConnection>(prefix + "pub_sub_connection");
+        _pubSubGroupConnectionCollection = database.GetCollection<PubSubGroupConnection>(prefix + "pub_sub_group_connection");
+        _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>(prefix + "pub_sub_group_user");
+        _pubSubAckCollection = database.GetCollection<PubSubAck>(prefix + "pub_sub_ack");
 
         Initialize();
     }

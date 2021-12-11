@@ -51,7 +51,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             Environment = new Dictionary<string, string>
             {
                 {"Nuages__PubSub__Uri", url},
-                {"Nuages__PubSub__Region", Aws.REGION}
+                {"Nuages__PubSub__Region", Aws.REGION},
+                {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });

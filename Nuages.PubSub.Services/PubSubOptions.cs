@@ -13,4 +13,5 @@ public class PubSubOptions
     public string? Issuer { get; set; }
     public string? Uri { get; set; }
     public string Region { get; set; } = "";
+    public string? TableNamePrefix { get; set; }
 }
