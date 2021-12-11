@@ -30,4 +30,19 @@ public class GroupController
     {
         return await _pubSubService.GroupExistsAsync(hub,  group);
     }
+
+    Task<bool> IsConnectionInGroupAsync(string hub, string group, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
+    {
+        throw new NotImplementedException();
+    }
 }

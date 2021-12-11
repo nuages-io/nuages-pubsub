@@ -30,4 +30,19 @@ public class UserController
     {
         return await _pubSubService.UserExistsAsync(hub,  userId);
     }
+
+    Task AddUserToGroupAsync(string hub, string group, string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task RemoveUserFromGroupAsync(string hub, string group, string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task RemoveUserFromAllGroupsAsync(string hub, string userId)
+    {
+        throw new NotImplementedException();
+    }
 }

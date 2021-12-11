@@ -30,4 +30,20 @@ public class ConnectionController
     {
         return await _pubSubService.ConnectionExistsAsync(hub,  connectionId);
     }
+
+    Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task RevokePermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> CheckPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
+    {
+        throw new NotImplementedException();
+    }
+
 }
