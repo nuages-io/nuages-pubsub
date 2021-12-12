@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="Amazon.Extensions.Configuration.SystemsManager" Version="3.0.0" />
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="7.0.0" />
+        <PackageReference Include="AWSXRayRecorder" Version="2.10.1" />
         <PackageReference Include="NSwag.AspNetCore" Version="13.15.3" />
         <PackageReference Include="Nuages.PubSub.Services" Version="1.0.21" />
         <PackageReference Include="Nuages.PubSub.Storage.DynamoDb" Version="1.0.21" />

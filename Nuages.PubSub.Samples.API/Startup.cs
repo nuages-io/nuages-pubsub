@@ -1,4 +1,7 @@
 ﻿using System.Text.Json;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Core.Strategies;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
@@ -18,6 +21,8 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
+        
+        
         services.AddSingleton(_configuration);
         
         var pubSubBuilder = services
@@ -75,7 +80,16 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
-
+        else
+        {
+            var stackName = _configuration.GetSection("Nuages:PubSub:StackName").Value;
+            
+            AWSSDKHandler.RegisterXRayForAllServices();
+            AWSXRayRecorder.InitializeInstance(_configuration);
+            app.UseXRay(stackName);
+            
+        }
+        
         app.UseHttpsRedirection();
 
         app.UseRouting();

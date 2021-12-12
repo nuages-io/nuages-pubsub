@@ -1,10 +1,14 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
+using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.Route53;
+using Amazon.CDK.AWS.SAM;
 using CfnDomainName = Amazon.CDK.AWS.Apigatewayv2.CfnDomainName;
 using CfnDomainNameProps = Amazon.CDK.AWS.Apigatewayv2.CfnDomainNameProps;
 
@@ -25,16 +29,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             throw new Exception("WebApiAsset must be assigned");
         }
 
-       
-        var apiEventSource = new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
-        {
-            ApiKeyRequired = true
-        });
         
-        var apiEventSource2 = new ApiEventSource("ANY", "/", new MethodOptions
-        {
-            ApiKeyRequired = true
-        });
         
         // ReSharper disable once UnusedVariable
         var func = new Function(this, "AspNetCoreFunction", new FunctionProps
@@ -44,7 +39,15 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             Runtime = Runtime.DOTNET_CORE_3_1,
             Events = new IEventSource[]
             {
-                apiEventSource, apiEventSource2
+                new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
+                {
+                    ApiKeyRequired = true,
+                    
+                }), 
+                new ApiEventSource("ANY", "/", new MethodOptions
+                {
+                    ApiKeyRequired = true
+                })
             },
             Role = role,
             Timeout = Duration.Seconds(30),
@@ -52,7 +55,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             {
                 {"Nuages__PubSub__Uri", url},
                 {"Nuages__PubSub__Region", Aws.REGION},
-                {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" }
+                {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
+                {"Nuages__PubSub__StackName", StackName ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });
@@ -95,7 +99,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             });
 
             var webApi = (RestApi) Node.Children.Single(c => c.GetType() == typeof(RestApi));
-        
+
+           
             // ReSharper disable once UnusedVariable
             var usagePlan = new UsagePlan(this, MakeId("WebApiUsagePlan"), new UsagePlanProps
             {
@@ -108,7 +113,23 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                     }
                 }
             });
-        
+
+            
+            // ReSharper disable once UnusedVariable
+            var overrides = new CfnApiGatewayManagedOverrides(this, MakeId("ApiGatewayOverriudes"),
+                new CfnApiGatewayManagedOverridesProps
+                {
+                    ApiId = webApi.RestApiId,
+                    Stage = new CfnApiGatewayManagedOverrides.StageOverridesProperty
+                    {
+                        RouteSettings =  new CfnHttpApi.RouteSettingsProperty
+                        {
+                            DataTraceEnabled = true
+                        }
+                    }
+                });
+            
+            
             // ReSharper disable once UnusedVariable
             var apiKey = new ApiKey(this, "WebApiKey");
 
@@ -132,7 +153,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         
         
     }
-    
+
     protected virtual Role CreateWebApiRole()
     {
         var role = new Role(this, "RoleWebApi", new RoleProps

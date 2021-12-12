@@ -32,5 +32,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="AWSXRayRecorder.Core" Version="2.10.1" />
+    </ItemGroup>
 
 </Project>

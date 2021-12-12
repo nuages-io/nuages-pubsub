@@ -27,6 +27,7 @@ public class LambdaEntryPoint :
     /// <param name="builder"></param>
     protected override void Init(IWebHostBuilder builder)
     {
+        
         builder.UseStartup<Startup>();
     }
 
@@ -43,6 +44,9 @@ public class LambdaEntryPoint :
         builder.ConfigureAppConfiguration((context, configBuilder) =>
         {
             configBuilder.AddJsonFile("appsettings.prod.json", true, true);
+
+
         });
+
     }
 }

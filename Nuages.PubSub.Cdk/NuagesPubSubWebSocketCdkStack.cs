@@ -48,7 +48,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public string JoinRouteKey { get; set; } = "join";
     public string LeaveRouteKey { get; set; } = "leave";
         
-    public string StageName { get; set; } = "Prod";
+    public string StageName { get; set; } = "prod";
            
     public string NuagesPubSubRole { get; set; } = "Role";
     

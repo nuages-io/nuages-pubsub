@@ -29,6 +29,6 @@ public partial class PubSubServiceClient
         };
     
         
-        return await webService.GetClientAccessTokenAsync(userId, _hub, expiresAfter, roles);
+        return await webService.GetClientAccessTokenAsync(userId, _hub, expiresAfter, roles).ConfigureAwait(false);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
@@ -26,6 +28,9 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.PubSubFunction
      
         IConfiguration configuration = builder.Build();
             
+        AWSSDKHandler.RegisterXRayForAllServices();
+        AWSXRayRecorder.InitializeInstance(configuration);
+        
         var serviceCollection = new ServiceCollection();
 
         serviceCollection

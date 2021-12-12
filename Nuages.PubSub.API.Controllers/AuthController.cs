@@ -1,3 +1,4 @@
+using Amazon.XRay.Recorder.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
@@ -22,17 +23,32 @@ public class AuthController : Controller
         string userId, string audience,
         TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
     {
-        var secret = _options.Secret;
-        if (string.IsNullOrEmpty(secret))
-            throw new Exception("secret must be provided");
+        try
+        {
+            AWSXRayRecorder.Instance.BeginSubsegment("AuthController.GetClientAccessTokenAsync");
         
-        var issuer = _options.Issuer;
-        if (string.IsNullOrEmpty(issuer))
-            throw new Exception("issuer must be provided");
+            var secret = _options.Secret;
+            if (string.IsNullOrEmpty(secret))
+                throw new Exception("secret must be provided");
         
-        var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret, expiresAfter);
+            var issuer = _options.Issuer;
+            if (string.IsNullOrEmpty(issuer))
+                throw new Exception("issuer must be provided");
+        
+            var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret, expiresAfter);
 
-        return await Task.FromResult(token);
+            return await Task.FromResult(token);
+        }
+        catch (Exception e)
+        {
+            AWSXRayRecorder.Instance.AddException(e);
+
+            throw;
+        }
+        finally
+        {
+            AWSXRayRecorder.Instance.EndSubsegment();
+        }
     }
 
 }
