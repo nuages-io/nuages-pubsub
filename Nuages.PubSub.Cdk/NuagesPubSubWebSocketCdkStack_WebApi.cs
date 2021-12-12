@@ -9,6 +9,8 @@ using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.Route53;
 using Amazon.CDK.AWS.SAM;
+using Amazon.JSII.Runtime.Deputy;
+using Constructs;
 using CfnDomainName = Amazon.CDK.AWS.Apigatewayv2.CfnDomainName;
 using CfnDomainNameProps = Amazon.CDK.AWS.Apigatewayv2.CfnDomainNameProps;
 
@@ -34,21 +36,10 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         // ReSharper disable once UnusedVariable
         var func = new Function(this, "AspNetCoreFunction", new FunctionProps
         {
+            FunctionName = MakeId("AspNetCoreFunction"),
             Code = Code.FromAsset(WebApiAsset),
             Handler = "Nuages.PubSub.Samples.API::Nuages.PubSub.Samples.API.LambdaEntryPoint::FunctionHandlerAsync",
             Runtime = Runtime.DOTNET_CORE_3_1,
-            Events = new IEventSource[]
-            {
-                new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
-                {
-                    ApiKeyRequired = true,
-                    
-                }), 
-                new ApiEventSource("ANY", "/", new MethodOptions
-                {
-                    ApiKeyRequired = true
-                })
-            },
             Role = role,
             Timeout = Duration.Seconds(30),
             Environment = new Dictionary<string, string>
@@ -60,7 +51,18 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             },
             Tracing = Tracing.ACTIVE
         });
-
+        
+        func.AddEventSource(new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
+        {
+            ApiKeyRequired = true
+        }));
+        
+        func.AddEventSource(new ApiEventSource("ANY", "/", new MethodOptions
+        {
+            ApiKeyRequired = true
+        }));
+        
+        
         var useCustomDomain = Convert.ToBoolean(Node.TryGetContext(ContextUseCustomDomainName));
 
         if (useCustomDomain)
@@ -116,18 +118,18 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
 
             
             // ReSharper disable once UnusedVariable
-            var overrides = new CfnApiGatewayManagedOverrides(this, MakeId("ApiGatewayOverriudes"),
-                new CfnApiGatewayManagedOverridesProps
-                {
-                    ApiId = webApi.RestApiId,
-                    Stage = new CfnApiGatewayManagedOverrides.StageOverridesProperty
-                    {
-                        RouteSettings =  new CfnHttpApi.RouteSettingsProperty
-                        {
-                            DataTraceEnabled = true
-                        }
-                    }
-                });
+            // var overrides = new CfnApiGatewayManagedOverrides(this, MakeId("ApiGatewayOverriudes"),
+            //     new CfnApiGatewayManagedOverridesProps
+            //     {
+            //         ApiId = webApi.RestApiId,
+            //         Stage = new CfnApiGatewayManagedOverrides.StageOverridesProperty
+            //         {
+            //             DefaultRouteSettings =  new CfnApiGatewayManagedOverrides.RouteSettingsProperty
+            //             {
+            //                 DataTraceEnabled = true
+            //             }
+            //         }
+            //     });
             
             
             // ReSharper disable once UnusedVariable
@@ -152,6 +154,18 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         }
         
         
+    }
+
+    private void PrintNode(Node deploymentStageNode)
+    {
+       
+        Console.WriteLine(deploymentStageNode.Id + " " + deploymentStageNode.GetType());
+
+        
+        foreach (var c in deploymentStageNode.Children)
+        {
+            PrintNode(c.Node);
+        }
     }
 
     protected virtual Role CreateWebApiRole()
