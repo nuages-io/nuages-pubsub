@@ -151,7 +151,7 @@ public class GroupController
         }
     }
 
-    [HttpGet("connections/add")]
+    [HttpPut("connections/add")]
     public async Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
     {
         try
@@ -184,7 +184,7 @@ public class GroupController
         }
     }
 
-    [HttpGet("connections/remove")]
+    [HttpDelete("connections/remove")]
     public async Task<ActionResult> RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
     {
         try

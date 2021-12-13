@@ -117,7 +117,7 @@ public class ConnectionController
         }
     }
 
-    [HttpPatch("grantpermission")]
+    [HttpPatch("permissions/grant")]
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         try
@@ -147,7 +147,7 @@ public class ConnectionController
         }
     }
 
-    [HttpDelete("revokepermission")]
+    [HttpDelete("permissions/revoke")]
     public async Task RevokePermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         try
@@ -177,7 +177,7 @@ public class ConnectionController
         }
     }
 
-    [HttpGet("checkPermission")]
+    [HttpGet("permissions/check")]
     public async Task<bool> CheckPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)
     {
         try
