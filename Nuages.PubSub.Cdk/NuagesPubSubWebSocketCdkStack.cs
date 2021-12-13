@@ -64,7 +64,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextCertificateArnApi = "Nuages/PubSub/API/CertificateArn";
     public const string ContextApiKeyApi = "Nuages/PubSub/API/ApiKey";
     
-    public const string ContextDynamoDb = "Nuages/PubSub/CreateDynamoDbStorage";
+    public const string ContextCreateDynamoDbStorage = "Nuages/PubSub/CreateDynamoDbStorage";
     public const string ContextTableNamePrefix = "Nuages/PubSub/TableNamePrefix";
     
     public List<CfnRoute> Routes { get; set; } = new ();
@@ -136,7 +136,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
         
-        var createDynamodb = Convert.ToBoolean(Node.TryGetContext(ContextDynamoDb));
+        var createDynamodb = Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbStorage));
         
         Console.WriteLine("createDynamodb = " + createDynamodb);
         if (createDynamodb)

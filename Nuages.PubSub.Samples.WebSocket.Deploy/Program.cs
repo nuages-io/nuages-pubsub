@@ -22,7 +22,6 @@ sealed class Program
         var app = new App();
 
         var name = configuration.GetSection("Nuages:PubSub:StackName").Value;
-
         
         var stack = new MyNuagesPubSubStack(configuration, app, name, new StackProps
         {
@@ -36,17 +35,15 @@ sealed class Program
         //Initialize context required by custom domain. You may also set the values in the cdk.json file (see CDK documentation for more info)
 
        
-        stack.Node.SetContext("Nuages/PubSub/WebSocket/Domain",  configuration.GetSection("Nuages:PubSub:WebSocket:Domain").Value);
-        stack.Node.SetContext("Nuages/PubSub/WebSocket/CertificateArn", configuration.GetSection("Nuages:PubSub:WebSocket:CertificateArn").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextDomainName,  configuration.GetSection("Nuages:PubSub:WebSocket:Domain").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextCertificateArn, configuration.GetSection("Nuages:PubSub:WebSocket:CertificateArn").Value);
         
-        stack.Node.SetContext("Nuages/PubSub/API/Domain",  configuration.GetSection("Nuages:PubSub:API:Domain").Value);
-        stack.Node.SetContext("Nuages/PubSub/API/CertificateArn", configuration.GetSection("Nuages:PubSub:API:CertificateArn").Value);
-        stack.Node.SetContext("Nuages/PubSub/API/ApiKey", configuration.GetSection("Nuages:PubSub:API:ApiKey").Value);
-
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextDomainNameApi,  configuration.GetSection("Nuages:PubSub:API:Domain").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextCertificateArnApi, configuration.GetSection("Nuages:PubSub:API:CertificateArn").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextApiKeyApi, configuration.GetSection("Nuages:PubSub:API:ApiKey").Value);
         
-        stack.Node.SetContext("Nuages/PubSub/Storage", configuration.GetSection("Nuages:PubSub:Storage").Value);
-        stack.Node.SetContext("Nuages/PubSub/CreateDynamoDbStorage", configuration.GetSection("Nuages:PubSub:CreateDynamoDbStorage").Value);
-        stack.Node.SetContext("Nuages/PubSub/TableNamePrefix", configuration.GetSection("Nuages:PubSub:TableNamePrefix").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextCreateDynamoDbStorage, configuration.GetSection("Nuages:PubSub:CreateDynamoDbStorage").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextTableNamePrefix, configuration.GetSection("Nuages:PubSub:TableNamePrefix").Value);
         
         stack.CreateTemplate();
 
