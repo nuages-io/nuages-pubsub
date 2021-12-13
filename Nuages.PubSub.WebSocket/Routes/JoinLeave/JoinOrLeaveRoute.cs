@@ -51,7 +51,7 @@ public class JoinOrLeaveRoute
             if (hasPermission)
             {
                 if (join)
-                    await _pubSubService.AddConnectionToGroupAsync(hub, inMessage.group,  connectionId, request.GetSub());
+                    await _pubSubService.AddConnectionToGroupAsync(hub, inMessage.group,  connectionId);
                 else
                 {
                     await _pubSubService.RemoveConnectionFromGroupAsync(request.GetHub(), inMessage.group, connectionId);

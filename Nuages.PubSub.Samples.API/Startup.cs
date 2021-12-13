@@ -85,8 +85,7 @@ public class Startup
         
             app.UseXRay(stackName);
         }
-          
-        
+
         app.UseHttpsRedirection();
 
         app.UseRouting();

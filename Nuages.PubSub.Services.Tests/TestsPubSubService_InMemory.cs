@@ -95,7 +95,7 @@ public class TestsPubSubServiceInMemory
     {
         var gateway = GetApiGateway();
         
-        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId, _sub);
+        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
 
         Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
@@ -142,7 +142,7 @@ public class TestsPubSubServiceInMemory
         Assert.True(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
         Assert.True(await _pubSubService.UserExistsAsync(_hub, _sub));
         
-        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId, _sub);
+        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
 
         Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
@@ -239,7 +239,7 @@ public class TestsPubSubServiceInMemory
             group = _group
         };
 
-        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId, _sub);
+        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
         
         await _pubSubService.SendToGroupAsync(_hub, _group, message);
         
@@ -258,7 +258,7 @@ public class TestsPubSubServiceInMemory
             group = _group
         };
 
-        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId, _sub);
+        await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
         
         await _pubSubService.SendToGroupAsync(_hub, _group, message, new List<string> { _connectionId});
         

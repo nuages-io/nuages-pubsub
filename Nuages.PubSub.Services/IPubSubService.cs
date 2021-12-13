@@ -26,7 +26,7 @@ public interface IPubSubService
 
     Task<bool> IsConnectionInGroupAsync(string hub, string group, string connectionId);
     
-    Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId);
+    Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
     Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId);
     
     

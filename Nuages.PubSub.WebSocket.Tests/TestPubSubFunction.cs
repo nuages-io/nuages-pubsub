@@ -188,7 +188,7 @@ public class TestPubSubFunction
        
         //Throw
         
-        pubSubService.Setup(c => c.AddConnectionToGroupAsync(hub, group, connectionId, user)).ThrowsAsync(new Exception());
+        pubSubService.Setup(c => c.AddConnectionToGroupAsync(hub, group, connectionId)).ThrowsAsync(new Exception());
         res = await function.JoinHandlerAsync(request, lambdaContext);
         Assert.Equal(500, res.StatusCode);
         
