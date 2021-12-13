@@ -35,14 +35,14 @@ sealed class Program
       
         //Initialize context required by custom domain. You may also set the values in the cdk.json file (see CDK documentation for more info)
 
-        var useCustomDomain = Convert.ToBoolean(configuration.GetSection("Nuages:PubSub:UseCustomDomainName").Value);
-        if (useCustomDomain)
-        {
-            stack.Node.SetContext("Nuages/PubSub/UseCustomDomainName", useCustomDomain);
-            stack.Node.SetContext("Nuages/PubSub/DomainName",  configuration.GetSection("Nuages:PubSub:DomainName").Value);
-            stack.Node.SetContext("Nuages/PubSub/DomainNameApi",  configuration.GetSection("Nuages:PubSub:DomainNameApi").Value);
-            stack.Node.SetContext("Nuages/PubSub/CertificateArn", configuration.GetSection("Nuages:PubSub:CertificateArn").Value);
-        }
+       
+        stack.Node.SetContext("Nuages/PubSub/WebSocket/Domain",  configuration.GetSection("Nuages:PubSub:WebSocket:Domain").Value);
+        stack.Node.SetContext("Nuages/PubSub/WebSocket/CertificateArn", configuration.GetSection("Nuages:PubSub:WebSocket:CertificateArn").Value);
+        
+        stack.Node.SetContext("Nuages/PubSub/API/Domain",  configuration.GetSection("Nuages:PubSub:API:Domain").Value);
+        stack.Node.SetContext("Nuages/PubSub/API/CertificateArn", configuration.GetSection("Nuages:PubSub:API:CertificateArn").Value);
+        stack.Node.SetContext("Nuages/PubSub/API/ApiKey", configuration.GetSection("Nuages:PubSub:API:ApiKey").Value);
+
         
         stack.Node.SetContext("Nuages/PubSub/Storage", configuration.GetSection("Nuages:PubSub:Storage").Value);
         stack.Node.SetContext("Nuages/PubSub/CreateDynamoDbStorage", configuration.GetSection("Nuages:PubSub:CreateDynamoDbStorage").Value);

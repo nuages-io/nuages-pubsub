@@ -1,16 +1,10 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
-using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.Route53;
-using Amazon.CDK.AWS.SAM;
-using Amazon.JSII.Runtime.Deputy;
-using Constructs;
 using CfnDomainName = Amazon.CDK.AWS.Apigatewayv2.CfnDomainName;
 using CfnDomainNameProps = Amazon.CDK.AWS.Apigatewayv2.CfnDomainNameProps;
 
@@ -21,7 +15,7 @@ namespace Nuages.PubSub.Cdk;
 public partial class NuagesPubSubWebSocketCdkStack<T>
 {
     protected string? WebApiAsset { get; set; }
-    
+
     private void CreateWebApi(string url)
     {
         var role = CreateWebApiRole();
@@ -31,8 +25,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             throw new Exception("WebApiAsset must be assigned");
         }
 
-        
-        
+
         // ReSharper disable once UnusedVariable
         var func = new Function(this, "AspNetCoreFunction", new FunctionProps
         {
@@ -44,48 +37,52 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             Timeout = Duration.Seconds(30),
             Environment = new Dictionary<string, string>
             {
-                {"Nuages__PubSub__Uri", url},
-                {"Nuages__PubSub__Region", Aws.REGION},
-                {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
-                {"Nuages__PubSub__StackName", StackName ?? "" }
+                { "Nuages__PubSub__Uri", url },
+                { "Nuages__PubSub__Region", Aws.REGION },
+                { "Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
+                { "Nuages__PubSub__StackName", StackName ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });
-        
+
         func.AddEventSource(new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
         {
             ApiKeyRequired = true
         }));
-        
+
         func.AddEventSource(new ApiEventSource("ANY", "/", new MethodOptions
         {
             ApiKeyRequired = true
         }));
-        
-        
-        var useCustomDomain = Convert.ToBoolean(Node.TryGetContext(ContextUseCustomDomainName));
 
-        if (useCustomDomain)
+        var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
+
+
+        var domainName = (string)Node.TryGetContext(ContextDomainNameApi);
+
+        if (!string.IsNullOrEmpty(domainName))
         {
-            var domainName = (string) Node.TryGetContext(ContextDomainNameApi);
-            var certficateArn = (string) Node.TryGetContext(ContextCertificateArn);
-        
+            var certficateArn = (string)Node.TryGetContext(ContextCertificateArnApi);
+
+            Console.WriteLine($"ContextCertificateArnApi = {ContextCertificateArnApi}");
             var apiGatewayDomainName = new CfnDomainName(this, "NuagesApiDomainName", new CfnDomainNameProps
             {
                 DomainName = domainName,
-                DomainNameConfigurations = new [] { new CfnDomainName.DomainNameConfigurationProperty
+                DomainNameConfigurations = new[]
                 {
-                    EndpointType = "REGIONAL",
-                    CertificateArn = certficateArn
-                }}
+                    new CfnDomainName.DomainNameConfigurationProperty
+                    {
+                        EndpointType = "REGIONAL",
+                        CertificateArn = certficateArn
+                    }
+                }
             });
-        
+
             var hostedZone = HostedZone.FromLookup(this, "LookupApi", new HostedZoneProviderProps
             {
                 DomainName = GetBaseDomain(domainName)
             });
-        
-        
+
             // ReSharper disable once UnusedVariable
             var recordSet = new CfnRecordSet(this, "Route53RecordSetGroupApi", new CfnRecordSetProps
             {
@@ -97,46 +94,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                 HostedZoneId = hostedZone.HostedZoneId,
                 Name = domainName,
                 Type = "A"
-           
             });
 
-            var webApi = (RestApi) Node.Children.Single(c => c.GetType() == typeof(RestApi));
-
-           
-            // ReSharper disable once UnusedVariable
-            var usagePlan = new UsagePlan(this, MakeId("WebApiUsagePlan"), new UsagePlanProps
-            {
-                ApiStages = new IUsagePlanPerApiStage[]
-                {
-                    new UsagePlanPerApiStage
-                    {
-                        Api = webApi,
-                        Stage = webApi.DeploymentStage
-                    }
-                }
-            });
-
-            
-            // ReSharper disable once UnusedVariable
-            // var overrides = new CfnApiGatewayManagedOverrides(this, MakeId("ApiGatewayOverriudes"),
-            //     new CfnApiGatewayManagedOverridesProps
-            //     {
-            //         ApiId = webApi.RestApiId,
-            //         Stage = new CfnApiGatewayManagedOverrides.StageOverridesProperty
-            //         {
-            //             DefaultRouteSettings =  new CfnApiGatewayManagedOverrides.RouteSettingsProperty
-            //             {
-            //                 DataTraceEnabled = true
-            //             }
-            //         }
-            //     });
-            
-            
-            // ReSharper disable once UnusedVariable
-            var apiKey = new ApiKey(this, "WebApiKey");
-
-            usagePlan.AddApiKey(apiKey);
-            
             // ReSharper disable once UnusedVariable
             var apiMapping = new CfnApiMapping(this, MakeId("NuagesRestApiMapping"), new CfnApiMappingProps
             {
@@ -152,20 +111,29 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                 Description = "Custom Url for the Web API"
             });
         }
-        
-        
-    }
 
-    private void PrintNode(Node deploymentStageNode)
-    {
-       
-        Console.WriteLine(deploymentStageNode.Id + " " + deploymentStageNode.GetType());
-
-        
-        foreach (var c in deploymentStageNode.Children)
+        // ReSharper disable once UnusedVariable
+        var usagePlan = new UsagePlan(this, MakeId("WebApiUsagePlan"), new UsagePlanProps
         {
-            PrintNode(c.Node);
-        }
+            ApiStages = new IUsagePlanPerApiStage[]
+            {
+                new UsagePlanPerApiStage
+                {
+                    Api = webApi,
+                    Stage = webApi.DeploymentStage
+                }
+            }
+        });
+
+        var key = (string)Node.TryGetContext(ContextApiKeyApi);
+        
+        // ReSharper disable once UnusedVariable
+        var apiKey = new ApiKey(this, "WebApiKey", new ApiKeyProps
+        {
+            Value = key
+        });
+
+        usagePlan.AddApiKey(apiKey);
     }
 
     protected virtual Role CreateWebApiRole()
@@ -176,39 +144,17 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         });
 
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy("API"));
-        
         role.AddManagedPolicy(CreateLambdaFullAccessRolePolicy());
-            
-        role.AddManagedPolicy(CreateDynamoDbWebApiRolePolicy());
-        
-        role.AddManagedPolicy(CreateExecuteApiConnectionWebApiRolePolicy());
-        
+        role.AddManagedPolicy(CreateDynamoDbRolePolicy("API"));
+        role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy("API"));
+        role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy("API"));
+
         return role;
-
     }
 
-    protected virtual ManagedPolicy CreateExecuteApiConnectionWebApiRolePolicy()
+    private IManagedPolicy CreateLambdaFullAccessRolePolicy()
     {
-        return new ManagedPolicy(this, MakeId("ExecuteApiConnectionRoleWebApi"), new ManagedPolicyProps
-        {
-            Document = new PolicyDocument(new PolicyDocumentProps
-            {
-                Statements = new []{ new PolicyStatement(new PolicyStatementProps
-                {
-                    Effect = Effect.ALLOW,
-                    Actions = new []{"execute-api:ManageConnections"},
-                    Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
-                })}
-            })
-            //ManagedPolicyName = MakeId("ExecuteApiConnectionRoleWebApi")
-        });
-    }
-    
-    private IManagedPolicy CreateDynamoDbWebApiRolePolicy()
-    {
-        var id = MakeId("DynamoDbRoleWebApi");
-        
-        return new ManagedPolicy(this, id, new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("LambdaFullAccessRole"), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -217,75 +163,61 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] { "dynamodb:*" },
+                        Actions = new[]
+                        {
+                            "cloudformation:DescribeStacks",
+                            "cloudformation:ListStackResources",
+                            "cloudwatch:ListMetrics",
+                            "cloudwatch:GetMetricData",
+                            "ec2:DescribeSecurityGroups",
+                            "ec2:DescribeSubnets",
+                            "ec2:DescribeVpcs",
+                            "kms:ListAliases",
+                            "iam:GetPolicy",
+                            "iam:GetPolicyVersion",
+                            "iam:GetRole",
+                            "iam:GetRolePolicy",
+                            "iam:ListAttachedRolePolicies",
+                            "iam:ListRolePolicies",
+                            "iam:ListRoles",
+                            "lambda:*",
+                            "logs:DescribeLogGroups",
+                            "states:DescribeStateMachine",
+                            "states:ListStateMachines",
+                            "tag:GetResources",
+                            "xray:GetTraceSummaries",
+                            "xray:BatchGetTraces"
+                        },
                         Resources = new[] { "*" }
-                    })
-                }
-            })
-        });
-    }
-     private IManagedPolicy CreateLambdaFullAccessRolePolicy()
-    {
-        return new ManagedPolicy(this, MakeId("LambdaFullAccessRole"), new ManagedPolicyProps
-        {
-            Document = new PolicyDocument(new PolicyDocumentProps
-            {
-                Statements = new []{ new PolicyStatement(new PolicyStatementProps
-                {
-                    Effect = Effect.ALLOW,
-                    Actions = new []{"cloudformation:DescribeStacks",
-                        "cloudformation:ListStackResources",
-                        "cloudwatch:ListMetrics",
-                        "cloudwatch:GetMetricData",
-                        "ec2:DescribeSecurityGroups",
-                        "ec2:DescribeSubnets",
-                        "ec2:DescribeVpcs",
-                        "kms:ListAliases",
-                        "iam:GetPolicy",
-                        "iam:GetPolicyVersion",
-                        "iam:GetRole",
-                        "iam:GetRolePolicy",
-                        "iam:ListAttachedRolePolicies",
-                        "iam:ListRolePolicies",
-                        "iam:ListRoles",
-                        "lambda:*",
-                        "logs:DescribeLogGroups",
-                        "states:DescribeStateMachine",
-                        "states:ListStateMachines",
-                        "tag:GetResources",
-                        "xray:GetTraceSummaries",
-                        "xray:BatchGetTraces"},
-                    Resources = new []{"*"}
-                }),
+                    }),
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new []{"iam:PassRole"},
-                        Resources = new []{"*"},
+                        Actions = new[] { "iam:PassRole" },
+                        Resources = new[] { "*" },
                         Conditions = new Dictionary<string, object>
                         {
-                            { 
-                                "StringEquals",  new Dictionary<string, string>
+                            {
+                                "StringEquals", new Dictionary<string, string>
                                 {
                                     { "iam:PassedToService", "lambda.amazonaws.com" }
                                 }
-                                
                             }
-                           
                         }
                     }),
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new []{"logs:DescribeLogStreams",
+                        Actions = new[]
+                        {
+                            "logs:DescribeLogStreams",
                             "logs:GetLogEvents",
-                            "logs:FilterLogEvents"},
-                        Resources = new []{"arn:aws:logs:*:*:log-group:/aws/lambda/*"}
+                            "logs:FilterLogEvents"
+                        },
+                        Resources = new[] { "arn:aws:logs:*:*:log-group:/aws/lambda/*" }
                     })
                 }
-                
             })
-            //ManagedPolicyName = MakeId("LambdaFullAccessRole")
         });
     }
 }

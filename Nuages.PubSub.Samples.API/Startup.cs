@@ -21,15 +21,12 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
-        
-        
         services.AddSingleton(_configuration);
         
         var pubSubBuilder = services
             .AddPubSubService(_configuration);
             
         var storage = _configuration.GetSection("Nuages:PubSub:Storage").Value;
-        Console.WriteLine($"Storage = {storage}");
         
         switch (storage)
         {

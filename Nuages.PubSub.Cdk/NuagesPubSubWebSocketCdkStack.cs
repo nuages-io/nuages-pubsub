@@ -57,10 +57,13 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         
     }
 
-    public const string ContextDomainName = "Nuages/PubSub/DomainName";
-    public const string ContextDomainNameApi = "Nuages/PubSub/DomainNameApi";
-    public const string ContextCertificateArn = "Nuages/PubSub/CertificateArn";
-    public const string ContextUseCustomDomainName = "Nuages/PubSub/UseCustomDomainName";
+    public const string ContextDomainName = "Nuages/PubSub/WebSocket/Domain";
+    public const string ContextCertificateArn = "Nuages/PubSub/WebSocket/CertificateArn";
+    
+    public const string ContextDomainNameApi = "Nuages/PubSub/API/Domain";
+    public const string ContextCertificateArnApi = "Nuages/PubSub/API/CertificateArn";
+    public const string ContextApiKeyApi = "Nuages/PubSub/API/ApiKey";
+    
     public const string ContextDynamoDb = "Nuages/PubSub/CreateDynamoDbStorage";
     public const string ContextTableNamePrefix = "Nuages/PubSub/TableNamePrefix";
     
@@ -111,19 +114,20 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
         var stage = CreateStage(api, deployment);
 
-        var useCustomDomain = Convert.ToBoolean(Node.TryGetContext(ContextUseCustomDomainName));
+        var domainName = (string) Node.TryGetContext(ContextDomainName);
 
-        if (useCustomDomain)
+        if (!string.IsNullOrEmpty(domainName))
         {
-            var domainName = (string) Node.TryGetContext(ContextDomainName);
             Console.WriteLine($"Domain = {domainName}");
-            
+        
             var certficateArn = (string) Node.TryGetContext(ContextCertificateArn);
+        
+            Console.WriteLine($"ContextCertificateArn = {ContextCertificateArn}");
             
             var apiGatewayDomainName = CreateApiGatewayDomainName(certficateArn, domainName);
             CreateS3RecordSet(domainName, apiGatewayDomainName);
             CreateApiMapping(apiGatewayDomainName, api, stage);
-            
+        
             // ReSharper disable once UnusedVariable
             var output2 = new CfnOutput(this, "NuagesPubSubCustomURI", new CfnOutputProps
             {
@@ -131,9 +135,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                 Description = "The Custom WSS Protocol URI to connect to"
             });
         }
-
-       
-        
         
         var createDynamodb = Convert.ToBoolean(Node.TryGetContext(ContextDynamoDb));
         
@@ -327,7 +328,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             {
                 {"Nuages__PubSub__Region", Aws.REGION},
                 {"Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}"},
-                {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" }
+                {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
+                 {"Nuages__PubSub__StackName", StackName ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });
@@ -351,13 +353,14 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy());
         
         role.AddManagedPolicy(CreateDynamoDbRolePolicy());
+        role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy());
             
         return role;
     }
 
-    protected virtual ManagedPolicy CreateDynamoDbRolePolicy()
+    protected virtual ManagedPolicy CreateDynamoDbRolePolicy(string suffix = "")
     {
-        return new ManagedPolicy(this, MakeId("DynamoDbRole"), new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("DynamoDbRole" + suffix), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -368,13 +371,12 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Resources = new []{"*"}
                 })}
             })
-            //ManagedPolicyName = MakeId("DynamoDbRole")
         });
     }
 
-    protected virtual ManagedPolicy CreateExecuteApiConnectionRolePolicy()
+    protected virtual ManagedPolicy CreateExecuteApiConnectionRolePolicy(string suffix = "")
     {
-        return new ManagedPolicy(this, MakeId("ExecuteApiConnectionRole"), new ManagedPolicyProps
+        return new ManagedPolicy(this, MakeId("ExecuteApiConnectionRole"+suffix), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
             {
@@ -385,26 +387,25 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Resources = new []{"arn:aws:execute-api:*:*:*/@connections/*"}
                 })}
             })
-            //ManagedPolicyName = MakeId("ExecuteApiConnectionRole")
         });
     }
 
-    // protected virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy()
-    // {
-    //     return new ManagedPolicy(this, GetNormalizedName("SystemsManagerParametersRole"), new ManagedPolicyProps
-    //     {
-    //         Document = new PolicyDocument(new PolicyDocumentProps
-    //         {
-    //             Statements = new []{ new PolicyStatement(new PolicyStatementProps
-    //             {
-    //                 Effect = Effect.ALLOW,
-    //                 Actions = new []{"ssm:GetParametersByPath"},
-    //                 Resources = new []{"*"}
-    //             })}
-    //         }),
-    //         ManagedPolicyName = GetNormalizedName("SystemsManagerParametersRole")
-    //     });
-    // }
+    protected virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy(string suffix = "")
+    {
+        return new ManagedPolicy(this, MakeId("SystemsManagerParametersRole"+ suffix), new ManagedPolicyProps
+        {
+            Document = new PolicyDocument(new PolicyDocumentProps
+            {
+                Statements = new []{ new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Actions = new []{"ssm:GetParametersByPath"},
+                    Resources = new []{"*"}
+                })}
+            }),
+            //ManagedPolicyName = GetNormalizedName("SystemsManagerParametersRole")
+        });
+    }
 
     protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
@@ -462,6 +463,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     protected virtual CfnDomainName CreateApiGatewayDomainName(string certficateArn, string domainName)
     {
+        Console.WriteLine($"certficateArn = {certficateArn}");
         // ReSharper disable once UnusedVariable
         //var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
         var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps

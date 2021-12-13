@@ -18,7 +18,7 @@ public class AuthController : Controller
     }
     
     // GET
-    [HttpGet("GetClientAccessToken")]
+    [HttpGet("getclienttoken")]
     public async Task<ActionResult<string>> GetClientAccessTokenAsync(
         string userId, string audience,
         TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
