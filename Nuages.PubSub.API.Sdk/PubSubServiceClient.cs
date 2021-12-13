@@ -21,7 +21,7 @@ public partial class PubSubServiceClient
     
     public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
     {
-        HttpClient.DefaultRequestHeaders.Add("apiKey", _apiKey);
+        HttpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
         
         var webService = new AuthClient(HttpClient)
         {

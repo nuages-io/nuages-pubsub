@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".CDK", ".CDK", "{0B49A1C7-3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Controllers", "Nuages.PubSub.API.Controllers\Nuages.PubSub.API.Controllers.csproj", "{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Sdk.Tests", "Nuages.PubSub.API.Sdk.Tests\Nuages.PubSub.API.Sdk.Tests.csproj", "{7614C86E-6CEC-42DF-9CD3-43C006050183}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7614C86E-6CEC-42DF-9CD3-43C006050183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7614C86E-6CEC-42DF-9CD3-43C006050183}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7614C86E-6CEC-42DF-9CD3-43C006050183}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7614C86E-6CEC-42DF-9CD3-43C006050183}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{90032C05-C7FF-4AD6-B7D5-1CF271AD9A29} = {E97A975A-2951-452E-8080-891F5D6D9347}

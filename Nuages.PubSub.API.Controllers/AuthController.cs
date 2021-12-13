@@ -5,7 +5,7 @@ using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : Controller
 {
     private readonly IPubSubService _pubSubService;

@@ -6,7 +6,7 @@ using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/group")]
 public class GroupController
 {
     private readonly IPubSubService _pubSubService;
@@ -36,7 +36,7 @@ public class GroupController
             {
                 type = message.type,
                 data = message.data,
-                dataType = message.dataType,
+                dataType = message.dataType.ToString(),
                 from = PubSubMessageSource.server
             });
 

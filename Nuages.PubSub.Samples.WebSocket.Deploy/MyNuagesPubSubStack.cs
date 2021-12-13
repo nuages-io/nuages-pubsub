@@ -6,6 +6,7 @@ namespace Nuages.PubSub.Samples.WebSocket.Deploy;
 
 public class MyNuagesPubSubStack : Cdk.NuagesPubSubWebSocketCdkStack<PubSubFunction>
 {
+    // ReSharper disable once UnusedParameter.Local
     public MyNuagesPubSubStack(IConfiguration configuration, Construct scope, string id, IStackProps? props = null) 
         : base(scope, id, props)
     {

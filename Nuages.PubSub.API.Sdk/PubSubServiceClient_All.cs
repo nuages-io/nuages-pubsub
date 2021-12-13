@@ -2,13 +2,14 @@ namespace Nuages.PubSub.API.Sdk;
 
 public partial class PubSubServiceClient
 {
-    public async Task SendToAllAsync(string message)
+    public async Task SendToAllAsync(Message message)
     {
         var webService = new AllClient(HttpClient)
         {
             BaseUrl = _url
         };
     
+        
         await webService.SendAsync(_hub, message).ConfigureAwait(false);
     }
     

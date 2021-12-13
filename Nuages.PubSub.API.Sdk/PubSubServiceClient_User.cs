@@ -2,7 +2,7 @@ namespace Nuages.PubSub.API.Sdk;
 
 public partial class PubSubServiceClient
 {
-    public async Task SendToUserAsync(string userId, string message)
+    public async Task SendToUserAsync(string userId, Message message)
     {
         var webService = new UserClient(HttpClient)
         {
@@ -30,5 +30,35 @@ public partial class PubSubServiceClient
         };
     
         return await webService.ExistsAsync(_hub, connectionId).ConfigureAwait(false);
+    }
+    
+    public async Task AddUserToGroupAsync(string userId, string group)
+    {
+        var webService = new UserClient(HttpClient)
+        {
+            BaseUrl = _url
+        };
+    
+        await webService.AddUserToGroupAsync(_hub, userId, group).ConfigureAwait(false);
+    }
+    
+    public async Task RemoveUserFromGroupAsync(string userId, string group)
+    {
+        var webService = new UserClient(HttpClient)
+        {
+            BaseUrl = _url
+        };
+    
+        await webService.RemoveUserFromGroupAsync(_hub, userId, group).ConfigureAwait(false);
+    }
+    
+    public async Task RemoveUserFromGroupAsync(string userId)
+    {
+        var webService = new UserClient(HttpClient)
+        {
+            BaseUrl = _url
+        };
+    
+        await webService.RemoveUserFromAllGroupsAsync(_hub, userId).ConfigureAwait(false);
     }
 }

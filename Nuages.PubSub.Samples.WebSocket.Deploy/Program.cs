@@ -8,6 +8,7 @@ namespace Nuages.PubSub.Samples.WebSocket.Deploy;
 //ReSharper disable once ArrangeTypeModifiers
 sealed class Program
 {
+    // ReSharper disable once UnusedParameter.Global
     public static void Main(string[] args)
     {
         var configManager = new ConfigurationManager();
