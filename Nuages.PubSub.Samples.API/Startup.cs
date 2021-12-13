@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using Amazon.XRay.Recorder.Core;
-using Amazon.XRay.Recorder.Core.Strategies;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;

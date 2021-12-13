@@ -329,7 +329,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                 {"Nuages__PubSub__Region", Aws.REGION},
                 {"Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}"},
                 {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
-                 {"Nuages__PubSub__StackName", StackName ?? "" }
+                {"Nuages__PubSub__StackName", StackName }
             },
             Tracing = Tracing.ACTIVE
         });
@@ -349,9 +349,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         });
 
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy());
-            
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy());
-        
         role.AddManagedPolicy(CreateDynamoDbRolePolicy());
         role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy());
             
@@ -402,8 +400,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Actions = new []{"ssm:GetParametersByPath"},
                     Resources = new []{"*"}
                 })}
-            }),
-            //ManagedPolicyName = GetNormalizedName("SystemsManagerParametersRole")
+            })
         });
     }
 
@@ -422,7 +419,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     Resources = new []{"*"}
                 })}
             })
-            //ManagedPolicyName = MakeId("LambdaBasicExecutionRole" + suffix)
         });
     }
 

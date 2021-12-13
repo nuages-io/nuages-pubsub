@@ -12,5 +12,8 @@ public class MyNuagesPubSubStack : Cdk.NuagesPubSubWebSocketCdkStack<PubSubFunct
         
         Asset = "./Nuages.PubSub.Samples.WebSocket/bin/Release/net6.0/linux-x64/publish";
         WebApiAsset = "./Nuages.PubSub.Samples.API/bin/Release/net6.0/linux-x64/publish";
+        
+       
     }
+    
 }
