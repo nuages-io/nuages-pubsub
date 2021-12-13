@@ -182,7 +182,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
         foreach (var c in list2)
         {
-            await _context.DeleteAsync(c);
+            await _context.DeleteAsync(c, _tableConfig);
         }
     }
 
@@ -199,7 +199,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
         foreach (var c in list)
         {
-            await _context.DeleteAsync(c);
+            await _context.DeleteAsync(c, _tableConfig);
         }
         
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
@@ -213,7 +213,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
         foreach (var c in list2)
         {
-            await _context.DeleteAsync(c);
+            await _context.DeleteAsync(c, _tableConfig);
         }
         
     }
@@ -244,7 +244,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         var list = await search.GetNextSetAsync();
         foreach (var c in list)
         {
-            await _context.DeleteAsync(c);
+            await _context.DeleteAsync(c, _tableConfig);
         }
         
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
@@ -257,7 +257,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         var list2 = await search2.GetNextSetAsync();
         foreach (var c in list2)
         {
-            await _context.DeleteAsync(c);
+            await _context.DeleteAsync(c, _tableConfig);
         }
     }
 

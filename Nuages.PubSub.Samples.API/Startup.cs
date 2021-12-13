@@ -77,14 +77,15 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
         else
-        {
+        {   
             var stackName = _configuration.GetSection("Nuages:PubSub:StackName").Value;
             
-            AWSSDKHandler.RegisterXRayForAllServices();
             AWSXRayRecorder.InitializeInstance(_configuration);
+            AWSSDKHandler.RegisterXRayForAllServices();
+        
             app.UseXRay(stackName);
-            
         }
+          
         
         app.UseHttpsRedirection();
 
