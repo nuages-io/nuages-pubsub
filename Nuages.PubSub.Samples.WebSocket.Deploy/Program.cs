@@ -19,9 +19,11 @@ sealed class Program
         
         IConfiguration configuration = builder.Build();
         
+        var options = configuration.Get<ConfigOptions>();
+        
         var app = new App();
 
-        var name = configuration.GetSection("Nuages:PubSub:StackName").Value;
+        var name = options.StackName;
         
         var stack = new MyNuagesPubSubStack(configuration, app, name, new StackProps
         {
@@ -34,16 +36,15 @@ sealed class Program
       
         //Initialize context required by custom domain. You may also set the values in the cdk.json file (see CDK documentation for more info)
 
-       
-        stack.Node.SetContext(MyNuagesPubSubStack.ContextDomainName,  configuration.GetSection("Nuages:PubSub:WebSocket:Domain").Value);
-        stack.Node.SetContext(MyNuagesPubSubStack.ContextCertificateArn, configuration.GetSection("Nuages:PubSub:WebSocket:CertificateArn").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextDomainName,  options.WebSocket.Domain);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextCertificateArn,options.WebSocket.CertificateArn);
         
-        stack.Node.SetContext(MyNuagesPubSubStack.ContextDomainNameApi,  configuration.GetSection("Nuages:PubSub:API:Domain").Value);
-        stack.Node.SetContext(MyNuagesPubSubStack.ContextCertificateArnApi, configuration.GetSection("Nuages:PubSub:API:CertificateArn").Value);
-        stack.Node.SetContext(MyNuagesPubSubStack.ContextApiKeyApi, configuration.GetSection("Nuages:PubSub:API:ApiKey").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextDomainNameApi,  options.Api.Domain);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextCertificateArnApi, options.Api.CertificateArn);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextApiKeyApi, options.Api.ApiKey);
         
-        stack.Node.SetContext(MyNuagesPubSubStack.ContextCreateDynamoDbStorage, configuration.GetSection("Nuages:PubSub:CreateDynamoDbStorage").Value);
-        stack.Node.SetContext(MyNuagesPubSubStack.ContextTableNamePrefix, configuration.GetSection("Nuages:PubSub:TableNamePrefix").Value);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextCreateDynamoDbStorage, options.CreateDynamoDbStorage);
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextTableNamePrefix, options.TableNamePrefix);
         
         stack.CreateTemplate();
 
