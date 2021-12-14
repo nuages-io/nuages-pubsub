@@ -4,7 +4,7 @@ public partial class PubSubServiceClient
 {
     public async Task SendToUserAsync(string userId, Message message)
     {
-        var webService = new UserClient(HttpClient)
+        var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -14,7 +14,7 @@ public partial class PubSubServiceClient
     
     public async Task CloseUserConnectionsAsync(string userId)
     {
-        var webService = new UserClient(HttpClient)
+        var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -24,7 +24,7 @@ public partial class PubSubServiceClient
     
     public async Task<bool> UserExistsAsync(string connectionId)
     {
-        var webService = new UserClient(HttpClient)
+        var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -34,7 +34,7 @@ public partial class PubSubServiceClient
     
     public async Task AddUserToGroupAsync(string userId, string group)
     {
-        var webService = new UserClient(HttpClient)
+        var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -44,7 +44,7 @@ public partial class PubSubServiceClient
     
     public async Task RemoveUserFromGroupAsync(string userId, string group)
     {
-        var webService = new UserClient(HttpClient)
+        var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -54,7 +54,7 @@ public partial class PubSubServiceClient
     
     public async Task RemoveUserFromGroupAsync(string userId)
     {
-        var webService = new UserClient(HttpClient)
+        var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };

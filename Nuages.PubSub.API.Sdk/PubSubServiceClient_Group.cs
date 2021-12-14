@@ -4,7 +4,7 @@ public partial class PubSubServiceClient
 {
     public async Task SendToGroupAsync(string group, Message message)
     {
-        var webService = new GroupClient(HttpClient)
+        var webService = new GroupClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -14,7 +14,7 @@ public partial class PubSubServiceClient
     
     public async Task CloseGroupConnectionsAsync(string group)
     {
-        var webService = new GroupClient(HttpClient)
+        var webService = new GroupClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -24,7 +24,7 @@ public partial class PubSubServiceClient
     
     public async Task<bool> GroupExistsAsync(string connectionId)
     {
-        var webService = new GroupClient(HttpClient)
+        var webService = new GroupClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -34,7 +34,7 @@ public partial class PubSubServiceClient
     
     public async Task AddConnectionToGroupAsync( string group, string connectionid)
     {
-        var webService = new GroupClient(HttpClient)
+        var webService = new GroupClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -44,7 +44,7 @@ public partial class PubSubServiceClient
     
     public async Task RemoveConnectionFromGroupAsync(string group, string connectionid)
     {
-        var webService = new GroupClient(HttpClient)
+        var webService = new GroupClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -54,7 +54,7 @@ public partial class PubSubServiceClient
     
     public async Task<bool> IsConnectionInGroupAsync(string group, string connectionid)
     {
-        var webService = new GroupClient(HttpClient)
+        var webService = new GroupClient(_httpClient)
         {
             BaseUrl = _url
         };

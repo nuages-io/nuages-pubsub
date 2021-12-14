@@ -6,29 +6,42 @@ public partial class PubSubServiceClient
     private readonly string _apiKey;
     private readonly string _hub;
 
-    private HttpClient? _httpClient;
+    private HttpClient _httpClient;
 
-    private HttpClient HttpClient
-    {
-        get { return _httpClient ??= new HttpClient(); }
-    }
     public PubSubServiceClient(string url, string apiKey, string hub)
     {
         _url = url;
         _apiKey = apiKey;
         _hub = hub;
+
+        _httpClient = new HttpClient();
+        _httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="expiresAfter"></param>
+    /// <param name="roles"></param>
+    /// <returns></returns>
     public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
     {
-        HttpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
-        
-        var webService = new AuthClient(HttpClient)
+        var webService = new AuthClient(_httpClient)
         {
             BaseUrl = _url
         };
     
-        
         return await webService.GetClientAccessTokenAsync(userId, _hub, expiresAfter, roles).ConfigureAwait(false);
+    }
+    
+    public async Task<string> GetClientAccessUriAsync(string userId, string audience, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
+    {
+        var webService = new AuthClient(_httpClient)
+        {
+            BaseUrl = _url
+        };
+
+        return await webService.GetClientAccessUriAsync(userId, audience, _hub, expiresAfter, roles).ConfigureAwait(false);
     }
 }

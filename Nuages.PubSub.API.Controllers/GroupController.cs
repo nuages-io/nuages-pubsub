@@ -56,6 +56,7 @@ public class GroupController
     }
     
     [HttpDelete("close")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> CloseAsync(string hub, string group)
     {
         try
@@ -185,6 +186,7 @@ public class GroupController
     }
 
     [HttpDelete("connections/remove")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
     {
         try

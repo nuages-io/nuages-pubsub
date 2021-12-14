@@ -4,7 +4,7 @@ public partial class PubSubServiceClient
 {
     public async Task SendToAllAsync(Message message)
     {
-        var webService = new AllClient(HttpClient)
+        var webService = new AllClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -15,7 +15,7 @@ public partial class PubSubServiceClient
     
     public async Task CloseAllConnectionsAsync()
     {
-        var webService = new AllClient(HttpClient)
+        var webService = new AllClient(_httpClient)
         {
             BaseUrl = _url
         };

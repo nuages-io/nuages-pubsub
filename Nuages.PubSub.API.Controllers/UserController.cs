@@ -58,6 +58,7 @@ public class UserController
     }
     
     [HttpDelete("close")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> CloseAsync(string hub, string userId)
     {
         try
@@ -155,6 +156,7 @@ public class UserController
     }
 
     [HttpDelete("groups/remove")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
         try
@@ -187,6 +189,7 @@ public class UserController
     }
 
     [HttpDelete("groups/removeall")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
         try

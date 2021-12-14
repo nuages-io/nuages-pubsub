@@ -4,7 +4,7 @@ public partial class PubSubServiceClient
 {
     public async Task SendToConnectionAsync(string connectionid, Message message)
     {
-        var webService = new ConnectionClient(HttpClient)
+        var webService = new ConnectionClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -14,7 +14,7 @@ public partial class PubSubServiceClient
 
     public async Task CloseConnectionAsync(string connectionId)
     {
-        var webService = new ConnectionClient(HttpClient)
+        var webService = new ConnectionClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -24,7 +24,7 @@ public partial class PubSubServiceClient
     
     public async Task<bool> ConnectionExistsAsync(string connectionId)
     {
-        var webService = new ConnectionClient(HttpClient)
+        var webService = new ConnectionClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -34,7 +34,7 @@ public partial class PubSubServiceClient
 
     public async Task GrantPermissionAsync(PubSubPermission permission, string connectionId, string target)
     {
-        var webService = new ConnectionClient(HttpClient)
+        var webService = new ConnectionClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -44,7 +44,7 @@ public partial class PubSubServiceClient
     
     public async Task RevokePermissionAsync( PubSubPermission permission, string connectionId, string target)
     {
-        var webService = new ConnectionClient(HttpClient)
+        var webService = new ConnectionClient(_httpClient)
         {
             BaseUrl = _url
         };
@@ -54,7 +54,7 @@ public partial class PubSubServiceClient
     
     public async Task<bool> CheckPermissionAsync(PubSubPermission permission, string connectionId, string target)
     {
-        var webService = new ConnectionClient(HttpClient)
+        var webService = new ConnectionClient(_httpClient)
         {
             BaseUrl = _url
         };
