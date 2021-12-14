@@ -4,8 +4,14 @@ namespace Nuages.PubSub.API.Sdk.Tests;
 
 public class TestAuth
 {
-    [Fact]
-    public void Test1()
+    public TestAuth()
     {
+        
+    }
+    
+    [Fact]
+    public void ShouldGetAuthToken()
+    {
+        
     }
 }

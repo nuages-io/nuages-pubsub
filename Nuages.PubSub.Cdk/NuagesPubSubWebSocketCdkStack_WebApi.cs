@@ -128,7 +128,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         var key = (string)Node.TryGetContext(ContextApiKeyApi);
         
         // ReSharper disable once UnusedVariable
-        var apiKey = new ApiKey(this, "WebApiKey", new ApiKeyProps
+        var apiKey = new ApiKey(this, MakeId("WebApiKey"), new ApiKeyProps
         {
             Value = key
         });

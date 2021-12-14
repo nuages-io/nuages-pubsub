@@ -15,7 +15,7 @@ sealed class Program
 
         var builder = configManager
             .AddJsonFile("appsettings.json",  false, true)
-            .AddJsonFile("appsettings.prod.json",  true, true)
+            .AddJsonFile("appsettings.prod.test.json",  false, true)
             .AddEnvironmentVariables();
         
         IConfiguration configuration = builder.Build();
@@ -34,8 +34,6 @@ sealed class Program
                 Region = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_REGION")
             }
         }); 
-      
-        //Initialize context required by custom domain. You may also set the values in the cdk.json file (see CDK documentation for more info)
 
         stack.Node.SetContext(MyNuagesPubSubStack.ContextDomainName,  options.WebSocket.Domain);
         stack.Node.SetContext(MyNuagesPubSubStack.ContextCertificateArn,options.WebSocket.CertificateArn);

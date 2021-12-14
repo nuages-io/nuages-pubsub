@@ -8,7 +8,6 @@ public class ConfigOptions
     
     public WebSocket WebSocket { get; set; } = new ();
     public Api Api { get; set; } = new();
-    
 }
 
 public class WebSocket
