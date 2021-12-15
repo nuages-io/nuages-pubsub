@@ -104,7 +104,7 @@ public class TestInMemoryPubSubStorage
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, new TimeSpan(1,0,0));
 
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
 

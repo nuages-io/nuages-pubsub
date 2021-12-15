@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Nuages.PubSub.Samples.API;
 /// <summary>
 /// This class extends from APIGatewayProxyFunction which contains the method FunctionHandlerAsync which is the 
@@ -6,6 +8,7 @@ namespace Nuages.PubSub.Samples.API;
 /// Nuages.PubSub.Samples.API::Nuages.PubSub.Samples.API.LambdaEntryPoint::FunctionHandlerAsync
 /// </summary>
 // ReSharper disable once UnusedType.Global
+[ExcludeFromCodeCoverage]
 public class LambdaEntryPoint :
 
     // The base class must be set to match the AWS service invoking the Lambda function. If not Amazon.Lambda.AspNetCoreServer

@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Microsoft.Extensions.Configuration;
 
@@ -6,6 +7,7 @@ namespace Nuages.PubSub.Samples.WebSocket.Deploy;
 
 //ReSharper disable once ClassNeverInstantiated.Global
 //ReSharper disable once ArrangeTypeModifiers
+[ExcludeFromCodeCoverage]
 sealed class Program
 {
     // ReSharper disable once UnusedParameter.Global
@@ -15,8 +17,8 @@ sealed class Program
 
         var builder = configManager
             .AddJsonFile("appsettings.json",  false, true)
-            .AddJsonFile("appsettings.prod.json",  false, true)
-            //.AddJsonFile("appsettings.prod.test.json",  false, true)
+            //.AddJsonFile("appsettings.prod.json",  false, true)
+            .AddJsonFile("appsettings.prod.test.json",  false, true)
             .AddEnvironmentVariables();
         
         IConfiguration configuration = builder.Build();

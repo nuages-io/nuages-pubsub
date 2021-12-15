@@ -13,7 +13,7 @@ namespace Nuages.PubSub.Storage.DynamoDb.Tests;
 // ReSharper disable once InconsistentNaming
 public class TestDynamoDbPubSubStorage_Integration
 {
-    private readonly string _sub;
+    private readonly string _userId;
     private readonly string _hub;
     
     private readonly IPubSubStorage _pubSubStorage;
@@ -22,7 +22,7 @@ public class TestDynamoDbPubSubStorage_Integration
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
-            .AddJsonFile("appsettings.local.json", true)
+            .AddJsonFile("appsettings.local.json", false)
             .Build();
 
         var serviceCollection = new ServiceCollection();
@@ -36,7 +36,7 @@ public class TestDynamoDbPubSubStorage_Integration
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
         _hub = "Hub";
-        _sub = "sub-test";
+        _userId = "sub-test";
         
         _pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
         
@@ -49,7 +49,7 @@ public class TestDynamoDbPubSubStorage_Integration
     {
         var connectionId = Guid.NewGuid().ToString();
 
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, null);
 
         Assert.False(connection.IsExpired());
         
@@ -65,15 +65,15 @@ public class TestDynamoDbPubSubStorage_Integration
         var collEmpty = await _pubSubStorage.GetAllConnectionAsync("Bad_Hub");
         Assert.Empty(collEmpty);
         
-        var userConnections = await _pubSubStorage.GetConnectionsForUserAsync(_hub, _sub);
+        var userConnections = await _pubSubStorage.GetConnectionsForUserAsync(_hub, _userId);
         Assert.Single(userConnections);
         
-        var userConnectionsEmpty = await _pubSubStorage.GetConnectionsForUserAsync("Bad_Hub", _sub);
+        var userConnectionsEmpty = await _pubSubStorage.GetConnectionsForUserAsync("Bad_Hub", _userId);
         Assert.Empty(userConnectionsEmpty);
         
-        Assert.True(await _pubSubStorage.UserHasConnectionsAsync(_hub, _sub));
+        Assert.True(await _pubSubStorage.UserHasConnectionsAsync(_hub, _userId));
         
-        Assert.False(await _pubSubStorage.UserHasConnectionsAsync("Bad_Hub", _sub));
+        Assert.False(await _pubSubStorage.UserHasConnectionsAsync("Bad_Hub", _userId));
     }
     
     [Fact]
@@ -81,7 +81,7 @@ public class TestDynamoDbPubSubStorage_Integration
     {
         var connectionId = Guid.NewGuid().ToString();
 
-        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, null);
 
         var existing = await _pubSubStorage.GetConnectionAsync(_hub, connectionId);
         Assert.NotNull(existing);
@@ -103,11 +103,11 @@ public class TestDynamoDbPubSubStorage_Integration
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, TimeSpan.FromDays(1));
+        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, TimeSpan.FromDays(1));
 
         Assert.False(connection.IsExpired());
         
-        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
+        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _userId);
 
         Assert.False(await _pubSubStorage.GroupHasConnectionsAsync("Bad_hub", group));
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
@@ -115,7 +115,7 @@ public class TestDynamoDbPubSubStorage_Integration
         await _pubSubStorage.RemoveConnectionFromGroupAsync("Bad_hub", group, connectionId);
         await _pubSubStorage.RemoveConnectionFromGroupAsync(_hub, group, connectionId);
         
-        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _sub));
+        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _userId));
         
     }
     
@@ -125,9 +125,9 @@ public class TestDynamoDbPubSubStorage_Integration
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, null);
 
-        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
+        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _userId);
 
         var collOne = await _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
         Assert.Single(collOne);
@@ -151,27 +151,27 @@ public class TestDynamoDbPubSubStorage_Integration
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, null);
 
-        await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
+        await _pubSubStorage.AddUserToGroupAsync(_hub, group, _userId);
 
         Assert.True(await _pubSubStorage.IsConnectionInGroup(_hub, group, connectionId));
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
 
-        var groups = await _pubSubStorage.GetGroupsForUser(_hub, _sub);
+        var groups = await _pubSubStorage.GetGroupsForUser(_hub, _userId);
         Assert.Equal(group, groups.First());
 
-        await _pubSubStorage.RemoveUserFromGroupAsync(_hub, group, _sub);
+        await _pubSubStorage.RemoveUserFromGroupAsync(_hub, group, _userId);
         
-        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _sub));
+        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _userId));
         
-        await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
+        await _pubSubStorage.AddUserToGroupAsync(_hub, group, _userId);
 
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
 
-        await _pubSubStorage.RemoveUserFromAllGroupsAsync(_hub, _sub);
+        await _pubSubStorage.RemoveUserFromAllGroupsAsync(_hub, _userId);
         
-        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _sub));
+        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _userId));
     }
     
     [Fact]
@@ -179,7 +179,7 @@ public class TestDynamoDbPubSubStorage_Integration
     {
         var connectionId = Guid.NewGuid().ToString();
         const string permissionId = "Permission";
-        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, null);
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, null);
 
         await _pubSubStorage.AddPermissionAsync(_hub, connectionId, permissionId);
         

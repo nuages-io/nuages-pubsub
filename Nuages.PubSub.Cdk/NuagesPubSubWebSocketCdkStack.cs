@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.DynamoDB;
@@ -16,6 +17,7 @@ namespace Nuages.PubSub.Cdk;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 // ReSharper disable once UnusedType.Global
+[ExcludeFromCodeCoverage]
 public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 {
     public string? Asset { get; set; } 

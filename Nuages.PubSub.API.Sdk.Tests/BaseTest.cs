@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Websocket.Client;
 using Xunit.Abstractions;
 
 namespace Nuages.PubSub.API.Sdk.Tests;
@@ -14,6 +18,8 @@ public class BaseTest
     protected string _hub;
     protected string _group;
 
+    protected PubSubServiceClient _pubSubClient;
+    
     protected BaseTest(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
@@ -27,5 +33,27 @@ public class BaseTest
         _userId = configuration.GetSection("UserId").Value;
         _hub = configuration.GetSection("Hub").Value;
         _group = configuration.GetSection("Group").Value;
+        
+        _pubSubClient = new PubSubServiceClient(_url, _apiKey, _hub);
+    }
+    
+    protected async Task<IWebsocketClient> CreateWebsocketClient()
+    {
+        var uri = await _pubSubClient.GetClientAccessUriAsync(_userId, null,
+            new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup) });
+
+        IWebsocketClient client = new WebsocketClient(new Uri(uri));
+        return client;
+    }
+    
+    
+    protected static void SendEcho(IWebsocketClient client)
+    {
+        var message = JsonSerializer.Serialize(new
+        {
+            type = "echo"
+        });
+
+        client.Send(message);
     }
 }

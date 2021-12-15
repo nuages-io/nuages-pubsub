@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Nuages.PubSub.Samples.WebSocket.Deploy;
 
+[ExcludeFromCodeCoverage]
 public class ConfigOptions
 {
     public string StackName { get; set; } = "";
@@ -10,12 +13,14 @@ public class ConfigOptions
     public Api Api { get; set; } = new();
 }
 
+[ExcludeFromCodeCoverage]
 public class WebSocket
 {
     public string Domain { get; set; } = "";
     public string CertificateArn { get; set; } = "";
 }
 
+[ExcludeFromCodeCoverage]
 public class Api
 {
     public string Domain { get; set; } = "";

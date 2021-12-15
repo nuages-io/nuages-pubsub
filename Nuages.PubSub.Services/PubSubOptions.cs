@@ -16,6 +16,7 @@ public class PubSubOptions
     public string? TableNamePrefix { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class ExternalAuth
 {
     public string ValidIssuers { get; set; } = "";

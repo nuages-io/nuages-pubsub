@@ -1,4 +1,5 @@
-﻿using Amazon.Lambda.Core;
+﻿using System.Diagnostics.CodeAnalysis;
+using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
@@ -14,6 +15,7 @@ using Nuages.PubSub.WebSocket;
 namespace Nuages.PubSub.Samples.WebSocket;
 
 // ReSharper disable once ClassNeverInstantiated.Global
+[ExcludeFromCodeCoverage]
 public class PubSubFunction : Nuages.PubSub.WebSocket.PubSubFunction
 {
     public PubSubFunction() 

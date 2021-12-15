@@ -17,12 +17,11 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         var client = new AmazonDynamoDBClient();
         _context = new DynamoDBContext(client);
-        var options1 = options.Value;
 
         _tableConfig =
             new DynamoDBOperationConfig
             {
-                TableNamePrefix = options1.TableNamePrefix
+                TableNamePrefix = options.Value.TableNamePrefix
             };
     }
 
@@ -78,7 +77,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         var search = _context.ScanAsync<PubSubConnection>(
             new List<ScanCondition>
             {
-                new ("Sub",  ScanOperator.Equal, userId),
+                new ("UserId",  ScanOperator.Equal, userId),
                 new ("Hub",  ScanOperator.Equal, hub)
             },
             _tableConfig
@@ -127,7 +126,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         var search =  _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>
         {
-            new ("Sub",  ScanOperator.Equal, userId),
+            new ("UserId",  ScanOperator.Equal, userId),
             new ("Group",  ScanOperator.Equal, group),
             new ("Hub",  ScanOperator.Equal, hub)
         },
@@ -156,7 +155,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         var search =  _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>
         {
-            new ("Sub",  ScanOperator.Equal, userId),
+            new ("UserId",  ScanOperator.Equal, userId),
             new ("Group",  ScanOperator.Equal, group),
             new ("Hub",  ScanOperator.Equal, hub)
         },
@@ -171,7 +170,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
         {
-            new ("Sub",  ScanOperator.Equal, userId),
+            new ("UserId",  ScanOperator.Equal, userId),
             new ("Group",  ScanOperator.Equal, group),
             new ("Hub",  ScanOperator.Equal, hub)
         },
@@ -189,7 +188,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         var search =  _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>
         {
-            new ("Sub",  ScanOperator.Equal, userId),
+            new ("UserId",  ScanOperator.Equal, userId),
             new ("Hub",  ScanOperator.Equal, hub)
         },
             _tableConfig);
@@ -203,7 +202,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
         {
-            new ("Sub",  ScanOperator.Equal, userId),
+            new ("UserId",  ScanOperator.Equal, userId),
             new ("Hub",  ScanOperator.Equal, hub)
         },
             _tableConfig);
@@ -221,7 +220,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         var search =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
         {
-            new ("Sub",  ScanOperator.Equal, userId),
+            new ("UserId",  ScanOperator.Equal, userId),
             new ("Hub",  ScanOperator.Equal, hub)
         },
             _tableConfig);
@@ -328,7 +327,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         var search = _context.ScanAsync<PubSubConnection>(
             new List<ScanCondition>
             {
-                new ("Sub",  ScanOperator.Equal, userId),
+                new ("UserId",  ScanOperator.Equal, userId),
                 new ("Hub",  ScanOperator.Equal, hub)
             },
             _tableConfig
@@ -393,28 +392,28 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
     public void DeleteAll()
     {
-        var list =  _context.ScanAsync<PubSubConnection>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        var list =  _context.ScanAsync<PubSubConnection>(new List<ScanCondition>(), _tableConfig).GetRemainingAsync().Result;
         list.ForEach(c =>
         {
             _context.DeleteAsync(c,
                 _tableConfig).Wait();
         });
         
-        var list2 = _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        var list2 = _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>(), _tableConfig).GetRemainingAsync().Result;
         list2.ForEach(c =>
         {
             _context.DeleteAsync(c,
                 _tableConfig).Wait();
         });
         
-        var list3 = _context.ScanAsync<PubSubAck>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        var list3 = _context.ScanAsync<PubSubAck>(new List<ScanCondition>(), _tableConfig).GetRemainingAsync().Result;
         list3.ForEach(c =>
         {
             _context.DeleteAsync(c,
                 _tableConfig).Wait();
         });
         
-        var list4 = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>()).GetRemainingAsync().Result;
+        var list4 = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>(), _tableConfig).GetRemainingAsync().Result;
         list4.ForEach(c =>
         {
             _context.DeleteAsync(c,

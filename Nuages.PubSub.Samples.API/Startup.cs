@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
@@ -9,6 +10,7 @@ using Nuages.PubSub.Storage.Mongo;
 
 namespace Nuages.PubSub.Samples.API;
 
+[ExcludeFromCodeCoverage]
 public class Startup
 {
     public Startup(IConfiguration configuration)

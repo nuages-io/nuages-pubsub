@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Constructs;
 using Microsoft.Extensions.Configuration;
 
 namespace Nuages.PubSub.Samples.WebSocket.Deploy;
 
+[ExcludeFromCodeCoverage]
 public class MyNuagesPubSubStack : Cdk.NuagesPubSubWebSocketCdkStack<PubSubFunction>
 {
     // ReSharper disable once UnusedParameter.Local

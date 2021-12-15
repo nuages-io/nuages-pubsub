@@ -29,4 +29,10 @@
       <ProjectReference Include="..\Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="appsettings.local.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    
 </Project>
