@@ -12,7 +12,7 @@ public class BaseTest
     protected string _apiKey;
     protected string _userId;
     protected string _hub;
-    protected string _audience;
+    protected string _group;
 
     protected BaseTest(ITestOutputHelper testOutputHelper)
     {
@@ -26,6 +26,6 @@ public class BaseTest
         _apiKey = configuration.GetSection("ApiKey").Value;
         _userId = configuration.GetSection("UserId").Value;
         _hub = configuration.GetSection("Hub").Value;
-        _audience = configuration.GetSection("Audience").Value;
+        _group = configuration.GetSection("Group").Value;
     }
 }
