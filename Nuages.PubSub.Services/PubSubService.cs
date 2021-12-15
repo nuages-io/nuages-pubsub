@@ -62,14 +62,14 @@ public partial class PubSubService : IPubSubService
         return tokenHandler.WriteToken(token);
     }
 
-    public async Task ConnectAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay = default)
+    public async Task ConnectAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay = default)
     {
-        await _pubSubStorage.CreateConnectionAsync(hub, connectionid, sub, expireDelay);
+        await _pubSubStorage.CreateConnectionAsync(hub, connectionid, userId, expireDelay);
 
-        var groups = await  _pubSubStorage.GetGroupsForUser(hub, sub);
+        var groups = await  _pubSubStorage.GetGroupsForUser(hub, userId);
         foreach (var g in groups)
         {
-            await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid, sub);
+            await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid, userId);
         }
     }
 

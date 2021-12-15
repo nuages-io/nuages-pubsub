@@ -66,7 +66,6 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             },
             _tableConfig
         );
-
         
         var list = await search.GetNextSetAsync();
         
@@ -141,7 +140,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             var userConnection = new PubSubGroupUser
             {
                 Id = Guid.NewGuid().ToString(),
-                Sub = userId,
+                UserId = userId,
                 Group = group,
                 Hub = hub,
                 CreatedOn = DateTime.Now
@@ -218,11 +217,11 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         
     }
 
-    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
+    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId)
     {
         var search =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
         {
-            new ("Sub",  ScanOperator.Equal, sub),
+            new ("Sub",  ScanOperator.Equal, userId),
             new ("Hub",  ScanOperator.Equal, hub)
         },
             _tableConfig);
@@ -371,7 +370,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                     Group = group,
                     Hub = hub,
                     CreatedOn = DateTime.UtcNow,
-                    Sub = userId,
+                    UserId = userId,
                     ExpireOn = conn.ExpireOn
                 };
 

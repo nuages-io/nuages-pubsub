@@ -99,7 +99,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
 
     public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
-        var conn = GetHubConnections(hub).Where(c => c.Sub == userId);
+        var conn = GetHubConnections(hub).Where(c => c.UserId == userId);
 
         return await Task.FromResult(conn);
     }
@@ -107,7 +107,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
     public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
     {
         
-        return await Task.FromResult(GetHubConnections(hub).Any(c => c.Sub == userId));
+        return await Task.FromResult(GetHubConnections(hub).Any(c => c.UserId == userId));
     }
 
     public async Task<bool> ConnectionExistsAsync(string hub, string connectionid)
@@ -129,7 +129,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
                 Hub = hub,
                 ConnectionId = connectionId,
                 CreatedOn = DateTime.UtcNow,
-                Sub = userId
+                UserId = userId
             };
             
             GetHubConnectionsAndGroups(hub).Add(connection);
@@ -151,13 +151,13 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
     public async Task AddUserToGroupAsync(string hub, string group, string userId)
     {
         var existing = GetHubUsersAndGroups(hub).AsQueryable()
-            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.Sub == userId);
+            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.UserId == userId);
 
         if (existing == null)
         {
             var userConnection = new PubSubGroupUser
             {
-                Sub = userId,
+                UserId = userId,
                 Group = group,
                 Hub = hub,
                 CreatedOn = DateTime.Now
@@ -173,18 +173,18 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
     public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
         
-        GetHubUsersAndGroups(hub).RemoveAll( c => c.Group == group && c.Sub == userId);
+        GetHubUsersAndGroups(hub).RemoveAll( c => c.Group == group && c.UserId == userId);
         
-        GetHubConnectionsAndGroups(hub).RemoveAll( c => c.Group == group && c.Sub == userId);
+        GetHubConnectionsAndGroups(hub).RemoveAll( c => c.Group == group && c.UserId == userId);
 
         await Task.CompletedTask;
     }
 
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
-        GetHubUsersAndGroups(hub).RemoveAll( c => c.Sub == userId);
+        GetHubUsersAndGroups(hub).RemoveAll( c => c.UserId == userId);
 
-        GetHubConnectionsAndGroups(hub).RemoveAll( c => c.Sub == userId);
+        GetHubConnectionsAndGroups(hub).RemoveAll( c => c.UserId == userId);
         
         await Task.CompletedTask;
     }
@@ -197,9 +197,9 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         });
     }
 
-    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
+    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId)
     {
-        var ids = GetHubUsersAndGroups(hub).Where(c => c.Sub == sub).Select(c => c.Group);
+        var ids = GetHubUsersAndGroups(hub).Where(c => c.UserId == userId).Select(c => c.Group);
 
         return await Task.FromResult(ids);
     }

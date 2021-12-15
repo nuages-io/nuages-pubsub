@@ -39,9 +39,9 @@ public class TestPubSubFunction
         };
 
         const string hub = "hub";
-        const string sub = "user";
+        const string userId = "user";
         
-        request.RequestContext.Authorizer["sub"] = sub;
+        request.RequestContext.Authorizer["sub"] = userId;
         request.RequestContext.Authorizer["nuageshub"] = hub;
         request.RequestContext.Authorizer["roles"] = "JoinOrLeaveGroup";
         
@@ -51,7 +51,7 @@ public class TestPubSubFunction
         Assert.Equal(200, res.StatusCode);
         
         //Throw
-        pubSubService.Setup(c => c.ConnectAsync(hub, connectionId, sub, It.IsAny<TimeSpan?>())).ThrowsAsync(new Exception());
+        pubSubService.Setup(c => c.ConnectAsync(hub, connectionId, userId, It.IsAny<TimeSpan?>())).ThrowsAsync(new Exception());
 
         res = await function.OnConnectHandlerAsync(request, lambdaContext);
         

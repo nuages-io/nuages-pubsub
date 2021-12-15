@@ -10,7 +10,7 @@ public static class APIGatewayProxyRequestExtensions
         return request.RequestContext.Authorizer["nuageshub"].ToString() ?? throw new InvalidOperationException();
     }
 
-    public static string GetSub(this APIGatewayProxyRequest request)
+    public static string GetUserId(this APIGatewayProxyRequest request)
     {
         return request.RequestContext.Authorizer["sub"].ToString() ?? throw new InvalidOperationException();
     }

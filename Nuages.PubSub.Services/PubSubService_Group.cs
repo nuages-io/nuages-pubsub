@@ -43,7 +43,7 @@ public partial class PubSubService
     {
         var connection = await _pubSubStorage.GetConnectionAsync(hub, connectionId);
         if (connection != null)
-            await _pubSubStorage.AddConnectionToGroupAsync(hub, group, connectionId, connection.Sub);
+            await _pubSubStorage.AddConnectionToGroupAsync(hub, group, connectionId, connection.UserId);
     }
 
     public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)

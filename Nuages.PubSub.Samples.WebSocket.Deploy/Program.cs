@@ -15,7 +15,8 @@ sealed class Program
 
         var builder = configManager
             .AddJsonFile("appsettings.json",  false, true)
-            .AddJsonFile("appsettings.prod.test.json",  false, true)
+            .AddJsonFile("appsettings.prod.json",  false, true)
+            //.AddJsonFile("appsettings.prod.test.json",  false, true)
             .AddEnvironmentVariables();
         
         IConfiguration configuration = builder.Build();

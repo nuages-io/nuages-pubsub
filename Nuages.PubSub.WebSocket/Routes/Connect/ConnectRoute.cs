@@ -18,13 +18,13 @@ public class ConnectRoute : IConnectRoute
     
     public async Task<APIGatewayProxyResponse> ConnectAsync(APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var sub = request.GetSub();
+        var userId = request.GetUserId();
         
         try
         {
             context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
 
-            await _pubSubService.ConnectAsync(request.GetHub(), request.RequestContext.ConnectionId, sub);
+            await _pubSubService.ConnectAsync(request.GetHub(), request.RequestContext.ConnectionId, userId);
 
             await ProcessRolesAsync(request, request.RequestContext.ConnectionId);
 

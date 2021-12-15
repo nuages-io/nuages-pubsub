@@ -51,7 +51,7 @@ public class SendRoute : ISendRoute
                 {
                     group = inMessage.group,
                     from = PubSubMessageSource.group,
-                    fromSub = request.GetSub(),
+                    fromSub = request.GetUserId(),
                     type = "message",
                     dataType = inMessage.datatype,
                     data = inMessage.data

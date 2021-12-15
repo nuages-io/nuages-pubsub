@@ -62,12 +62,12 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
     public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
     {
-        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.Sub == userId));
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.UserId == userId));
     }
 
     public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
     {
-        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Any(c => c.Hub == hub && c.Sub == userId));
+        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Any(c => c.Hub == hub && c.UserId == userId));
     }
 
     public async Task<bool> ConnectionExistsAsync(string hub, string connectionid)
@@ -118,7 +118,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
             new CreateIndexModel<PubSubConnection>(
                 Builders<PubSubConnection>.IndexKeys
                     .Ascending(p => p.Hub)
-                    .Ascending(p => p.Sub)
+                    .Ascending(p => p.UserId)
                 , new CreateIndexOptions
                 {
                     Name = "IX_Sub",
@@ -157,7 +157,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                 Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
                     .Ascending(p => p.Group)
-                    .Ascending(p => p.Sub)
+                    .Ascending(p => p.UserId)
                 , new CreateIndexOptions
                 {
                     Name = "UK_HubGroupId",
@@ -181,7 +181,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
             new CreateIndexModel<PubSubGroupUser>(
                 Builders<PubSubGroupUser>.IndexKeys
                     .Ascending(p => p.Hub)
-                    .Ascending(p => p.Sub)
+                    .Ascending(p => p.UserId)
                 , new CreateIndexOptions
                 {
                     Name = "IX_HubUser",
@@ -207,7 +207,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                     Group = group,
                     Hub = hub,
                     CreatedOn = DateTime.UtcNow,
-                    Sub = userId,
+                    UserId = userId,
                     ExpireOn = conn.ExpireOn
                 };
 
@@ -225,14 +225,14 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     public async Task AddUserToGroupAsync(string hub, string group, string userId)
     {
         var existing = _pubSubGroupUserCollection.AsQueryable()
-            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.Sub == userId);
+            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.UserId == userId);
 
         if (existing == null)
         {
             var userConnection = new PubSubGroupUser
             {
                 Id = ObjectId.GenerateNewId(),
-                Sub = userId,
+                UserId = userId,
                 Group = group,
                 Hub = hub,
                 CreatedOn = DateTime.Now
@@ -246,19 +246,19 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
     public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
-        await _pubSubGroupUserCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Sub == userId);
-        await _pubSubGroupConnectionCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.Sub == userId);
+        await _pubSubGroupUserCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.UserId == userId);
+        await _pubSubGroupConnectionCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.UserId == userId);
     }
 
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
-        await _pubSubGroupUserCollection.DeleteManyAsync(c => c.Hub == hub &&c.Sub == userId);
-        await _pubSubGroupConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.Sub == userId);
+        await _pubSubGroupUserCollection.DeleteManyAsync(c => c.Hub == hub &&c.UserId == userId);
+        await _pubSubGroupConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.UserId == userId);
     }
 
-    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub)
+    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId)
     {
-        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.Sub == sub)
+        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.UserId == userId)
             .Select(c => c.Group));
     }
 

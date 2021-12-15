@@ -12,7 +12,7 @@ public class PubSubGroupConnection : IPubSubGroupConnection
     public string ConnectionId { get; set; } = "";
     public DateTime CreatedOn { get; set; }
     public string Hub { get; set; } = "";
-    public string Sub { get; set; } = "";
+    public string UserId { get; set; } = "";
     public DateTime? ExpireOn { get; set; }
 }
 #endif

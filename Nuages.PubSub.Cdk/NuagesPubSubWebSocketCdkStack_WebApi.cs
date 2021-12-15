@@ -54,6 +54,18 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         {
             ApiKeyRequired = true
         }));
+        
+        func.AddEventSource(new ApiEventSource("ANY", "/swagger/{proxy+}", new MethodOptions
+        {
+            ApiKeyRequired = false
+        }));
+        
+        func.AddEventSource(new ApiEventSource("ANY", "/swagger", new MethodOptions
+        {
+            ApiKeyRequired = false
+        }));
+        
+       
 
         var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
 

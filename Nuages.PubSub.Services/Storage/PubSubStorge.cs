@@ -12,13 +12,13 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
     
     protected abstract string GetNewId();
     
-    public async Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay) 
+    public async Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay) 
     {
         var conn = new T
         {
             Id = GetNewId(),
             ConnectionId = connectionid,
-            Sub = sub,
+            UserId = userId,
             Hub = hub,
             CreatedOn = DateTime.UtcNow
         };

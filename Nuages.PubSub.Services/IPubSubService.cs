@@ -35,9 +35,9 @@ public interface IPubSubService
     Task RemoveUserFromGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);
 
-    Task<APIGatewayProxyResponse> SendToUserAsync( string hub, string sub, PubSubMessage message, List<string>? excludedIds = null);
-    Task CloseUserConnectionsAsync(string hub, string sub);
-    Task<bool> UserExistsAsync(string hub, string sub);
+    Task<APIGatewayProxyResponse> SendToUserAsync( string hub, string userId, PubSubMessage message, List<string>? excludedIds = null);
+    Task CloseUserConnectionsAsync(string hub, string userId);
+    Task<bool> UserExistsAsync(string hub, string userId);
     
 
     //Permissions

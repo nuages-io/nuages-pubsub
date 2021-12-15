@@ -14,6 +14,6 @@ public class PubSubGroupConnection  : IPubSubGroupConnection
     public string ConnectionId { get; set; } = null!;
     public DateTime CreatedOn { get; set; }
     public string Hub { get; set; }= null!;
-    public string Sub { get; set; } = null!;
+    public string UserId { get; set; } = null!;
     public DateTime? ExpireOn { get; set; }
 }

@@ -3,7 +3,7 @@ namespace Nuages.PubSub.Services.Storage;
 
 public interface IPubSubStorage 
 {
-    Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay);
+    Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay);
 
     Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub);
     Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId);
@@ -26,7 +26,7 @@ public interface IPubSubStorage
     Task RemoveUserFromGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);
     
-    Task<IEnumerable<string>> GetGroupsForUser(string hub, string sub);
+    Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId);
     Task DeleteConnectionAsync(string hub, string connectionId);
 
     Task<bool> ExistAckAsync(string hub, string connectionId, string ackId);
