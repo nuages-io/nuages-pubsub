@@ -36,12 +36,53 @@ public class TestAll : BaseTest
         });
     }
 
+    
     [Fact]
-    public async Task ShouldCloseAllAsync()
+    public async Task ShouldCloseAllConnection()
     {
-        var client = new PubSubServiceClient(_url, _apiKey, _hub);
+        using var client = await CreateWebsocketClient();
 
-        await client.CloseAllConnectionsAsync();
+        var receivedEvent = new ManualResetEvent(false);
+        string? connectionId = null;
+
+        bool disconnected = false;
+        
+        client.DisconnectionHappened.Subscribe(response =>
+        {
+            disconnected = true;
+        });
+        
+        client.MessageReceived
+            .Subscribe(response =>
+            {
+                var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
+                
+                switch (msg.type)
+                {
+                    case "echo":
+                    {
+                        connectionId = msg.data!.connectionId;
+                        
+
+                        break;
+                    }
+                }
+            });
+
+        await client.Start();
+
+        SendEcho(client);
+
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+
+        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId));
+        await _pubSubClient.CloseAllConnectionsAsync();
+        
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+        
+        Assert.True(disconnected);
+        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId));
+        
     }
 
 

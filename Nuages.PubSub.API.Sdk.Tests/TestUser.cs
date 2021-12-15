@@ -4,112 +4,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-// ReSharper disable InconsistentNaming
 
 namespace Nuages.PubSub.API.Sdk.Tests;
 
-public class TestConnection : BaseTest
+public class TestUser : BaseTest
 {
-    public TestConnection(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public TestUser(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
     }
-
-  
-
-
     [Fact]
-    public async Task ShouldConnectionExists()
-    {
-        using var client = await CreateWebsocketClient();
-
-        var receivedEvent = new ManualResetEvent(false);
-        string? connectionId = null;
-
-        client.MessageReceived
-            .Subscribe(response =>
-            {
-                var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
-                
-                switch (msg.type)
-                {
-                    case "echo":
-                    {
-                        connectionId = msg.data!.connectionId;
-                        receivedEvent.Set();
-                        break;
-                    }
-                }
-        });
-
-        await client.Start();
-
-        SendEcho(client);
-
-        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
-
-        Assert.NotNull(connectionId);
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId));
-        
-    }
-    
-    [Fact]
-    public async Task ShouldSendMessageToConnection()
-    {
-        using var client = await CreateWebsocketClient();
-
-        string? received = null;
-        var receivedEvent = new ManualResetEvent(false);
-        string? connectionId = null;
-
-        client.MessageReceived
-            .Subscribe(response =>
-            {
-                var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
-                
-                switch (msg.type)
-                {
-                    case "echo":
-                    {
-                        connectionId = msg.data!.connectionId;
-                        
-                        _testOutputHelper.WriteLine(connectionId);
-
-                        _pubSubClient.SendToConnectionAsync(connectionId, new Message
-                        {
-                            Data = new
-                            {
-                                Message = "Hello"
-                            }
-                        });
-
-                        break;
-                    }
-                    default:
-                    {
-                        _testOutputHelper.WriteLine(response.Text);
-
-                        received = response.Text;
-                        
-                        receivedEvent.Set();
-                        break;
-                    }
-                }
-        });
-
-        await client.Start();
-
-        SendEcho(client);
-
-        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
-
-        var expected = JsonSerializer.Serialize(new
-            { from = "server", dataType = "json", data = new { Message = "Hello" }, success = true });
-
-        Assert.Equal(expected, received);
-    }
-    
-    [Fact]
-    public async Task ShouldCloseConnection()
+    public async Task ShouldCloseUserConnection()
     {
         using var client = await CreateWebsocketClient();
 
@@ -138,7 +42,7 @@ public class TestConnection : BaseTest
                         break;
                     }
                 }
-        });
+            });
 
         await client.Start();
 
@@ -147,7 +51,7 @@ public class TestConnection : BaseTest
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
         Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId));
-        await _pubSubClient.CloseConnectionAsync(connectionId);
+        await _pubSubClient.CloseUserConnectionsAsync(_userId);
         
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
@@ -155,6 +59,61 @@ public class TestConnection : BaseTest
         Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId));
         
     }
-   
     
+    [Fact]
+    public async Task ShouldSendMessageToUser()
+    {
+        using var client = await CreateWebsocketClient();
+
+        string? received = null;
+        var receivedEvent = new ManualResetEvent(false);
+        string? connectionId = null;
+
+        client.MessageReceived
+            .Subscribe(response =>
+            {
+                var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
+                
+                switch (msg.type)
+                {
+                    case "echo":
+                    {
+                        connectionId = msg.data!.connectionId;
+                        
+                        _testOutputHelper.WriteLine(connectionId);
+
+                        _pubSubClient.SendToUserAsync(_userId, new Message
+                        {
+                            Data = new
+                            {
+                                Message = "Hello"
+                            }
+                        });
+
+                        break;
+                    }
+                    default:
+                    {
+                        _testOutputHelper.WriteLine(response.Text);
+
+                        received = response.Text;
+                        
+                        receivedEvent.Set();
+                        break;
+                    }
+                }
+            });
+
+        await client.Start();
+
+        SendEcho(client);
+
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+
+        var expected = JsonSerializer.Serialize(new
+            { from = "server", dataType = "json", data = new { Message = "Hello" }, success = true });
+
+        Assert.Equal(expected, received);
+    }
+
 }
