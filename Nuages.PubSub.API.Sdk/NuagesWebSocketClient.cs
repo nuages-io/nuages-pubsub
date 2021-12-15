@@ -333,24 +333,20 @@ namespace Nuages.PubSub.API.Sdk
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, string audience, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles)
+        public System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles)
         {
-            return GetClientAccessTokenAsync(userId, audience, expiresAfter, roles, System.Threading.CancellationToken.None);
+            return GetClientAccessTokenAsync(userId, expiresAfter, roles, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, string audience, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/auth/getclienttoken?");
             if (userId != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("userId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (expiresAfter != null)
             {
@@ -422,24 +418,20 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string audience, string hub, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles)
+        public System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string hub, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, string token)
         {
-            return GetClientAccessUriAsync(userId, audience, hub, expiresAfter, roles, System.Threading.CancellationToken.None);
+            return GetClientAccessUriAsync(userId, hub, expiresAfter, roles, token, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string audience, string hub, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string hub, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, string token, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/auth/getclienturi?");
             if (userId != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("userId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (audience != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("audience") + "=").Append(System.Uri.EscapeDataString(ConvertToString(audience, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (hub != null)
             {
@@ -452,6 +444,10 @@ namespace Nuages.PubSub.API.Sdk
             if (roles != null)
             {
                 foreach (var item_ in roles) { urlBuilder_.Append(System.Uri.EscapeDataString("roles") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            if (token != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("token") + "=").Append(System.Uri.EscapeDataString(ConvertToString(token, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
     
@@ -730,14 +726,14 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FileResponse> CloseAsync(string hub, string connectionId)
+        public System.Threading.Tasks.Task CloseAsync(string hub, string connectionId)
         {
             return CloseAsync(hub, connectionId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FileResponse> CloseAsync(string hub, string connectionId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CloseAsync(string hub, string connectionId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/connection/close?");
@@ -758,7 +754,6 @@ namespace Nuages.PubSub.API.Sdk
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -781,12 +776,9 @@ namespace Nuages.PubSub.API.Sdk
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return;
                         }
                         else
                         {
@@ -1361,14 +1353,14 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FileResponse> CloseAsync(string hub, string group)
+        public System.Threading.Tasks.Task CloseAsync(string hub, string group)
         {
             return CloseAsync(hub, group, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FileResponse> CloseAsync(string hub, string group, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CloseAsync(string hub, string group, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/group/close?");
@@ -1389,7 +1381,6 @@ namespace Nuages.PubSub.API.Sdk
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -1412,12 +1403,9 @@ namespace Nuages.PubSub.API.Sdk
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return;
                         }
                         else
                         {
@@ -1686,14 +1674,14 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FileResponse> RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
+        public System.Threading.Tasks.Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
         {
             return RemoveConnectionFromGroupAsync(hub, group, connectionId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FileResponse> RemoveConnectionFromGroupAsync(string hub, string group, string connectionId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/group/connections/remove?");
@@ -1718,7 +1706,6 @@ namespace Nuages.PubSub.API.Sdk
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -1741,12 +1728,9 @@ namespace Nuages.PubSub.API.Sdk
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return;
                         }
                         else
                         {
@@ -1984,14 +1968,14 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FileResponse> CloseAsync(string hub, string userId)
+        public System.Threading.Tasks.Task CloseAsync(string hub, string userId)
         {
             return CloseAsync(hub, userId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FileResponse> CloseAsync(string hub, string userId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CloseAsync(string hub, string userId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/user/close?");
@@ -2012,7 +1996,6 @@ namespace Nuages.PubSub.API.Sdk
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -2035,12 +2018,9 @@ namespace Nuages.PubSub.API.Sdk
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return;
                         }
                         else
                         {
@@ -2224,14 +2204,14 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FileResponse> RemoveUserFromGroupAsync(string hub, string group, string userId)
+        public System.Threading.Tasks.Task RemoveUserFromGroupAsync(string hub, string group, string userId)
         {
             return RemoveUserFromGroupAsync(hub, group, userId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FileResponse> RemoveUserFromGroupAsync(string hub, string group, string userId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task RemoveUserFromGroupAsync(string hub, string group, string userId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/user/groups/remove?");
@@ -2256,7 +2236,6 @@ namespace Nuages.PubSub.API.Sdk
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -2279,12 +2258,9 @@ namespace Nuages.PubSub.API.Sdk
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return;
                         }
                         else
                         {
@@ -2307,14 +2283,14 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FileResponse> RemoveUserFromAllGroupsAsync(string hub, string userId)
+        public System.Threading.Tasks.Task RemoveUserFromAllGroupsAsync(string hub, string userId)
         {
             return RemoveUserFromAllGroupsAsync(hub, userId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FileResponse> RemoveUserFromAllGroupsAsync(string hub, string userId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task RemoveUserFromAllGroupsAsync(string hub, string userId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/user/groups/removeall?");
@@ -2335,7 +2311,6 @@ namespace Nuages.PubSub.API.Sdk
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -2358,12 +2333,9 @@ namespace Nuages.PubSub.API.Sdk
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return;
                         }
                         else
                         {
@@ -2523,42 +2495,6 @@ namespace Nuages.PubSub.API.Sdk
         [System.Runtime.Serialization.EnumMember(Value = @"SendMessageToGroup")]
         SendMessageToGroup = 1,
     
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.14.7.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FileResponse : System.IDisposable
-    {
-        private System.IDisposable _client;
-        private System.IDisposable _response;
-
-        public int StatusCode { get; private set; }
-
-        public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
-
-        public System.IO.Stream Stream { get; private set; }
-
-        public bool IsPartial
-        {
-            get { return StatusCode == 206; }
-        }
-
-        public FileResponse(int statusCode, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.IO.Stream stream, System.IDisposable client, System.IDisposable response)
-        {
-            StatusCode = statusCode;
-            Headers = headers;
-            Stream = stream;
-            _client = client;
-            _response = response;
-        }
-
-        public void Dispose()
-        {
-            Stream.Dispose();
-            if (_response != null)
-                _response.Dispose();
-            if (_client != null)
-                _client.Dispose();
-        }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.14.7.0 (NJsonSchema v10.5.2.0 (Newtonsoft.Json v13.0.0.0))")]

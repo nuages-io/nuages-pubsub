@@ -32,16 +32,16 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        return await webService.GetClientAccessTokenAsync(userId, _hub, expiresAfter, roles).ConfigureAwait(false);
+        return await webService.GetClientAccessTokenAsync(userId, expiresAfter, roles).ConfigureAwait(false);
     }
     
-    public async Task<string> GetClientAccessUriAsync(string userId, string audience, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
+    public async Task<string> GetClientAccessUriAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null, string? token = null)
     {
         var webService = new AuthClient(_httpClient)
         {
             BaseUrl = _url
         };
 
-        return await webService.GetClientAccessUriAsync(userId, audience, _hub, expiresAfter, roles).ConfigureAwait(false);
+        return await webService.GetClientAccessUriAsync(userId, _hub, expiresAfter, roles, token).ConfigureAwait(false);
     }
 }

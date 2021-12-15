@@ -45,14 +45,14 @@ public class AuthorizeRoute : IAuthorizeRoute
 
         claimDict.Add("nuageshub", hub);
 
-        var validIssuers = _pubSubOptions.ValidIssuers.Split(",");
-        var validAudiences = _pubSubOptions.ValidAudiences?.Split(",").ToList();
+        var validIssuer = _pubSubOptions.Issuer;
+        var validAudience = _pubSubOptions.Audience;
 
         var keys = await LoadKeys(context, jwtToken);
 
         try
         {
-            ValidateToken(token, keys, validIssuers, validAudiences);
+            ValidateToken(token, keys, validIssuer , validAudience);
 
             return CreateResponse(true, input.MethodArn, claimDict);
         }
@@ -66,80 +66,33 @@ public class AuthorizeRoute : IAuthorizeRoute
     [ExcludeFromCodeCoverage]
     private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context, JwtSecurityToken jwtToken)
     {
-        var keys = new List<SecurityKey>();
-
         var secret = _pubSubOptions.Secret;
-        switch (jwtToken.SignatureAlgorithm)
-        {
-            case "RS256":
-            {
-                keys.AddRange(await GetSigningKeys(jwtToken.Issuer, context));
-                break;
-            }
-            default:
-            {
-                if (string.IsNullOrEmpty(secret))
-                    throw new NullReferenceException("secret was not provided");
+        if (string.IsNullOrEmpty(secret))
+            throw new NullReferenceException("secret was not provided");
 
-                var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
-                keys = new List<SecurityKey> { mySecurityKey };
+        var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+        var keys = new List<SecurityKey> { mySecurityKey };
 
-                context.Logger.LogLine($"Secret : {secret}");
-                break;
-            }
-        }
+        context.Logger.LogLine($"Secret : {secret}");
 
-        return keys;
+        return await  Task.FromResult(keys);
     }
 
     [ExcludeFromCodeCoverage]
-    protected virtual void ValidateToken(string token, IEnumerable<SecurityKey> keys, IEnumerable<string> validIssuers,
-        List<string>? validAudiences)
+    protected virtual void ValidateToken(string token, IEnumerable<SecurityKey> keys, string issuer,
+        string audience)
     {
         new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKeys = keys,
-            ValidIssuers = validIssuers,
+            ValidIssuer = issuer,
             ValidateIssuer = true,
-            ValidAudiences = validAudiences,
-            ValidateAudience = validAudiences != null && validAudiences.Any()
+            ValidAudience = audience
         }, out _);
     }
 
-    [ExcludeFromCodeCoverage]
-    private static string GetEndpoint(string issuer)
-    {
-        var endpoint = issuer;
-
-        if (!endpoint.EndsWith("/"))
-            endpoint += "/";
-
-        return endpoint;
-    }
-
-    [ExcludeFromCodeCoverage]
-    protected virtual async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
-    {
-        var jsonWebKeySetUrl = $"{GetEndpoint(issuer)}{_pubSubOptions.JsonWebKeySetUrlPath}";
-
-        context.Logger.LogLine(jsonWebKeySetUrl);
-
-        using var handler = new HttpClientHandler();
-
-        if (_pubSubOptions.DisableSslCheck)
-            handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
-
-        using var httpClient = new HttpClient(handler);
-
-        var response = await httpClient.GetAsync(jsonWebKeySetUrl);
-        var issuerJsonWebKeySet = new JsonWebKeySet(await response.Content.ReadAsStringAsync());
-
-        var keys = issuerJsonWebKeySet.Keys;
-        return keys;
-    }
-
-    protected virtual Dictionary<string, string> GetClaims(JwtSecurityToken token)
+    public static Dictionary<string, string> GetClaims(JwtSecurityToken token)
     {
         var claimDict = new Dictionary<string, string>();
         foreach (var c in token.Claims)
@@ -150,7 +103,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         return claimDict;
     }
 
-    private static APIGatewayCustomAuthorizerResponse CreateResponse(bool success, string methodArn,
+    public static APIGatewayCustomAuthorizerResponse CreateResponse(bool success, string methodArn,
         Dictionary<string, string>? claims = null)
     {
         string? principal = null;

@@ -22,7 +22,7 @@ public class AuthController : Controller
     // GET
     [HttpGet("getclienttoken")]
     public async Task<ActionResult<string>> GetClientAccessTokenAsync(
-        string userId, string audience,
+        string userId, 
         TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
     {
         try
@@ -38,6 +38,10 @@ public class AuthController : Controller
             if (string.IsNullOrEmpty(issuer))
                 throw new ArgumentException("issuer must be provided");
 
+            var audience = _options.Audience;
+            if (string.IsNullOrEmpty(issuer))
+                throw new ArgumentException("audience must be provided");
+            
             var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
                 expiresAfter);
 
@@ -59,29 +63,35 @@ public class AuthController : Controller
 
     [HttpGet("getclienturi")]
     public async Task<ActionResult<string>> GetClientAccessUriAsync(
-        string userId, string audience, string hub,
-        TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
+        string userId, string hub,
+        TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null, string? token = null)
     {
         try
         {
-
             if (!_environment.IsDevelopment())
                 AWSXRayRecorder.Instance.BeginSubsegment("AuthController.GetClientAccessUriAsync");
 
             if (string.IsNullOrEmpty(hub))
                 throw new ArgumentException("hub must be provided");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                var secret = _options.Secret;
+                if (string.IsNullOrEmpty(secret))
+                    throw new ArgumentException("secret must be provided");
+
+                var issuer = _options.Issuer;
+                if (string.IsNullOrEmpty(issuer))
+                    throw new ArgumentException("issuer must be provided");
             
-            var secret = _options.Secret;
-            if (string.IsNullOrEmpty(secret))
-                throw new ArgumentException("secret must be provided");
+                var audience = _options.Audience;
+                if (string.IsNullOrEmpty(issuer))
+                    throw new ArgumentException("audience must be provided");
 
-            var issuer = _options.Issuer;
-            if (string.IsNullOrEmpty(issuer))
-                throw new ArgumentException("issuer must be provided");
-
-            var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
-                expiresAfter);
-
+                token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
+                    expiresAfter);
+            }
+            
             var uri = $"{_options.Uri}?hub={hub}&access_token={token}";
 
             return await Task.FromResult(uri);

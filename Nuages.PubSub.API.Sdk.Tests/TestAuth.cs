@@ -27,7 +27,7 @@ public class TestAuth : BaseTest
     {
         var client = new PubSubServiceClient(_url, _apiKey, _hub);
     
-        var url = await client.GetClientAccessUriAsync(_userId, _audience, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup)});
+        var url = await client.GetClientAccessUriAsync(_userId, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup)});
        
         _testOutputHelper.WriteLine($"url={url}");
     }
