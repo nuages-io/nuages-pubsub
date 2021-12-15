@@ -132,6 +132,11 @@ public partial class PubSubService : IPubSubService
                 Console.WriteLine($"PostToConnectionAsync : {connectionId}");
                 await apiGateway.PostToConnectionAsync(postConnectionRequest);
             }
+            catch (GoneException)
+            {
+                await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
+                break;
+            }
             catch (AmazonServiceException e)
             {
                 Console.WriteLine(e.Message);

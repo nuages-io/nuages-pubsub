@@ -32,8 +32,13 @@ public partial class PubSubService
             {
                 ConnectionId = connectionId
             });
-        
+
             return await _pubSubStorage.ConnectionExistsAsync(hub, connectionId);
+        }
+        catch (GoneException)
+        {
+            await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
+            return false;
         }
         catch (AmazonServiceException e)
         {
