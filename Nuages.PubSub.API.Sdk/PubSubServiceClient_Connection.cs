@@ -32,7 +32,7 @@ public partial class PubSubServiceClient
         return await webService.ExistsAsync(_hub, connectionId).ConfigureAwait(false);
     }
 
-    public async Task GrantPermissionAsync(PubSubPermission permission, string connectionId, string target)
+    public async Task GrantPermissionAsync(PubSubPermission permission, string connectionId, string? target = null)
     {
         var webService = new ConnectionClient(_httpClient)
         {
@@ -42,7 +42,7 @@ public partial class PubSubServiceClient
         await webService.GrantPermissionAsync(_hub, permission, connectionId, target);
     }
     
-    public async Task RevokePermissionAsync( PubSubPermission permission, string connectionId, string target)
+    public async Task RevokePermissionAsync( PubSubPermission permission, string connectionId, string? target = null)
     {
         var webService = new ConnectionClient(_httpClient)
         {
@@ -52,7 +52,7 @@ public partial class PubSubServiceClient
         await webService.RevokePermissionAsync(_hub, permission, connectionId, target);
     }
     
-    public async Task<bool> CheckPermissionAsync(PubSubPermission permission, string connectionId, string target)
+    public async Task<bool> CheckPermissionAsync(PubSubPermission permission, string connectionId, string? target = null)
     {
         var webService = new ConnectionClient(_httpClient)
         {

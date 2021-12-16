@@ -22,18 +22,59 @@ public class TestAll : BaseTest
     }
     
     [Fact]
-    public async Task ShouldSendToAllAsync()
+    public async Task ShouldSendMessageToAllConnection()
     {
-        var client = new PubSubServiceClient(_url, _apiKey, _hub);
+        using var client = await CreateWebsocketClient();
 
-        await client.SendToAllAsync(new Message
-        {
-            Data = new
+        string? received = null;
+        var receivedEvent = new ManualResetEvent(false);
+        string? connectionId = null;
+
+        client.MessageReceived
+            .Subscribe(async response =>
             {
-                Message = "Yo men!",
+                var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
+                
+                switch (msg.type)
+                {
+                    case "echo":
+                    {
+                        connectionId = msg.data!.connectionId;
+                        
+                        _testOutputHelper.WriteLine(connectionId);
 
-            }
-        });
+                        await _pubSubClient.SendToAllAsync(new Message
+                        {
+                            Data = new
+                            {
+                                Message = "Hello"
+                            }
+                        });
+
+                        break;
+                    }
+                    default:
+                    {
+                        _testOutputHelper.WriteLine(response.Text);
+
+                        received = response.Text;
+                        
+                        receivedEvent.Set();
+                        break;
+                    }
+                }
+            });
+
+        await client.Start();
+
+        SendEcho(client);
+
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+
+        var expected = JsonSerializer.Serialize(new
+            { from = "server", dataType = "json", data = new { Message = "Hello" }, success = true });
+
+        Assert.Equal(expected, received);
     }
 
     

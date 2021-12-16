@@ -30,9 +30,9 @@ public class BaseTest
 
         _url = configuration.GetSection("Url").Value;
         _apiKey = configuration.GetSection("ApiKey").Value;
-        _userId = configuration.GetSection("UserId").Value;
-        _hub = configuration.GetSection("Hub").Value;
-        _group = configuration.GetSection("Group").Value;
+        _userId = "user-" + Guid.NewGuid();
+        _hub = "hub-" + Guid.NewGuid();
+        _group = "group-" + Guid.NewGuid();
         
         _pubSubClient = new PubSubServiceClient(_url, _apiKey, _hub);
     }

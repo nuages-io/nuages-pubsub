@@ -62,7 +62,7 @@ public class TestConnection : BaseTest
         string? connectionId = null;
 
         client.MessageReceived
-            .Subscribe(response =>
+            .Subscribe(async response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
                 
@@ -74,7 +74,7 @@ public class TestConnection : BaseTest
                         
                         _testOutputHelper.WriteLine(connectionId);
 
-                        _pubSubClient.SendToConnectionAsync(connectionId, new Message
+                        await _pubSubClient.SendToConnectionAsync(connectionId, new Message
                         {
                             Data = new
                             {
@@ -155,6 +155,49 @@ public class TestConnection : BaseTest
         Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId));
         
     }
-   
-    
+
+    [Fact]
+    public async Task ShouldCheckPermission()
+    {
+        var receivedEvent = new ManualResetEvent(false);
+        using var client = await CreateWebsocketClient();
+
+        string? connectionId = null;
+        
+        client.MessageReceived
+            .Subscribe(response =>
+            {
+                var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
+                
+                switch (msg.type)
+                {
+                    case "echo":
+                    {
+                        connectionId = msg.data!.connectionId;
+                        
+
+                        break;
+                    }
+                }
+            });
+        
+        await client.Start();
+
+
+        SendEcho(client);
+        
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+        
+        Assert.NotNull(connectionId);
+        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null));
+        
+        await _pubSubClient.RevokePermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null);
+        
+        Assert.False(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null));
+
+        await _pubSubClient.GrantPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null);
+
+        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null));
+
+    }
 }

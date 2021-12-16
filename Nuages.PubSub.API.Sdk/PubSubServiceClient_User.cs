@@ -32,27 +32,27 @@ public partial class PubSubServiceClient
         return await webService.ExistsAsync(_hub, connectionId).ConfigureAwait(false);
     }
     
-    public async Task AddUserToGroupAsync(string userId, string group)
+    public async Task AddUserToGroupAsync(string group, string userId )
     {
         var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };
     
-        await webService.AddUserToGroupAsync(_hub, userId, group).ConfigureAwait(false);
+        await webService.AddUserToGroupAsync(_hub, group, userId).ConfigureAwait(false);
     }
     
-    public async Task RemoveUserFromGroupAsync(string userId, string group)
+    public async Task RemoveUserFromGroupAsync(string group, string userId)
     {
         var webService = new UserClient(_httpClient)
         {
             BaseUrl = _url
         };
     
-        await webService.RemoveUserFromGroupAsync(_hub, userId, group).ConfigureAwait(false);
+        await webService.RemoveUserFromGroupAsync(_hub, group, userId ).ConfigureAwait(false);
     }
     
-    public async Task RemoveUserFromGroupAsync(string userId)
+    public async Task RemoveUserFromAllGroupsAsync(string userId)
     {
         var webService = new UserClient(_httpClient)
         {

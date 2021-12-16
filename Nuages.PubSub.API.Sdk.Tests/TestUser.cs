@@ -12,6 +12,7 @@ public class TestUser : BaseTest
     public TestUser(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
     }
+    
     [Fact]
     public async Task ShouldCloseUserConnection()
     {
@@ -61,6 +62,20 @@ public class TestUser : BaseTest
     }
     
     [Fact]
+    public async Task ShouldUserExists()
+    {
+        using var client = await CreateWebsocketClient();
+
+        var receivedEvent = new ManualResetEvent(false);
+
+        await client.Start();
+
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(2));
+
+        Assert.True(await _pubSubClient.UserExistsAsync(_userId));
+    }
+    
+    [Fact]
     public async Task ShouldSendMessageToUser()
     {
         using var client = await CreateWebsocketClient();
@@ -70,7 +85,7 @@ public class TestUser : BaseTest
         string? connectionId = null;
 
         client.MessageReceived
-            .Subscribe(response =>
+            .Subscribe(async response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
                 
@@ -82,7 +97,7 @@ public class TestUser : BaseTest
                         
                         _testOutputHelper.WriteLine(connectionId);
 
-                        _pubSubClient.SendToUserAsync(_userId, new Message
+                        await _pubSubClient.SendToUserAsync(_userId, new Message
                         {
                             Data = new
                             {
