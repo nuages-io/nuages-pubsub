@@ -48,7 +48,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         var validIssuer = _pubSubOptions.Issuer;
         var validAudience = _pubSubOptions.Audience;
 
-        var keys = await LoadKeys(context, jwtToken);
+        var keys = await LoadKeys(context);
 
         try
         {
@@ -64,7 +64,7 @@ public class AuthorizeRoute : IAuthorizeRoute
     }
 
     [ExcludeFromCodeCoverage]
-    private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context, JwtSecurityToken jwtToken)
+    private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context)
     {
         var secret = _pubSubOptions.Secret;
         if (string.IsNullOrEmpty(secret))

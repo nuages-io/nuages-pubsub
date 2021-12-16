@@ -11,35 +11,35 @@ namespace Nuages.PubSub.API.Sdk.Tests;
 
 public class BaseTest
 {
-    protected ITestOutputHelper _testOutputHelper;
-    protected string _url;
-    protected string _apiKey;
-    protected string _userId;
-    protected string _hub;
-    protected string _group;
+    protected ITestOutputHelper TestOutputHelper;
+    protected readonly string TestUrl;
+    protected readonly string TestApiKey;
+    protected readonly string TestUserId;
+    protected readonly string TestHub;
+    protected readonly string TestGroup;
 
-    protected PubSubServiceClient _pubSubClient;
+    protected PubSubServiceClient PubSubClient;
     
     protected BaseTest(ITestOutputHelper testOutputHelper)
     {
-        _testOutputHelper = testOutputHelper;
+        TestOutputHelper = testOutputHelper;
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 
-        _url = configuration.GetSection("Url").Value;
-        _apiKey = configuration.GetSection("ApiKey").Value;
-        _userId = "user-" + Guid.NewGuid();
-        _hub = "hub-" + Guid.NewGuid();
-        _group = "group-" + Guid.NewGuid();
+        TestUrl = configuration.GetSection("Url").Value;
+        TestApiKey = configuration.GetSection("ApiKey").Value;
+        TestUserId = "user-" + Guid.NewGuid();
+        TestHub = "hub-" + Guid.NewGuid();
+        TestGroup = "group-" + Guid.NewGuid();
         
-        _pubSubClient = new PubSubServiceClient(_url, _apiKey, _hub);
+        PubSubClient = new PubSubServiceClient(TestUrl, TestApiKey, TestHub);
     }
     
     protected async Task<IWebsocketClient> CreateWebsocketClient()
     {
-        var uri = await _pubSubClient.GetClientAccessUriAsync(_userId, null,
+        var uri = await PubSubClient.GetClientAccessUriAsync(TestUserId, null,
             new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup) });
 
         IWebsocketClient client = new WebsocketClient(new Uri(uri));

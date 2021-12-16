@@ -12,21 +12,21 @@ public class TestAuth : BaseTest
     [Fact]
     public async Task ShouldGetAuthToken()
     {
-        var client = new PubSubServiceClient(_url, _apiKey, _hub);
+        var client = new PubSubServiceClient(TestUrl, TestApiKey, TestHub);
 
-       var token = await client.GetClientAccessTokenAsync(_userId, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup) });
+       var token = await client.GetClientAccessTokenAsync(TestUserId, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup) });
        
-       _testOutputHelper.WriteLine($"token={token}");
+       TestOutputHelper.WriteLine($"token={token}");
     }
     
     [Fact]
     public async Task ShouldGetAuthUrl()
     {
-        var client = new PubSubServiceClient(_url, _apiKey, _hub);
+        var client = new PubSubServiceClient(TestUrl, TestApiKey, TestHub);
     
-        var url = await client.GetClientAccessUriAsync(_userId, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup)});
+        var url = await client.GetClientAccessUriAsync(TestUserId, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup)});
        
-        _testOutputHelper.WriteLine($"url={url}");
+        TestOutputHelper.WriteLine($"url={url}");
     }
 
     public TestAuth(ITestOutputHelper testOutputHelper) : base(testOutputHelper)

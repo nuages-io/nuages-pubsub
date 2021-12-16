@@ -7,6 +7,7 @@ namespace Nuages.PubSub.Samples.API;
 /// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
 [ExcludeFromCodeCoverage]
+// ReSharper disable once ClassNeverInstantiated.Global
 public class LocalEntryPoint
 {
     public static void Main(string[] args)

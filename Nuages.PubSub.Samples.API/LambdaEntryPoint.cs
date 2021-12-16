@@ -9,6 +9,7 @@ namespace Nuages.PubSub.Samples.API;
 /// </summary>
 // ReSharper disable once UnusedType.Global
 [ExcludeFromCodeCoverage]
+// ReSharper disable once UnusedType.Global
 public class LambdaEntryPoint :
 
     // The base class must be set to match the AWS service invoking the Lambda function. If not Amazon.Lambda.AspNetCoreServer

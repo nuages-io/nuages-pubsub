@@ -1,4 +1,5 @@
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 namespace Nuages.PubSub.API.Controllers.Model;
 
 // ReSharper disable once ClassNeverInstantiated.Global

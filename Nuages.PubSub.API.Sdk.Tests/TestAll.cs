@@ -11,9 +11,9 @@ public class TestAll : BaseTest
 {
     public TestAll(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
-        _testOutputHelper = testOutputHelper;
+        TestOutputHelper = testOutputHelper;
         
-        _pubSubClient = new PubSubServiceClient(_url, _apiKey, _hub);
+        PubSubClient = new PubSubServiceClient(TestUrl, TestApiKey, TestHub);
     }
     
     [Fact]
@@ -26,7 +26,7 @@ public class TestAll : BaseTest
         string? connectionId = null;
 
         client.MessageReceived
-            .Subscribe(async response =>
+            .Subscribe( response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
                 
@@ -36,21 +36,21 @@ public class TestAll : BaseTest
                     {
                         connectionId = msg.data!.connectionId;
                         
-                        _testOutputHelper.WriteLine(connectionId);
+                        TestOutputHelper.WriteLine(connectionId);
 
-                        await _pubSubClient.SendToAllAsync(new Message
+                        PubSubClient.SendToAllAsync(new Message
                         {
                             Data = new
                             {
                                 Message = "Hello"
                             }
-                        });
+                        }).Wait();
 
                         break;
                     }
                     default:
                     {
-                        _testOutputHelper.WriteLine(response.Text);
+                        TestOutputHelper.WriteLine(response.Text);
 
                         received = response.Text;
                         
@@ -81,9 +81,9 @@ public class TestAll : BaseTest
         var receivedEvent = new ManualResetEvent(false);
         string? connectionId = null;
 
-        bool disconnected = false;
+        var disconnected = false;
         
-        client.DisconnectionHappened.Subscribe(response =>
+        client.DisconnectionHappened.Subscribe(_ =>
         {
             disconnected = true;
         });
@@ -92,17 +92,12 @@ public class TestAll : BaseTest
             .Subscribe(response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
-                
-                switch (msg.type)
-                {
-                    case "echo":
-                    {
-                        connectionId = msg.data!.connectionId;
-                        
 
-                        break;
-                    }
-                }
+                connectionId = msg.type switch
+                {
+                    "echo" => msg.data!.connectionId,
+                    _ => connectionId
+                };
             });
 
         await client.Start();
@@ -111,13 +106,13 @@ public class TestAll : BaseTest
 
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
-        await _pubSubClient.CloseAllConnectionsAsync();
+        Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
+        await PubSubClient.CloseAllConnectionsAsync();
         
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.True(disconnected);
-        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId));
+        Assert.False(await PubSubClient.ConnectionExistsAsync(connectionId!));
         
     }
 

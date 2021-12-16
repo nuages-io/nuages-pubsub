@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
@@ -65,7 +64,7 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
     }
 
     [ExcludeFromCodeCoverage]
-    private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context, JwtSecurityToken jwtToken)
+    private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context, SecurityToken jwtToken)
     {
         var keys = new List<SecurityKey>();
 
@@ -76,7 +75,7 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
 
     [ExcludeFromCodeCoverage]
     protected virtual void ValidateToken(string token, IEnumerable<SecurityKey> keys, IEnumerable<string> validIssuers,
-        List<string>? validAudiences)
+        IEnumerable<string>? validAudiences)
     {
         new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
         {

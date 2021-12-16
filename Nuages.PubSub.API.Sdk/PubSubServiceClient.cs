@@ -3,19 +3,17 @@
 public partial class PubSubServiceClient
 {
     private readonly string _url;
-    private readonly string _apiKey;
     private readonly string _hub;
 
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
 
     public PubSubServiceClient(string url, string apiKey, string hub)
     {
         _url = url;
-        _apiKey = apiKey;
         _hub = hub;
 
         _httpClient = new HttpClient();
-        _httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
+        _httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
     }
     
     /// <summary>

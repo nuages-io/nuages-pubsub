@@ -48,7 +48,7 @@ public class TestConnection : BaseTest
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
         Assert.NotNull(connectionId);
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
+        Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
         
     }
     
@@ -59,10 +59,9 @@ public class TestConnection : BaseTest
 
         string? received = null;
         var receivedEvent = new ManualResetEvent(false);
-        string? connectionId = null;
 
         client.MessageReceived
-            .Subscribe(async response =>
+            .Subscribe( response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
                 
@@ -70,23 +69,23 @@ public class TestConnection : BaseTest
                 {
                     case "echo":
                     {
-                        connectionId = msg.data!.connectionId;
+                        var connectionId = msg.data!.connectionId;
                         
-                        _testOutputHelper.WriteLine(connectionId);
+                        TestOutputHelper.WriteLine(connectionId);
 
-                        await _pubSubClient.SendToConnectionAsync(connectionId, new Message
+                        PubSubClient.SendToConnectionAsync(connectionId, new Message
                         {
                             Data = new
                             {
                                 Message = "Hello"
                             }
-                        });
+                        }).Wait();
 
                         break;
                     }
                     default:
                     {
-                        _testOutputHelper.WriteLine(response.Text);
+                        TestOutputHelper.WriteLine(response.Text);
 
                         received = response.Text;
                         
@@ -141,13 +140,13 @@ public class TestConnection : BaseTest
 
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
-        await _pubSubClient.CloseConnectionAsync(connectionId!);
+        Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
+        await PubSubClient.CloseConnectionAsync(connectionId!);
         
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.True(disconnected);
-        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId!));
+        Assert.False(await PubSubClient.ConnectionExistsAsync(connectionId!));
         
     }
 
@@ -179,15 +178,15 @@ public class TestConnection : BaseTest
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.NotNull(connectionId);
-        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
+        Assert.True(await PubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
         
-        await _pubSubClient.RevokePermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!);
+        await PubSubClient.RevokePermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!);
         
-        Assert.False(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
+        Assert.False(await PubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
 
-        await _pubSubClient.GrantPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!);
+        await PubSubClient.GrantPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!);
 
-        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
+        Assert.True(await PubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
 
     }
 }

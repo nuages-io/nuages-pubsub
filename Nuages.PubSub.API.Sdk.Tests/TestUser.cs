@@ -46,13 +46,13 @@ public class TestUser : BaseTest
 
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
-        await _pubSubClient.CloseUserConnectionsAsync(_userId);
+        Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
+        await PubSubClient.CloseUserConnectionsAsync(TestUserId);
         
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.True(disconnected);
-        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId!));
+        Assert.False(await PubSubClient.ConnectionExistsAsync(connectionId!));
         
     }
     
@@ -67,7 +67,7 @@ public class TestUser : BaseTest
 
         receivedEvent.WaitOne(TimeSpan.FromSeconds(2));
 
-        Assert.True(await _pubSubClient.UserExistsAsync(_userId));
+        Assert.True(await PubSubClient.UserExistsAsync(TestUserId));
     }
     
     [Fact]
@@ -80,7 +80,7 @@ public class TestUser : BaseTest
         string? connectionId = null;
 
         client.MessageReceived
-            .Subscribe(async response =>
+            .Subscribe( response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
                 
@@ -90,21 +90,21 @@ public class TestUser : BaseTest
                     {
                         connectionId = msg.data!.connectionId;
                         
-                        _testOutputHelper.WriteLine(connectionId);
+                        TestOutputHelper.WriteLine(connectionId);
 
-                        await _pubSubClient.SendToUserAsync(_userId, new Message
+                        PubSubClient.SendToUserAsync(TestUserId, new Message
                         {
                             Data = new
                             {
                                 Message = "Hello"
                             }
-                        });
+                        }).Wait();
 
                         break;
                     }
                     default:
                     {
-                        _testOutputHelper.WriteLine(response.Text);
+                        TestOutputHelper.WriteLine(response.Text);
 
                         received = response.Text;
                         

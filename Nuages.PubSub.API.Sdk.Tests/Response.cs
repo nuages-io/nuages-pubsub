@@ -2,6 +2,7 @@
 namespace Nuages.PubSub.API.Sdk.Tests;
 
 
+// ReSharper disable once ClassNeverInstantiated.Global
 internal class ReponseData
 {
     public string connectionId { get; set; } = "";

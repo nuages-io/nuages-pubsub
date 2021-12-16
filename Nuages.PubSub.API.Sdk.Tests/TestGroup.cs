@@ -23,7 +23,7 @@ public class TestGroup : BaseTest
         string? connectionId = null;
 
         client.MessageReceived
-            .Subscribe( async response =>
+            .Subscribe(  response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
                 
@@ -33,25 +33,25 @@ public class TestGroup : BaseTest
                     {
                         connectionId = msg.data!.connectionId;
                         
-                        _testOutputHelper.WriteLine(connectionId);
+                        TestOutputHelper.WriteLine(connectionId);
 
-                        await _pubSubClient.AddConnectionToGroupAsync(_group, connectionId);
+                         PubSubClient.AddConnectionToGroupAsync(TestGroup, connectionId).Wait();
                          //await _pubSubClient.AddUserToGroupAsync(_userId, _group);
                          
                          
-                         await _pubSubClient.SendToGroupAsync(_group, new Message
+                         PubSubClient.SendToGroupAsync(TestGroup, new Message
                         {
                             Data = new
                             {
                                 Message = "Hello"
                             }
-                        });
+                        }).Wait();
 
                         break;
                     }
                     default:
                     {
-                        _testOutputHelper.WriteLine(response.Text);
+                        TestOutputHelper.WriteLine(response.Text);
 
                         received = response.Text;
                         
@@ -72,15 +72,15 @@ public class TestGroup : BaseTest
 
         Assert.Equal(expected, received);
         
-        Assert.True(await _pubSubClient.GroupExistsAsync(_group));
+        Assert.True(await PubSubClient.GroupExistsAsync(TestGroup));
         
-        Assert.True(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
+        Assert.True(await PubSubClient.IsConnectionInGroupAsync(TestGroup, connectionId!));
 
-        await _pubSubClient.RemoveConnectionFromGroupAsync(_group, connectionId!);
+        await PubSubClient.RemoveConnectionFromGroupAsync(TestGroup, connectionId!);
         
-        Assert.False(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
+        Assert.False(await PubSubClient.IsConnectionInGroupAsync(TestGroup, connectionId!));
         
-        Assert.False(await _pubSubClient.GroupExistsAsync(_group));
+        Assert.False(await PubSubClient.GroupExistsAsync(TestGroup));
     }
 
 
@@ -94,7 +94,7 @@ public class TestGroup : BaseTest
         string? connectionId = null;
 
         client.MessageReceived
-            .Subscribe( async response =>
+            .Subscribe( response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
                 
@@ -104,23 +104,23 @@ public class TestGroup : BaseTest
                     {
                         connectionId = msg.data!.connectionId;
                         
-                        _testOutputHelper.WriteLine(connectionId);
+                        TestOutputHelper.WriteLine(connectionId);
 
-                        await _pubSubClient.AddUserToGroupAsync(_group, _userId);
+                        PubSubClient.AddUserToGroupAsync(TestGroup, TestUserId).Wait();
                          
-                        await _pubSubClient.SendToGroupAsync(_group, new Message
+                        PubSubClient.SendToGroupAsync(TestGroup, new Message
                         {
                             Data = new
                             {
                                 Message = "Hello"
                             }
-                        });
+                        }).Wait();
 
                         break;
                     }
                     default:
                     {
-                        _testOutputHelper.WriteLine(response.Text);
+                        TestOutputHelper.WriteLine(response.Text);
 
                         received = response.Text;
                         
@@ -141,24 +141,24 @@ public class TestGroup : BaseTest
 
         Assert.Equal(expected, received);
         
-        Assert.True(await _pubSubClient.GroupExistsAsync(_group));
+        Assert.True(await PubSubClient.GroupExistsAsync(TestGroup));
         
-        Assert.True(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
+        Assert.True(await PubSubClient.IsConnectionInGroupAsync(TestGroup, connectionId!));
 
-        await _pubSubClient.RemoveUserFromGroupAsync(_group, _userId);
+        await PubSubClient.RemoveUserFromGroupAsync(TestGroup, TestUserId);
         
-        Assert.False(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
+        Assert.False(await PubSubClient.IsConnectionInGroupAsync(TestGroup, connectionId!));
         
-        Assert.False(await _pubSubClient.GroupExistsAsync(_group));
+        Assert.False(await PubSubClient.GroupExistsAsync(TestGroup));
     }
 
     [Fact]
     public async Task ShouldRemoveUserFromGroup()
     {
-        await _pubSubClient.AddUserToGroupAsync(_group, _userId);
-        Assert.True(await _pubSubClient.IsUserInGroupAsync(_group, _userId));
-        await _pubSubClient.RemoveUserFromAllGroupsAsync(_userId);
-        Assert.False(await _pubSubClient.IsUserInGroupAsync(_group, _userId));
+        await PubSubClient.AddUserToGroupAsync(TestGroup, TestUserId);
+        Assert.True(await PubSubClient.IsUserInGroupAsync(TestGroup, TestUserId));
+        await PubSubClient.RemoveUserFromAllGroupsAsync(TestUserId);
+        Assert.False(await PubSubClient.IsUserInGroupAsync(TestGroup, TestUserId));
     }
     
     [Fact]
@@ -177,7 +177,7 @@ public class TestGroup : BaseTest
         });
         
         client.MessageReceived
-            .Subscribe(async response =>
+            .Subscribe( response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
 
@@ -187,7 +187,7 @@ public class TestGroup : BaseTest
                     _ => connectionId
                 };
                 
-                await _pubSubClient.AddConnectionToGroupAsync(_group, connectionId!);
+                PubSubClient.AddConnectionToGroupAsync(TestGroup, connectionId!).Wait();
             });
 
         await client.Start();
@@ -196,13 +196,13 @@ public class TestGroup : BaseTest
 
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
-        await _pubSubClient.CloseGroupConnectionsAsync(_group);
+        Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
+        await PubSubClient.CloseGroupConnectionsAsync(TestGroup);
         
         receivedEvent.WaitOne(TimeSpan.FromSeconds(3));
         
         Assert.True(disconnected);
-        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId!));
+        Assert.False(await PubSubClient.ConnectionExistsAsync(connectionId!));
         
     }
     
