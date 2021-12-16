@@ -11,6 +11,7 @@ namespace Nuages.PubSub.WebSocket.Routes.Authorize;
 
 // ReSharper disable once UnusedType.Global
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
+[ExcludeFromCodeCoverage]
 public class AuthorizeRouteExternal : IAuthorizeRoute
 {
     private readonly PubSubOptions _pubSubOptions;

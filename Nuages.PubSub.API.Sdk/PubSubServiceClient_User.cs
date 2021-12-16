@@ -61,4 +61,14 @@ public partial class PubSubServiceClient
     
         await webService.RemoveUserFromAllGroupsAsync(_hub, userId).ConfigureAwait(false);
     }
+    
+    public async Task<bool> IsUserInGroupAsync(string group, string userId)
+    {
+        var webService = new UserClient(_httpClient)
+        {
+            BaseUrl = _url
+        };
+    
+        return await webService.IsUserInGroupAsync(_hub, group, userId).ConfigureAwait(false);
+    }
 }

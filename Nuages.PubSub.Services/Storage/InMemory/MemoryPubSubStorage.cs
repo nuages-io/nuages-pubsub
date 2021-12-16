@@ -129,7 +129,8 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
                 Hub = hub,
                 ConnectionId = connectionId,
                 CreatedOn = DateTime.UtcNow,
-                UserId = userId
+                UserId = userId,
+                ExpireOn = conn.ExpireOn
             };
             
             GetHubConnectionsAndGroups(hub).Add(connection);
@@ -146,6 +147,11 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
             GetHubConnectionsAndGroups(hub).Remove(exising);
 
         await Task.CompletedTask;
+    }
+
+    public async Task<bool> IsUserInGroupAsync(string hub, string group, string userId)
+    {
+        return await Task.FromResult(GetHubUsersAndGroups(hub).Any(u => u.Group == group && u.UserId == userId));
     }
 
     public async Task AddUserToGroupAsync(string hub, string group, string userId)
@@ -231,6 +237,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         return await Task.FromResult(GetHubConnectionsAndGroups(hub).Any(c => c.Group == group && c.ConnectionId == connectionId));
     }
 
+    [ExcludeFromCodeCoverage]
     public void DeleteAll()
     {
         HubAck.Clear();

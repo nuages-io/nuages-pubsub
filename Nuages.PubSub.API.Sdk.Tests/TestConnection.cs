@@ -48,7 +48,7 @@ public class TestConnection : BaseTest
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
         Assert.NotNull(connectionId);
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId));
+        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
         
     }
     
@@ -116,9 +116,9 @@ public class TestConnection : BaseTest
         var receivedEvent = new ManualResetEvent(false);
         string? connectionId = null;
 
-        bool disconnected = false;
+        var disconnected = false;
         
-        client.DisconnectionHappened.Subscribe(response =>
+        client.DisconnectionHappened.Subscribe(_ =>
         {
             disconnected = true;
         });
@@ -127,18 +127,13 @@ public class TestConnection : BaseTest
             .Subscribe(response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
-                
-                switch (msg.type)
-                {
-                    case "echo":
-                    {
-                        connectionId = msg.data!.connectionId;
-                        
 
-                        break;
-                    }
-                }
-        });
+                connectionId = msg.type switch
+                {
+                    "echo" => msg.data!.connectionId,
+                    _ => connectionId
+                };
+            });
 
         await client.Start();
 
@@ -146,13 +141,13 @@ public class TestConnection : BaseTest
 
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId));
-        await _pubSubClient.CloseConnectionAsync(connectionId);
+        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
+        await _pubSubClient.CloseConnectionAsync(connectionId!);
         
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.True(disconnected);
-        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId));
+        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId!));
         
     }
 
@@ -168,17 +163,12 @@ public class TestConnection : BaseTest
             .Subscribe(response =>
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
-                
-                switch (msg.type)
-                {
-                    case "echo":
-                    {
-                        connectionId = msg.data!.connectionId;
-                        
 
-                        break;
-                    }
-                }
+                connectionId = msg.type switch
+                {
+                    "echo" => msg.data!.connectionId,
+                    _ => connectionId
+                };
             });
         
         await client.Start();
@@ -189,15 +179,15 @@ public class TestConnection : BaseTest
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.NotNull(connectionId);
-        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null));
+        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
         
-        await _pubSubClient.RevokePermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null);
+        await _pubSubClient.RevokePermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!);
         
-        Assert.False(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null));
+        Assert.False(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
 
-        await _pubSubClient.GrantPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null);
+        await _pubSubClient.GrantPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!);
 
-        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!, null));
+        Assert.True(await _pubSubClient.CheckPermissionAsync(PubSubPermission.JoinOrLeaveGroup, connectionId!));
 
     }
 }

@@ -31,6 +31,7 @@ public interface IPubSubService
     
     
     //User
+    Task<bool> IsUserInGroupAsync(string hub, string group, string userId);
     Task AddUserToGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);

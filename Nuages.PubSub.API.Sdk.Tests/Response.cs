@@ -1,12 +1,15 @@
+// ReSharper disable InconsistentNaming
 namespace Nuages.PubSub.API.Sdk.Tests;
 
-class ReponseData
+
+internal class ReponseData
 {
     public string connectionId { get; set; } = "";
 }
 
-class Response
+internal class Response
 {
     public string? type { get; set; }
+    
     public ReponseData? data { get; set; }
 }

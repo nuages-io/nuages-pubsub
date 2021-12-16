@@ -167,6 +167,7 @@ public class TestDynamoDbPubSubStorage_Integration
         
         await _pubSubStorage.AddUserToGroupAsync(_hub, group, _userId);
 
+        Assert.True(await _pubSubStorage.IsUserInGroupAsync(_hub, group, _userId));
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
 
         await _pubSubStorage.RemoveUserFromAllGroupsAsync(_hub, _userId);

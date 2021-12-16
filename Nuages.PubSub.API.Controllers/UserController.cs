@@ -188,6 +188,40 @@ public class UserController
         }
     }
 
+    [HttpGet("groups/exists")]
+    public async Task<bool> IsUserInGroupAsync(string hub, string group, string userId)
+    {
+        try
+        {
+            if (!_environment.IsDevelopment())
+                AWSXRayRecorder.Instance.BeginSubsegment("GroupController.IsUserInGroupAsync");
+            
+            if (string.IsNullOrEmpty(hub))
+                throw new ArgumentException("hub must be provided");
+            
+            if (string.IsNullOrEmpty(group))
+                throw new ArgumentException("group must be provided");
+            
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentException("connectionId must be provided");
+            
+            return await _pubSubService.IsUserInGroupAsync(hub,  group, userId);
+        }
+        catch (Exception e)
+        {
+            if (!_environment.IsDevelopment())
+                AWSXRayRecorder.Instance.AddException(e);
+
+            throw;
+        }
+        finally
+        {
+            if (!_environment.IsDevelopment())
+                AWSXRayRecorder.Instance.EndSubsegment();
+        }
+    }
+
+    
     [HttpDelete("groups/removeall")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> RemoveUserFromAllGroupsAsync(string hub, string userId)

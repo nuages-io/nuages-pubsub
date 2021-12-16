@@ -252,6 +252,24 @@ public class TestsPubSubServiceMongo : IDisposable
         Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
     }
     
+    [Fact]
+    [TestPriority(9)]
+    public async Task ShouldFailSendToConnectionAsyncGoneEsxception()
+    {
+        var message = new PubSubMessage
+        {
+            ackId = null,
+            type = "message"
+        };
+
+        var gateway = GetApiGateway();
+        gateway.ThrowGoneException = true;
+        
+        await _pubSubService.SendToConnectionAsync(_hub, _connectionId, message);
+        
+        Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
+    }
+    
     
     [Fact]
     [TestPriority(10)]

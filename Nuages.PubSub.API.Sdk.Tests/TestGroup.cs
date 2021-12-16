@@ -74,11 +74,11 @@ public class TestGroup : BaseTest
         
         Assert.True(await _pubSubClient.GroupExistsAsync(_group));
         
-        Assert.True(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId));
+        Assert.True(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
 
-        await _pubSubClient.RemoveConnectionFromGroupAsync(_group, connectionId);
+        await _pubSubClient.RemoveConnectionFromGroupAsync(_group, connectionId!);
         
-        Assert.False(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId));
+        Assert.False(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
         
         Assert.False(await _pubSubClient.GroupExistsAsync(_group));
     }
@@ -143,12 +143,68 @@ public class TestGroup : BaseTest
         
         Assert.True(await _pubSubClient.GroupExistsAsync(_group));
         
-        Assert.True(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId));
+        Assert.True(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
 
         await _pubSubClient.RemoveUserFromGroupAsync(_group, _userId);
         
-        Assert.False(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId));
+        Assert.False(await _pubSubClient.IsConnectionInGroupAsync(_group, connectionId!));
         
         Assert.False(await _pubSubClient.GroupExistsAsync(_group));
     }
+
+    [Fact]
+    public async Task ShouldRemoveUserFromGroup()
+    {
+        await _pubSubClient.AddUserToGroupAsync(_group, _userId);
+        Assert.True(await _pubSubClient.IsUserInGroupAsync(_group, _userId));
+        await _pubSubClient.RemoveUserFromAllGroupsAsync(_userId);
+        Assert.False(await _pubSubClient.IsUserInGroupAsync(_group, _userId));
+    }
+    
+    [Fact]
+    public async Task ShouldCloseAllConnection()
+    {
+        using var client = await CreateWebsocketClient();
+
+        var receivedEvent = new ManualResetEvent(false);
+        string? connectionId = null;
+
+        var disconnected = false;
+        
+        client.DisconnectionHappened.Subscribe(_ =>
+        {
+            disconnected = true;
+        });
+        
+        client.MessageReceived
+            .Subscribe(async response =>
+            {
+                var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
+
+                connectionId = msg.type switch
+                {
+                    "echo" => msg.data!.connectionId,
+                    _ => connectionId
+                };
+                
+                await _pubSubClient.AddConnectionToGroupAsync(_group, connectionId!);
+            });
+
+        await client.Start();
+
+        SendEcho(client);
+
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+
+        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
+        await _pubSubClient.CloseGroupConnectionsAsync(_group);
+        
+        receivedEvent.WaitOne(TimeSpan.FromSeconds(3));
+        
+        Assert.True(disconnected);
+        Assert.False(await _pubSubClient.ConnectionExistsAsync(connectionId!));
+        
+    }
+    
+    
 }

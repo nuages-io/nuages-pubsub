@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Websocket.Client;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,9 +9,6 @@ namespace Nuages.PubSub.API.Sdk.Tests;
 
 public class TestAll : BaseTest
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-    
-
     public TestAll(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
@@ -116,7 +111,7 @@ public class TestAll : BaseTest
 
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
-        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId));
+        Assert.True(await _pubSubClient.ConnectionExistsAsync(connectionId!));
         await _pubSubClient.CloseAllConnectionsAsync();
         
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));

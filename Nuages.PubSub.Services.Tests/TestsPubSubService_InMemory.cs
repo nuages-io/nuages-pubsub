@@ -21,7 +21,7 @@ public class TestsPubSubServiceInMemory
     private readonly string _hub;
     private readonly string _group;
     private readonly string _connectionId;
-    private readonly string _sub;
+    private readonly string _userId;
     private readonly ServiceProvider _serviceProvider;
 
     public TestsPubSubServiceInMemory()
@@ -29,7 +29,7 @@ public class TestsPubSubServiceInMemory
         _hub = "Hub";
         _group = "Groupe1";
         _connectionId = Guid.NewGuid().ToString();
-        _sub = "user";
+        _userId = "user";
         
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
@@ -51,7 +51,7 @@ public class TestsPubSubServiceInMemory
         
         _pubSubService = _serviceProvider.GetRequiredService<IPubSubService>();
         
-        _pubSubService.ConnectAsync(_hub, _connectionId, _sub);
+        _pubSubService.ConnectAsync(_hub, _connectionId, _userId, new TimeSpan(1,0,0));
     }
 
     private FakeApiGateway GetApiGateway()
@@ -111,13 +111,13 @@ public class TestsPubSubServiceInMemory
     {
         var gateway = GetApiGateway();
         
-        await _pubSubService.AddUserToGroupAsync(_hub, _group, _sub);
+        await _pubSubService.AddUserToGroupAsync(_hub, _group, _userId);
 
         await _pubSubService.GroupExistsAsync(_hub, _group);
         
         Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
-        await _pubSubService.CloseUserConnectionsAsync(_hub, _sub);
+        await _pubSubService.CloseUserConnectionsAsync(_hub, _userId);
         
         Assert.True(gateway.DeleteRequestResponse.Single().Item1.ConnectionId == _connectionId);
         
@@ -140,7 +140,7 @@ public class TestsPubSubServiceInMemory
     public async Task ShouldAddConnectionToGroupAsync()
     {
         Assert.True(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
-        Assert.True(await _pubSubService.UserExistsAsync(_hub, _sub));
+        Assert.True(await _pubSubService.UserExistsAsync(_hub, _userId));
         
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
 
@@ -163,24 +163,26 @@ public class TestsPubSubServiceInMemory
     [Fact]
     public async Task ShouldAddUserToGroupAsync()
     {
-        await _pubSubService.AddUserToGroupAsync(_hub, _group, _sub);
+        await _pubSubService.AddUserToGroupAsync(_hub, _group, _userId);
 
         await _pubSubService.GroupExistsAsync(_hub, _group);
         Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
         
-        await _pubSubService.ConnectAsync(_hub, "other_connection", _sub);
+        await _pubSubService.ConnectAsync(_hub, "other_connection", _userId);
         Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, "other_connection"));
        
 
-        await _pubSubService.RemoveUserFromGroupAsync(_hub, _group, _sub);
+        await _pubSubService.RemoveUserFromGroupAsync(_hub, _group, _userId);
         
         Assert.False(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
-        await _pubSubService.AddUserToGroupAsync(_hub, _group, _sub);
+        await _pubSubService.AddUserToGroupAsync(_hub, _group, _userId);
+        
+        Assert.True(await _pubSubService.IsUserInGroupAsync(_hub, _group, _userId));
         Assert.True(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
         
-        await _pubSubService.RemoveUserFromAllGroupsAsync(_hub,  _sub);
+        await _pubSubService.RemoveUserFromAllGroupsAsync(_hub,  _userId);
         Assert.False(await _pubSubService.IsConnectionInGroupAsync(_hub, _group, _connectionId));
     }
 
@@ -228,6 +230,22 @@ public class TestsPubSubServiceInMemory
         Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
     }
     
+    [Fact]
+    public async Task ShouldFailSendToConnectionGoneException()
+    {
+        var message = new PubSubMessage
+        {
+            ackId = null,
+            type = "message"
+        };
+
+        var gateway = GetApiGateway();
+        gateway.ThrowGoneException = true;
+        
+        await _pubSubService.SendToConnectionAsync(_hub, _connectionId, message);
+        
+        Assert.False(await _pubSubService.ConnectionExistsAsync(_hub, _connectionId));
+    }
     
     [Fact]
     public async Task ShouldSendToGroupAsync()
@@ -304,7 +322,7 @@ public class TestsPubSubServiceInMemory
         };
 
         
-        await _pubSubService.SendToUserAsync(_hub, _sub, message);
+        await _pubSubService.SendToUserAsync(_hub, _userId, message);
         
         var gateway = GetApiGateway();
         
@@ -320,7 +338,7 @@ public class TestsPubSubServiceInMemory
             type = "message"
         };
 
-        await _pubSubService.SendToUserAsync(_hub, _sub, message, new List<string> {_connectionId});
+        await _pubSubService.SendToUserAsync(_hub, _userId, message, new List<string> {_connectionId});
         
         var gateway = GetApiGateway();
         
@@ -367,7 +385,7 @@ public class TestsPubSubServiceInMemory
         const string issuer = "issuer";
         const string audience = "audience";
         
-        var token = _pubSubService.GenerateToken(issuer, audience, _sub, new List<string> { "role"},
+        var token = _pubSubService.GenerateToken(issuer, audience, _userId, new List<string> { "role"},
             secret);
         
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));

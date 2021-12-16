@@ -10,6 +10,7 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
 {
     public HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.OK;
 
+    public bool ThrowGoneException { get; set; }
     public readonly List<(PostToConnectionRequest, PostToConnectionResponse)> PostRequestResponse = new ();
     public readonly List<(GetConnectionRequest, GetConnectionResponse)> GetRequestResponse = new ();
     public readonly List<(DeleteConnectionRequest, DeleteConnectionResponse)> DeleteRequestResponse = new ();
@@ -50,6 +51,9 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
 
     public async Task<GetConnectionResponse> GetConnectionAsync(GetConnectionRequest request, CancellationToken cancellationToken = new ())
     {
+        if (ThrowGoneException)
+            throw new GoneException("Gone!");
+        
         if (HttpStatusCode != HttpStatusCode.OK)
             throw new AmazonServiceException("Error")
             {
@@ -69,6 +73,9 @@ public class FakeApiGateway : IAmazonApiGatewayManagementApi
     public async Task<PostToConnectionResponse> PostToConnectionAsync(PostToConnectionRequest request,
         CancellationToken cancellationToken = new ())
     {
+        if (ThrowGoneException)
+            throw new GoneException("Gone!");
+        
         if (HttpStatusCode != HttpStatusCode.OK)
             throw new AmazonServiceException("Error")
             {

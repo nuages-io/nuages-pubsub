@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -222,6 +223,12 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         await _pubSubGroupConnectionCollection.DeleteOneAsync(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
     }
 
+    public async Task<bool> IsUserInGroupAsync(string hub, string group, string userId)
+    {
+        return await Task.FromResult(_pubSubGroupUserCollection.AsQueryable()
+            .Any(u => u.Hub == hub && u.Group == group && u.UserId == userId));
+    }
+
     public async Task AddUserToGroupAsync(string hub, string group, string userId)
     {
         var existing = _pubSubGroupUserCollection.AsQueryable()
@@ -293,10 +300,11 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable()
             .Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
     }
-
+    
+    [ExcludeFromCodeCoverage]
     public void DeleteAll()
     {
-        throw new NotImplementedException();
+        //Not Required
     }
 
     protected override async Task InsertAsync(IPubSubConnection conn)

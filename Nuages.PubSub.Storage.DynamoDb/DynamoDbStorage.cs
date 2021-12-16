@@ -1,4 +1,5 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Diagnostics.CodeAnalysis;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Microsoft.Extensions.Options;
@@ -120,6 +121,20 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             await _context.DeleteAsync(c,_tableConfig);
         }
        
+    }
+
+    public async Task<bool> IsUserInGroupAsync(string hub, string group, string userId)
+    {
+        var search =  _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>
+            {
+                new ("UserId",  ScanOperator.Equal, userId),
+                new ("Group",  ScanOperator.Equal, group),
+                new ("Hub",  ScanOperator.Equal, hub)
+            },
+            _tableConfig);
+
+       return (await search.GetRemainingAsync()).Any();
+
     }
 
     public async Task AddUserToGroupAsync(string hub, string group, string userId)
@@ -390,8 +405,16 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         return Guid.NewGuid().ToString();
     }
 
+    [ExcludeFromCodeCoverage]
     public void DeleteAll()
     {
+        var list4 = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>(), _tableConfig).GetRemainingAsync().Result;
+        list4.ForEach(c =>
+        {
+            _context.DeleteAsync(c,
+                _tableConfig).Wait();
+        });
+        
         var list =  _context.ScanAsync<PubSubConnection>(new List<ScanCondition>(), _tableConfig).GetRemainingAsync().Result;
         list.ForEach(c =>
         {
@@ -413,11 +436,6 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                 _tableConfig).Wait();
         });
         
-        var list4 = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>(), _tableConfig).GetRemainingAsync().Result;
-        list4.ForEach(c =>
-        {
-            _context.DeleteAsync(c,
-                _tableConfig).Wait();
-        });
+       
     }
 }

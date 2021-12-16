@@ -6,6 +6,11 @@ namespace Nuages.PubSub.Services;
 
 public partial class PubSubService
 {
+    public async Task<bool> IsUserInGroupAsync(string hub, string group, string userId)
+    {
+        return await _pubSubStorage.IsUserInGroupAsync(hub, group, userId);
+    }
+
     public async Task<APIGatewayProxyResponse> SendToUserAsync(string hub, string userId, PubSubMessage message, List<string>? excludedIds = null)
     {
         var connections = await _pubSubStorage.GetConnectionsForUserAsync(hub, userId);

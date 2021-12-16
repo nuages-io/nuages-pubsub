@@ -11,7 +11,7 @@ namespace Nuages.PubSub.API.Sdk.Tests;
 
 public class BaseTest
 {
-    protected readonly ITestOutputHelper _testOutputHelper;
+    protected ITestOutputHelper _testOutputHelper;
     protected string _url;
     protected string _apiKey;
     protected string _userId;

@@ -9,8 +9,8 @@ public partial class PubSubServiceClient
             BaseUrl = _url
         };
     
-        
         await webService.SendAsync(_hub, message).ConfigureAwait(false);
+        
     }
     
     public async Task CloseAllConnectionsAsync()
