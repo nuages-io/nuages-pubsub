@@ -12,20 +12,24 @@ namespace Nuages.PubSub.Storage.DynamoDb;
 public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
     private readonly DynamoDBContext _context;
-    private readonly DynamoDBOperationConfig _defaultTableConfig;
+    private readonly PubSubOptions _options;
 
     public DynamoDbStorage(IOptions<PubSubOptions> options)
     {
+        _options = options.Value;
+        
         var client = new AmazonDynamoDBClient();
         _context = new DynamoDBContext(client);
-
-        _defaultTableConfig =
-            new DynamoDBOperationConfig
-            {
-                TableNamePrefix = options.Value.TableNamePrefix
-            };
     }
 
+    private DynamoDBOperationConfig GetNewTableConfig()
+    {
+        return new DynamoDBOperationConfig
+        {
+            TableNamePrefix = _options.TableNamePrefix
+        };
+    }
+    
     public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
     {
         var search = _context.ScanAsync<PubSubConnection>(
@@ -33,7 +37,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             {
                 new ("Hub",  ScanOperator.Equal, hub)
             },
-            _defaultTableConfig
+            GetNewTableConfig()
         );
 
         return await search.GetRemainingAsync();
@@ -49,7 +53,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                 new ("Group",  ScanOperator.Equal, group)
                 
             },
-            _defaultTableConfig
+            GetNewTableConfig()
         );
 
         var groupConnections = await search.GetRemainingAsync();
@@ -65,7 +69,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                 new ("Hub",  ScanOperator.Equal, hub),
                 new ("Group",  ScanOperator.Equal, group)
             },
-            _defaultTableConfig
+            GetNewTableConfig()
         );
         
         var list = await search.GetNextSetAsync();
@@ -82,7 +86,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                 new ("Hub",  ScanOperator.Equal, hub),
                 new ("UserId",  ScanOperator.Equal, userId)
             },
-            _defaultTableConfig
+            GetNewTableConfig()
         );
         
         var list = await search.GetNextSetAsync();
@@ -98,7 +102,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Hub",  ScanOperator.Equal, hub),
             new ("ConnectionId",  ScanOperator.Equal, connectionid)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list = await search.GetNextSetAsync();
 
@@ -113,13 +117,13 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Group",  ScanOperator.Equal, group),
             new ("ConnectionId",  ScanOperator.Equal, connectionId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list = await search.GetRemainingAsync();
 
         foreach (var c in list)
         {
-            await _context.DeleteAsync(c,_defaultTableConfig);
+            await _context.DeleteAsync(c,GetNewTableConfig());
         }
        
     }
@@ -132,7 +136,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                 new ("Group",  ScanOperator.Equal, group),
                 new ("UserId",  ScanOperator.Equal, userId)
             },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
        return (await search.GetRemainingAsync()).Any();
 
@@ -146,7 +150,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Group",  ScanOperator.Equal, group),
             new ("UserId",  ScanOperator.Equal, userId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
         
         var list = await search.GetRemainingAsync();
         
@@ -161,7 +165,9 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                 CreatedOn = DateTime.Now
             };
 
-            await _context.SaveAsync(userConnection, _defaultTableConfig);
+            userConnection.Initialize();
+            
+            await _context.SaveAsync(userConnection, GetNewTableConfig());
         }
 
         await AddConnectionToGroupFromUserGroups(hub, group, userId);
@@ -175,13 +181,13 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Group",  ScanOperator.Equal, group),
             new ("UserId",  ScanOperator.Equal, userId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
         
         var list = await search.GetRemainingAsync();
 
         foreach (var c in list)
         {
-            await _context.DeleteAsync(c, _defaultTableConfig);
+            await _context.DeleteAsync(c, GetNewTableConfig());
         }
         
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
@@ -190,13 +196,13 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Group",  ScanOperator.Equal, group),
             new ("UserId",  ScanOperator.Equal, userId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
         
         var list2 = await search2.GetRemainingAsync();
 
         foreach (var c in list2)
         {
-            await _context.DeleteAsync(c, _defaultTableConfig);
+            await _context.DeleteAsync(c, GetNewTableConfig());
         }
     }
 
@@ -207,13 +213,13 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Hub",  ScanOperator.Equal, hub),
             new ("UserId",  ScanOperator.Equal, userId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
         
         var list = await search.GetRemainingAsync();
 
         foreach (var c in list)
         {
-            await _context.DeleteAsync(c, _defaultTableConfig);
+            await _context.DeleteAsync(c, GetNewTableConfig());
         }
         
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
@@ -221,13 +227,13 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Hub",  ScanOperator.Equal, hub),
             new ("UserId",  ScanOperator.Equal, userId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
         
         var list2 = await search2.GetRemainingAsync();
 
         foreach (var c in list2)
         {
-            await _context.DeleteAsync(c, _defaultTableConfig);
+            await _context.DeleteAsync(c, GetNewTableConfig());
         }
         
     }
@@ -239,7 +245,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Hub",  ScanOperator.Equal, hub),
             new ("UserId",  ScanOperator.Equal, userId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
         
         var list = await search.GetRemainingAsync();
 
@@ -253,12 +259,12 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Hub",  ScanOperator.Equal, hub),
             new ("ConnectionId",  ScanOperator.Equal, connectionId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list = await search.GetNextSetAsync();
         foreach (var c in list)
         {
-            await _context.DeleteAsync(c, _defaultTableConfig);
+            await _context.DeleteAsync(c, GetNewTableConfig());
         }
         
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
@@ -266,12 +272,12 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Hub",  ScanOperator.Equal, hub),
             new ("ConnectionId",  ScanOperator.Equal, connectionId),
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list2 = await search2.GetNextSetAsync();
         foreach (var c in list2)
         {
-            await _context.DeleteAsync(c, _defaultTableConfig);
+            await _context.DeleteAsync(c, GetNewTableConfig());
         }
     }
 
@@ -283,7 +289,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("ConnectionId",  ScanOperator.Equal, connectionId),
             new ("AckId",  ScanOperator.Equal, ackId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list = await search.GetNextSetAsync();
 
@@ -299,9 +305,11 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             ConnectionId = connectionId,
             Hub = hub
         };
+        
+        pubSubAck.Initialize();
 
         await _context.SaveAsync(pubSubAck,
-            _defaultTableConfig);
+            GetNewTableConfig());
     }
 
     public async Task<bool> IsConnectionInGroup(string hub, string group, string connectionId)
@@ -312,7 +320,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Group",  ScanOperator.Equal, group),
             new ("ConnectionId",  ScanOperator.Equal, connectionId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list = await search.GetNextSetAsync();
 
@@ -326,7 +334,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Hub",  ScanOperator.Equal, hub),
             new ("ConnectionId",  ScanOperator.Equal, connectionId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list = await search.GetNextSetAsync();
 
@@ -335,7 +343,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
     protected override async Task UpdateAsync(IPubSubConnection connection)
     {
-        await _context.SaveAsync((PubSubConnection)connection, _defaultTableConfig);
+        await _context.SaveAsync((PubSubConnection)connection, GetNewTableConfig());
     }
 
     public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
@@ -346,7 +354,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                 new ("Hub",  ScanOperator.Equal, hub),
                 new ("UserId",  ScanOperator.Equal, userId)
             },
-            _defaultTableConfig
+            GetNewTableConfig()
         );
 
         var connections = new List<PubSubConnection>();
@@ -368,7 +376,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             new ("Group",  ScanOperator.Equal, group),
             new ("ConnectionId",  ScanOperator.Equal, connectionId)
         },
-            _defaultTableConfig);
+            GetNewTableConfig());
 
         var list = await search.GetNextSetAsync();
 
@@ -388,8 +396,10 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
                     UserId = userId,
                     ExpireOn = conn.ExpireOn
                 };
+                
+                groupConnection.Initialize();
 
-                await _context.SaveAsync(groupConnection, _defaultTableConfig);
+                await _context.SaveAsync(groupConnection, GetNewTableConfig());
             }
           
         }
@@ -397,8 +407,12 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
 
     protected override async Task InsertAsync(IPubSubConnection conn)
     {
-        await _context.SaveAsync((PubSubConnection) conn,
-            _defaultTableConfig);
+        var dynamoDbConn = (PubSubConnection)conn;
+        
+        dynamoDbConn.Initialize();
+        
+        await _context.SaveAsync(dynamoDbConn,
+            GetNewTableConfig());
     }
 
     protected override string GetNewId()
@@ -409,32 +423,32 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     [ExcludeFromCodeCoverage]
     public void DeleteAll()
     {
-        var list4 = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>(), _defaultTableConfig).GetRemainingAsync().Result;
+        var list4 = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>(), GetNewTableConfig()).GetRemainingAsync().Result;
         list4.ForEach(c =>
         {
             _context.DeleteAsync(c,
-                _defaultTableConfig).Wait();
+                GetNewTableConfig()).Wait();
         });
         
-        var list =  _context.ScanAsync<PubSubConnection>(new List<ScanCondition>(), _defaultTableConfig).GetRemainingAsync().Result;
+        var list =  _context.ScanAsync<PubSubConnection>(new List<ScanCondition>(), GetNewTableConfig()).GetRemainingAsync().Result;
         list.ForEach(c =>
         {
             _context.DeleteAsync(c,
-                _defaultTableConfig).Wait();
+                GetNewTableConfig()).Wait();
         });
         
-        var list2 = _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>(), _defaultTableConfig).GetRemainingAsync().Result;
+        var list2 = _context.ScanAsync<PubSubGroupUser>(new List<ScanCondition>(), GetNewTableConfig()).GetRemainingAsync().Result;
         list2.ForEach(c =>
         {
             _context.DeleteAsync(c,
-                _defaultTableConfig).Wait();
+                GetNewTableConfig()).Wait();
         });
         
-        var list3 = _context.ScanAsync<PubSubAck>(new List<ScanCondition>(), _defaultTableConfig).GetRemainingAsync().Result;
+        var list3 = _context.ScanAsync<PubSubAck>(new List<ScanCondition>(), GetNewTableConfig()).GetRemainingAsync().Result;
         list3.ForEach(c =>
         {
             _context.DeleteAsync(c,
-                _defaultTableConfig).Wait();
+                GetNewTableConfig()).Wait();
         });
         
        

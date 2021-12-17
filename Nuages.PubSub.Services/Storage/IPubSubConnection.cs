@@ -11,6 +11,7 @@ public interface IPubSubConnection
     public string Hub { get; set;} 
 
     public List<string>? Permissions { get; set;}
+    
 }
 
 public static class WebSocketConnectionExtensions

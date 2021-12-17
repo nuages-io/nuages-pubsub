@@ -19,6 +19,28 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             },
             RemovalPolicy = RemovalPolicy.DESTROY
         });
+        
+        // pubSubConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndConnectionId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndConnectionId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
+        //
+        // pubSubConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndUserId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndUserId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
 
 
         // ReSharper disable once UnusedVariable
@@ -33,6 +55,17 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             },
             RemovalPolicy = RemovalPolicy.DESTROY
         });
+        
+        // pubSubAck.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndConnectionIdAndAckId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndConnectionIdAndAckId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
 
         // ReSharper disable once UnusedVariable
         var pubSubGroupConnection = new Table(this, "pub_sub_group_connection", new TableProps
@@ -46,6 +79,61 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             },
             RemovalPolicy = RemovalPolicy.DESTROY
         });
+        
+        // pubSubGroupConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndGroup",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndGroup",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
+        //
+        // pubSubGroupConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndGroupAndConnectionId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndGroupAndConnectionId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
+        //
+        // pubSubGroupConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndConnectionId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndConnectionId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
+        //
+        // pubSubGroupConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndUserId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndUserId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
+        //
+        // pubSubGroupConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndGroupAndUserId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndGroupAndUserId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
 
         // ReSharper disable once UnusedVariable
         var pubSubGroupUser = new Table(this, "pub_sub_group_user", new TableProps
@@ -59,5 +147,27 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             },
             RemovalPolicy = RemovalPolicy.DESTROY
         });
+        
+        // pubSubGroupUser.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndUserId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndUserId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
+        //
+        // pubSubGroupUser.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+        // {
+        //     IndexName = "HubAndGroupAndUserId",
+        //     ProjectionType = ProjectionType.ALL,
+        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+        //     {
+        //         Name = "HubAndGroupAndUserId",
+        //         Type = AttributeType.STRING
+        //     }
+        // });
     }
 }

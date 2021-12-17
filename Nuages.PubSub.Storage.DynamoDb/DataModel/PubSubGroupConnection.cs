@@ -16,4 +16,19 @@ public class PubSubGroupConnection  : IPubSubGroupConnection
     public string Hub { get; set; }= null!;
     public string UserId { get; set; } = null!;
     public DateTime? ExpireOn { get; set; }
+
+    public string HubAndGroup { get; set; } = null!;
+    public string HubAndGroupAndConnectionId { get; set; } = null!;
+    public string HubAndConnectionId { get; set; } = null!;
+    public string HubAndUserId { get; set; } = null!;
+    public string HubAndGroupAndUserId { get; set; } = null!;
+
+    public void Initialize()
+    {
+        HubAndGroup = $"{Hub}-{Group}";
+        HubAndGroupAndConnectionId = $"{Hub}-{Group}-{ConnectionId}";
+        HubAndConnectionId = $"{Hub}-{ConnectionId}";
+        HubAndUserId = $"{Hub}-{UserId}";
+        HubAndGroupAndUserId = $"{Hub}-{Group}-{UserId}";
+    }
 }

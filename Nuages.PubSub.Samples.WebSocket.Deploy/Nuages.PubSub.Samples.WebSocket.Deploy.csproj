@@ -25,7 +25,6 @@
     </ItemGroup>
     <ItemGroup>
         <None Remove="appsettings.prod.test.json" />
-        <Content Include="appsettings.prod.test.json" CopyToOutputDirectory="Always" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Samples.WebSocket\Nuages.PubSub.Samples.WebSocket.csproj" />

@@ -15,4 +15,10 @@ public class PubSubAck
     public string Hub { get; set; } = null!;
     public string AckId { get; set; } = null!;
 
+    public string HubAndConnectionIdAndAckId { get; set; } = null!;
+
+    public void Initialize()
+    {
+        HubAndConnectionIdAndAckId = $"{Hub}-{ConnectionId}-{AckId}";
+    }
 }

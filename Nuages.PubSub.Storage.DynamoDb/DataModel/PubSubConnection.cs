@@ -18,4 +18,12 @@ public class PubSubConnection : IPubSubConnection
     // ReSharper disable once MemberCanBePrivate.Global
     public List<string>? Permissions { get; set; }
 
+    public string HubAndConnectionId { get; set; } = null!;
+    public string HubAndUserId { get; set; } = null!;
+
+    public void Initialize()
+    {
+        HubAndConnectionId = $"{Hub}-{ConnectionId}";
+        HubAndUserId = $"{Hub}-{UserId}";
+    }
 }
