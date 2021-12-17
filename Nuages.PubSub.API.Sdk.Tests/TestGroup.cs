@@ -36,9 +36,7 @@ public class TestGroup : BaseTest
                         TestOutputHelper.WriteLine(connectionId);
 
                          PubSubClient.AddConnectionToGroupAsync(TestGroup, connectionId).Wait();
-                         //await _pubSubClient.AddUserToGroupAsync(_userId, _group);
-                         
-                         
+
                          PubSubClient.SendToGroupAsync(TestGroup, new Message
                         {
                             Data = new

@@ -25,7 +25,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             throw new Exception("WebApiAsset must be assigned");
         }
 
-
         // ReSharper disable once UnusedVariable
         var func = new Function(this, "AspNetCoreFunction", new FunctionProps
         {
