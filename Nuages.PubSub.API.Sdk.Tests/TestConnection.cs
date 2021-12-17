@@ -127,11 +127,18 @@ public class TestConnection : BaseTest
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
 
-                connectionId = msg.type switch
+                switch (@msg.type)
                 {
-                    "echo" => msg.data!.connectionId,
-                    _ => connectionId
-                };
+                    case "echo":
+                    {
+                        connectionId = msg.data!.connectionId;
+                        receivedEvent.Set();
+                        
+                        break;
+                    }
+                }
+
+                
             });
 
         await client.Start();
@@ -143,7 +150,7 @@ public class TestConnection : BaseTest
         Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
         await PubSubClient.CloseConnectionAsync(connectionId!);
         
-        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+        //receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.True(disconnected);
         Assert.False(await PubSubClient.ConnectionExistsAsync(connectionId!));
@@ -163,11 +170,17 @@ public class TestConnection : BaseTest
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
 
-                connectionId = msg.type switch
+                switch (@msg.type)
                 {
-                    "echo" => msg.data!.connectionId,
-                    _ => connectionId
-                };
+                    case "echo":
+                    {
+                        connectionId = msg.data!.connectionId;
+                        receivedEvent.Set();
+                        
+                        break;
+                    }
+                }
+                
             });
         
         await client.Start();

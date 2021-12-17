@@ -98,6 +98,8 @@ public class TestAll : BaseTest
                     "echo" => msg.data!.connectionId,
                     _ => connectionId
                 };
+
+                receivedEvent.Set();
             });
 
         await client.Start();
@@ -109,7 +111,7 @@ public class TestAll : BaseTest
         Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
         await PubSubClient.CloseAllConnectionsAsync();
         
-        receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
+        //receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
         
         Assert.True(disconnected);
         Assert.False(await PubSubClient.ConnectionExistsAsync(connectionId!));

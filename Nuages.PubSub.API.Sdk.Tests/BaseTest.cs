@@ -54,6 +54,6 @@ public class BaseTest
             type = "echo"
         });
 
-        client.Send(message);
+        client.SendInstant(message);
     }
 }

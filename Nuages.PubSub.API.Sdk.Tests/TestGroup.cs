@@ -181,13 +181,19 @@ public class TestGroup : BaseTest
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
 
-                connectionId = msg.type switch
+                switch (msg.type)
                 {
-                    "echo" => msg.data!.connectionId,
-                    _ => connectionId
-                };
+                    case "echo":
+                    {
+                        connectionId = msg.data!.connectionId;
+                        PubSubClient.AddConnectionToGroupAsync(TestGroup, connectionId!).Wait();
+                        receivedEvent.Set();
+                        break;
+                    }
+                }
+
                 
-                PubSubClient.AddConnectionToGroupAsync(TestGroup, connectionId!).Wait();
+
             });
 
         await client.Start();
@@ -199,7 +205,7 @@ public class TestGroup : BaseTest
         Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
         await PubSubClient.CloseGroupConnectionsAsync(TestGroup);
         
-        receivedEvent.WaitOne(TimeSpan.FromSeconds(3));
+        //receivedEvent.WaitOne(TimeSpan.FromSeconds(3));
         
         Assert.True(disconnected);
         Assert.False(await PubSubClient.ConnectionExistsAsync(connectionId!));
