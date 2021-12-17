@@ -30,7 +30,10 @@ public class TestMongoPubSubStorage
         serviceCollection.AddSingleton<IConfiguration>(configuration);
             
         serviceCollection
-            .AddPubSubService(configuration)
+            .AddPubSubService(configuration, subOptions =>
+            {
+                subOptions.TableNamePrefix = "test.";
+            })
             .AddPubSubMongoStorage();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();

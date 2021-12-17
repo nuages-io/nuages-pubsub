@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -31,6 +32,8 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>(prefix + "pub_sub_group_user");
         _pubSubAckCollection = database.GetCollection<PubSubAck>(prefix + "pub_sub_ack");
 
+        Console.WriteLine(JsonSerializer.Serialize(pubSubOptions.Value));
+        
         Initialize();
     }
     
