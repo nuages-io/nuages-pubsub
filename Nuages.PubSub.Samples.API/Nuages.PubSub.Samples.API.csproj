@@ -16,7 +16,6 @@
         <PackageReference Include="Nuages.PubSub.Services" Version="1.0.21" />
         <PackageReference Include="Nuages.PubSub.Storage.DynamoDb" Version="1.0.21" />
         <PackageReference Include="Nuages.PubSub.Storage.Mongo" Version="1.0.21" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.API.Controllers\Nuages.PubSub.API.Controllers.csproj" />
