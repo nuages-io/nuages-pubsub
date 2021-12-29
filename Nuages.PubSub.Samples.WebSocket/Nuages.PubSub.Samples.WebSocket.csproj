@@ -17,11 +17,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <PackageReference Include="Nuages.PubSub.Storage.Mongo" Version="1.0.21" />
-      <PackageReference Include="Nuages.PubSub.Storage.DynamoDb" Version="1.0.21" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Remove="appsettings.json" />
         <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     </ItemGroup>
