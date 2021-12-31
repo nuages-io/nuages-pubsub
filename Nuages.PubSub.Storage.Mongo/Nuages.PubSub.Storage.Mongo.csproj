@@ -32,7 +32,7 @@
         <PackageReference Include="MongoDB.Driver" Version="2.14.1" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Nuages.PubSub.WebSocket\Nuages.PubSub.WebSocket.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.WebSocket.Endpoints\Nuages.PubSub.WebSocket.Endpoints.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
     </ItemGroup>
 </Project>

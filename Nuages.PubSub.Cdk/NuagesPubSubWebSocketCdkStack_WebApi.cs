@@ -30,7 +30,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         {
             FunctionName = MakeId("AspNetCoreFunction"),
             Code = Code.FromAsset(WebApiAsset),
-            Handler = "Nuages.PubSub.Samples.API::Nuages.PubSub.Samples.API.LambdaEntryPoint::FunctionHandlerAsync",
+            Handler = "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync",
             Runtime = Runtime.DOTNET_CORE_3_1,
             Role = role,
             Timeout = Duration.Seconds(30),

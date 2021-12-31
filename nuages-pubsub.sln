@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Samples.Conso
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E97A975A-2951-452E-8080-891F5D6D9347}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket", "Nuages.PubSub.WebSocket\Nuages.PubSub.WebSocket.csproj", "{71D52B82-5113-46EF-A8BA-64FE0B8A6ECC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Endpoints", "Nuages.PubSub.WebSocket.Endpoints\Nuages.PubSub.WebSocket.Endpoints.csproj", "{71D52B82-5113-46EF-A8BA-64FE0B8A6ECC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.Mongo", "Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj", "{B13D2D4B-4BA4-43B0-95FB-BBEE1052531C}"
 EndProject
@@ -18,17 +18,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.Mongo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.Tests", "Nuages.PubSub.Services.Tests\Nuages.PubSub.Services.Tests.csproj", "{95875A83-3EB7-480D-88CD-B7B08102A2CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Tests", "Nuages.PubSub.WebSocket.Tests\Nuages.PubSub.WebSocket.Tests.csproj", "{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.Endpoints.Tests", "Nuages.PubSub.WebSocket.Endpoints.Tests\Nuages.PubSub.WebSocket.Endpoints.Tests.csproj", "{5DF8F8E4-2E95-42DE-AC98-D29699A942F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.DynamoDb", "Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj", "{F4413E7A-9225-4D7E-9242-1E28432635B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.DynamoDb.Tests", "Nuages.PubSub.Storage.DynamoDb.Tests\Nuages.PubSub.Storage.DynamoDb.Tests.csproj", "{505B99E3-BC2B-4A39-97CE-62510615954D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Samples.WebSocket", "Nuages.PubSub.Samples.WebSocket\Nuages.PubSub.Samples.WebSocket.csproj", "{136AA1C6-86A2-4FDC-85A7-DFF07CB3C7E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket.API", "Nuages.PubSub.WebSocket.API\Nuages.PubSub.WebSocket.API.csproj", "{136AA1C6-86A2-4FDC-85A7-DFF07CB3C7E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Samples.WebSocket.Deploy", "Nuages.PubSub.Samples.WebSocket.Deploy\Nuages.PubSub.Samples.WebSocket.Deploy.csproj", "{276C0749-02AC-4FDD-8617-633A8807E1FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Cdk.Deploy", "Nuages.PubSub.Cdk.Deploy\Nuages.PubSub.Cdk.Deploy.csproj", "{276C0749-02AC-4FDD-8617-633A8807E1FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Samples.API", "Nuages.PubSub.Samples.API\Nuages.PubSub.Samples.API.csproj", "{31148DEB-5326-47F2-BFFD-C4E6CC64418E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API", "Nuages.PubSub.API\Nuages.PubSub.API.csproj", "{31148DEB-5326-47F2-BFFD-C4E6CC64418E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Sdk", "Nuages.PubSub.API.Sdk\Nuages.PubSub.API.Sdk.csproj", "{D73B154E-4E33-4559-875B-E8A5D72A4CC3}"
 EndProject
@@ -38,14 +38,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".CDK", ".CDK", "{0B49A1C7-3
 	ProjectSection(SolutionItems) = preProject
 		build.sh = build.sh
 		cdk.json = cdk.json
-		deploy.sh = deploy.sh
-		synth.sh = synth.sh
-		diff.sh = diff.sh
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Controllers", "Nuages.PubSub.API.Controllers\Nuages.PubSub.API.Controllers.csproj", "{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Endpoints", "Nuages.PubSub.API.Endpoints\Nuages.PubSub.API.Endpoints.csproj", "{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Sdk.Tests", "Nuages.PubSub.API.Sdk.Tests\Nuages.PubSub.API.Sdk.Tests.csproj", "{7614C86E-6CEC-42DF-9CD3-43C006050183}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{6C86B919-4480-4403-BB2B-00C0E1D36A78}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebSocket", "WebSocket", "{6B4CBFA5-AFAC-4B5A-85C2-6F1A576F0F12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,8 +127,12 @@ Global
 		{95875A83-3EB7-480D-88CD-B7B08102A2CE} = {5F8FC58F-1215-4549-ACFC-BF4CFBC0ABA3}
 		{F4413E7A-9225-4D7E-9242-1E28432635B9} = {A0AB3C7E-15A9-4DEC-BCEF-0D2720BECE61}
 		{505B99E3-BC2B-4A39-97CE-62510615954D} = {A0AB3C7E-15A9-4DEC-BCEF-0D2720BECE61}
-		{136AA1C6-86A2-4FDC-85A7-DFF07CB3C7E9} = {E97A975A-2951-452E-8080-891F5D6D9347}
-		{276C0749-02AC-4FDD-8617-633A8807E1FB} = {E97A975A-2951-452E-8080-891F5D6D9347}
-		{31148DEB-5326-47F2-BFFD-C4E6CC64418E} = {E97A975A-2951-452E-8080-891F5D6D9347}
+		{31148DEB-5326-47F2-BFFD-C4E6CC64418E} = {6C86B919-4480-4403-BB2B-00C0E1D36A78}
+		{D73B154E-4E33-4559-875B-E8A5D72A4CC3} = {6C86B919-4480-4403-BB2B-00C0E1D36A78}
+		{7614C86E-6CEC-42DF-9CD3-43C006050183} = {6C86B919-4480-4403-BB2B-00C0E1D36A78}
+		{71D52B82-5113-46EF-A8BA-64FE0B8A6ECC} = {6B4CBFA5-AFAC-4B5A-85C2-6F1A576F0F12}
+		{5DF8F8E4-2E95-42DE-AC98-D29699A942F6} = {6B4CBFA5-AFAC-4B5A-85C2-6F1A576F0F12}
+		{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3} = {6C86B919-4480-4403-BB2B-00C0E1D36A78}
+		{136AA1C6-86A2-4FDC-85A7-DFF07CB3C7E9} = {6B4CBFA5-AFAC-4B5A-85C2-6F1A576F0F12}
 	EndGlobalSection
 EndGlobal

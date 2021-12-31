@@ -37,7 +37,7 @@ class Program
     // ReSharper disable once UnusedParameter.Local
     private static async Task Main(string[] args)
     {
-        System.Console.WriteLine("Starting Nuages.PubSub.WebSocket Console!");
+        System.Console.WriteLine("Starting Nuages.PubSub.WebSocket.Endpoints Console!");
         _configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
             .AddJsonFile("appsettings.json", false)
@@ -98,7 +98,7 @@ class Program
             _webSocket = new ClientWebSocket();
             await _webSocket.ConnectAsync(new Uri(uri), CancellationToken.None);
 
-            System.Console.WriteLine("Nuages.PubSub.WebSocket Connected");
+            System.Console.WriteLine("Nuages.PubSub.WebSocket.Endpoints Connected");
             System.Console.WriteLine("Sending echo message...");
                 
             var msg = new {type = "echo", data = ""};
@@ -118,7 +118,7 @@ class Program
             lock (ConsoleLock)
             {
                 System.Console.ForegroundColor = ConsoleColor.Red;
-                System.Console.WriteLine("Nuages.PubSub.WebSocket closed.");
+                System.Console.WriteLine("Nuages.PubSub.WebSocket.Endpoints closed.");
                 System.Console.ResetColor();
             }
         }
