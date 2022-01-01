@@ -30,23 +30,26 @@ public class Startup
             
         var storage = _configuration.GetSection("Nuages:PubSub:Storage").Value;
         
-        switch (storage)
-        {
-            case "DynamoDb":
-            {
-                pubSubBuilder.AddPubSubDynamoDbStorage();
-                break;
-            }
-            case "MongoDb":
-            {
-                pubSubBuilder.AddPubSubMongoStorage();
-                break;
-            }
-            default:
-            {
-                throw new NotSupportedException("Storage not supported");
-            }
-        }
+        // switch (storage)
+        // {
+        //     
+        //     // case "DynamoDb":
+        //     // {
+        //     //     pubSubBuilder.AddPubSubDynamoDbStorage();
+        //     //     break;
+        //     // }
+        //     case "MongoDb":
+        //     {
+        //         pubSubBuilder.AddPubSubMongoStorage();
+        //         break;
+        //     }
+        //     default:
+        //     {
+        //         throw new NotSupportedException("Storage not supported");
+        //     }
+        // }
+        //
+        pubSubBuilder.AddPubSubMongoStorage();
         
         services.AddControllers().AddJsonOptions(options =>
         {
@@ -88,7 +91,7 @@ public class Startup
             
             AWSXRayRecorder.InitializeInstance(_configuration);
             AWSSDKHandler.RegisterXRayForAllServices();
-        
+            
             app.UseXRay(stackName);
         }
 
@@ -106,8 +109,14 @@ public class Startup
                 async context =>
                 {
                     var option = app.ApplicationServices.GetService <IOptions<PubSubOptions>>();
+
+                    var config = new
+                    {
+                        PubSubOptions = option,
+                        Storage = _configuration.GetSection("Nuages:PubSub:Storage").Value
+                    };
                     
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(option, new JsonSerializerOptions
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(config, new JsonSerializerOptions
                     { 
                         WriteIndented = true
                     }));

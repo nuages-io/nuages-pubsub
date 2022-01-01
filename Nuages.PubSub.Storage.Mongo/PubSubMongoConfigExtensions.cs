@@ -19,6 +19,7 @@ public static class PubSubMongoConfigExtensions
         if (options != null)
             builder.Services.Configure(options);
         
+        
         builder.Services.AddScoped<IPubSubStorage, MongoPubSubStorage>();
     }
 }

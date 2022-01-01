@@ -28,15 +28,25 @@ public partial class PubSubService
         try
         {
             using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
+            Console.WriteLine($"uri = {_pubSubOptions.Uri} COnnectionId = {connectionId} hub = {hub}");
+            
             await apiGateway.GetConnectionAsync(new GetConnectionRequest
             {
                 ConnectionId = connectionId
             });
 
-            return await _pubSubStorage.ConnectionExistsAsync(hub, connectionId);
+            var res =  await _pubSubStorage.ConnectionExistsAsync(hub, connectionId);
+
+            if (!res)
+            {
+                Console.WriteLine($"Connection {connectionId} does not exists");
+            }
+
+            return res;
         }
         catch (GoneException)
         {
+            Console.WriteLine($"Connection {connectionId} is gone");
             await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
             return false;
         }
@@ -51,6 +61,8 @@ public partial class PubSubService
                 await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
             }
 
+            Console.WriteLine($"Exception {e.Message}");
+            
             return false;
         }
        

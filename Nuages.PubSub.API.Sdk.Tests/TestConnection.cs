@@ -48,8 +48,11 @@ public class TestConnection : BaseTest
         receivedEvent.WaitOne(TimeSpan.FromSeconds(10));
 
         Assert.NotNull(connectionId);
-        Assert.True(await PubSubClient.ConnectionExistsAsync(connectionId!));
+
+        var res = await PubSubClient.ConnectionExistsAsync(connectionId!);
+        Assert.True(res);
         
+       
     }
     
     [Fact]
