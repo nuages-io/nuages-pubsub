@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Title>Nuages.PubSub.Cdk</Title>
     <Authors>Nuages.io</Authors>
-    <Description> AWS CDK support for deployment of Nuages.PubSub.WebSocket</Description>
+    <Description> AWS CDK support for deployment of Nuages.PubSub.WebSocket.API and Nuages.PubSub.API</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>nuages.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>

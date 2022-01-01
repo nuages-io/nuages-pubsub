@@ -1,1 +1,1 @@
-Nuages.PubSub.WebSocket
+Nuages.PubSub.Cdk

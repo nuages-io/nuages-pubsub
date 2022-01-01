@@ -5,9 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <Title>Nuages.PubSub.WebSocket</Title>
+        <Title>Nuages.PubSub.WebSocket.Endpoints</Title>
         <Authors>Nuages.io</Authors>
-        <Description>Nuages.PubSub.WebSocket</Description>
+        <Description>Nuages.PubSub.WebSocket.Endpoints</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageIcon>nuages.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>

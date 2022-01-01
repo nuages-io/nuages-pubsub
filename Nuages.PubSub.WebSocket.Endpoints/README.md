@@ -1,1 +1,1 @@
-Nuages.PubSub.WebSocket
+Nuages.PubSub.WebSocket.Endpoints

@@ -6,9 +6,9 @@
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
 
-        <Title>Nuages.PubSub.API.Contollers</Title>
+        <Title>Nuages.PubSub.API.Endpoints</Title>
         <Authors>Nuages.io</Authors>
-        <Description> Backend for Nuages.PubSub.API</Description>
+        <Description> Backend controllers and endpoints for Nuages.PubSub.API</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageIcon>nuages.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
