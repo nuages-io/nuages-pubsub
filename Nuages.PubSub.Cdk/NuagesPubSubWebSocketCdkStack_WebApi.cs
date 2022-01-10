@@ -77,20 +77,20 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         
         var domainName = (string)Node.TryGetContext(ContextDomainNameApi);
 
-        var hc = new CfnHealthCheck(this, MakeId("HealthCheck"), new CfnHealthCheckProps
-        {
-            HealthCheckConfig = new CfnHealthCheck.HealthCheckConfigProperty
-            {
-                EnableSni = true,
-                FailureThreshold = 3,
-                FullyQualifiedDomainName = apiDomain,
-                Port = 443,
-                RequestInterval = 30,
-                ResourcePath = apiCheckPath,
-                Type = "HTTPS",
-            },
-            //©©HealthCheckTags = null
-        });
+        // var hc = new CfnHealthCheck(this, MakeId("HealthCheck"), new CfnHealthCheckProps
+        // {
+        //     HealthCheckConfig = new CfnHealthCheck.HealthCheckConfigProperty
+        //     {
+        //         EnableSni = true,
+        //         FailureThreshold = 3,
+        //         FullyQualifiedDomainName = apiDomain,
+        //         Port = 443,
+        //         RequestInterval = 30,
+        //         ResourcePath = apiCheckPath,
+        //         Type = "HTTPS",
+        //     },
+        //     //©©HealthCheckTags = null
+        // });
         
         if (!string.IsNullOrEmpty(domainName))
         {
