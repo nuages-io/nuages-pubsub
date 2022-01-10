@@ -17,3 +17,4 @@ tailwind-output.css
 /packages/
 .DS_Store
 cdk.out
+nlog.config

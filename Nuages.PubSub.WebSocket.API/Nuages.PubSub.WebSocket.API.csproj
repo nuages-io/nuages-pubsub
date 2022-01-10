@@ -19,6 +19,7 @@
     <ItemGroup>
         <None Remove="appsettings.json" />
         <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+        <None Remove="nlog.config" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="appsettings.prod.json" />

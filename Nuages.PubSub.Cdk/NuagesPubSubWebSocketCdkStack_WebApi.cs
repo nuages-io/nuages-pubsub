@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
+using Amazon.CDK.AWS.AppMesh;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
@@ -69,8 +70,28 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
 
 
+        var apiDomain = $"{webApi.RestApiId}.execute-api.{Aws.REGION}.amazonaws.com";
+        var apiCheckPath = $"{webApi.DeploymentStage.StageName}/swagger";
+
+       
+        
         var domainName = (string)Node.TryGetContext(ContextDomainNameApi);
 
+        var hc = new CfnHealthCheck(this, MakeId("HealthCheck"), new CfnHealthCheckProps
+        {
+            HealthCheckConfig = new CfnHealthCheck.HealthCheckConfigProperty
+            {
+                EnableSni = true,
+                FailureThreshold = 3,
+                FullyQualifiedDomainName = apiDomain,
+                Port = 443,
+                RequestInterval = 30,
+                ResourcePath = apiCheckPath,
+                Type = "HTTPS",
+            },
+            //©©HealthCheckTags = null
+        });
+        
         if (!string.IsNullOrEmpty(domainName))
         {
             var certficateArn = (string)Node.TryGetContext(ContextCertificateArnApi);

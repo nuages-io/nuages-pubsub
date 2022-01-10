@@ -20,6 +20,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
 {
     public PubSubFunction() 
     {
+        
         var configManager = new ConfigurationManager();
 
         var builder = configManager

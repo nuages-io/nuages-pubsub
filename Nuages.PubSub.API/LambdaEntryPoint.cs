@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using NLog.Web;
 
 namespace Nuages.PubSub.API;
 /// <summary>
@@ -73,7 +74,7 @@ public class LambdaEntryPoint :
             }
            
 
-        });
+        }).UseNLog();
 
     }
 }
