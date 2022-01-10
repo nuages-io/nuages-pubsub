@@ -38,6 +38,8 @@ public class AuthorizeRoute : IAuthorizeRoute
             return CreateResponse(false, input.MethodArn);
         }
 
+        context.Logger.LogLine($"Token={token} Hub={hub}");
+        
         var jwtToken = new JwtSecurityTokenHandler()
             .ReadJwtToken(token);
 
