@@ -21,8 +21,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore -c RELEASE
-    - name: Test
-      run: dotnet test Nuages.PubSub.Services.Tests/Nuages.PubSub.Services.Tests.csproj -c RELEASE
+    #- name: Test
+    #  run: dotnet test Nuages.PubSub.Services.Tests/Nuages.PubSub.Services.Tests.csproj -c RELEASE
    
       
    
