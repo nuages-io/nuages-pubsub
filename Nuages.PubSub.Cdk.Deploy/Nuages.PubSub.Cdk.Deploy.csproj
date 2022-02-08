@@ -21,11 +21,9 @@
     </ItemGroup>
     <ItemGroup>
         <None Remove="appsettings.prod.json" />
-        <Content Include="appsettings.prod.json" CopyToOutputDirectory="Always" />
+        <Content Include="appsettings.prod.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.prod.json')"/>
     </ItemGroup>
-    <ItemGroup>
-        <None Remove="appsettings.prod.test.json" />
-    </ItemGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.WebSocket.API\Nuages.PubSub.WebSocket.API.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Cdk\Nuages.PubSub.Cdk.csproj" />
