@@ -28,10 +28,5 @@
       <ProjectReference Include="..\Nuages.PubSub.API.Sdk\Nuages.PubSub.API.Sdk.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="appsettings.local.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 
 </Project>
