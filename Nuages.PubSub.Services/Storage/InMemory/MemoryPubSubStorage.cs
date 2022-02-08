@@ -3,6 +3,7 @@ using Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
 namespace Nuages.PubSub.Services.Storage.InMemory;
 
+
 public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
     private Dictionary<string, List<IPubSubConnection>> HubConnections { get; } = new();

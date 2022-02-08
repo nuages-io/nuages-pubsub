@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Nuages.PubSub.Services.Storage.InMemory;
 
-#if DEBUG
 
 [ExcludeFromCodeCoverage]
 public static class PubSubMemoryConfigExtensions
@@ -15,5 +14,3 @@ public static class PubSubMemoryConfigExtensions
         builder.Services.AddScoped<IPubSubStorage, MemoryPubSubStorage>();
     }
 }
-
-#endif

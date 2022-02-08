@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
-#if DEBUG
 [ExcludeFromCodeCoverage]
 public class PubSubGroupConnection : IPubSubGroupConnection
 {
@@ -15,4 +14,3 @@ public class PubSubGroupConnection : IPubSubGroupConnection
     public string UserId { get; set; } = "";
     public DateTime? ExpireOn { get; set; }
 }
-#endif

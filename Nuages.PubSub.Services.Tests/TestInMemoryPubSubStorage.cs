@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Nuages.PubSub.Services.Storage;
+
 using Nuages.PubSub.Services.Storage.InMemory;
 
 using Xunit;
