@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="appsettings.local.json">
+        <Content Include="appsettings.local.json" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

@@ -15,9 +15,9 @@
 
     <ItemGroup>
       <None Remove="appsettings.json" />
-      <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+      <Content Include="appsettings.json" CopyToOutputDirectory="Always"  />
       <None Remove="appsettings.local.json" />
-      <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" />
+      <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'"/>
     </ItemGroup>
 
     <ItemGroup>
