@@ -3,8 +3,6 @@ using Nuages.PubSub.Services.Storage.InMemory.DataModel;
 
 namespace Nuages.PubSub.Services.Storage.InMemory;
 
-#if DEBUG
-
 public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
     private Dictionary<string, List<IPubSubConnection>> HubConnections { get; } = new();
@@ -246,5 +244,3 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         HubUsersAndGroups.Clear();
     }
 }
-
-#endif

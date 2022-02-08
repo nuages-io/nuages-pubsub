@@ -29,11 +29,6 @@
       <ProjectReference Include="..\Nuages.PubSub.WebSocket.Endpoints\Nuages.PubSub.WebSocket.Endpoints.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="appsettings.local.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
 
   
 
