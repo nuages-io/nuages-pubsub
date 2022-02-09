@@ -29,12 +29,12 @@
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.4.0" />
-      <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.106" />
+      <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.122" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
-      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.15.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.15.1" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
     </ItemGroup>
 
     
