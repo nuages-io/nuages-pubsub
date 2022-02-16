@@ -20,8 +20,8 @@
         <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     </ItemGroup>
     <ItemGroup>
-        <None Remove="appsettings.prod.json" />
-        <Content Include="appsettings.prod.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.prod.json')" />
+        <None Remove="appsettings.deploy.json"/>
+        <Content Include="appsettings.deploy.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.deploy.json')"/>
     </ItemGroup>
     
     <ItemGroup>

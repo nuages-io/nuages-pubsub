@@ -28,7 +28,7 @@ public class Startup
         var pubSubBuilder = services
             .AddPubSubService(_configuration);
             
-        var storage = _configuration.GetSection("Nuages:PubSub:Storage").Value;
+        var storage = _configuration.GetSection("Nuages:Data:Storage").Value;
         
         // switch (storage)
         // {
@@ -103,7 +103,6 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            
             endpoints.MapControllers();
             endpoints.MapGet("/",
                 async context =>
@@ -113,7 +112,7 @@ public class Startup
                     var config = new
                     {
                         PubSubOptions = option,
-                        Storage = _configuration.GetSection("Nuages:PubSub:Storage").Value
+                        Storage = _configuration.GetSection("Nuages:Data:Storage").Value
                     };
                     
                     await context.Response.WriteAsync(JsonSerializer.Serialize(config, new JsonSerializerOptions

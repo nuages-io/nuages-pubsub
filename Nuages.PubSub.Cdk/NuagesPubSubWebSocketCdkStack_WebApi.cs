@@ -27,20 +27,27 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         }
 
         // ReSharper disable once UnusedVariable
-        var func = new Function(this, "AspNetCoreFunction", new FunctionProps
+        var func = new Function(this, "API", new FunctionProps
         {
-            FunctionName = MakeId("AspNetCoreFunction"),
+            FunctionName = MakeId("API"),
             Code = Code.FromAsset(WebApiAsset),
             Handler = "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync",
             Runtime = Runtime.DOTNET_CORE_3_1,
             Role = role,
             Timeout = Duration.Seconds(30),
+            MemorySize = 512,
             Environment = new Dictionary<string, string>
             {
                 { "Nuages__PubSub__Uri", url },
                 { "Nuages__PubSub__Region", Aws.REGION },
                 { "Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
-                { "Nuages__PubSub__StackName", StackName }
+                { "Nuages__PubSub__StackName", StackName },
+                { "Nuages__PubSub__Issuer", Issuer ?? "" },
+                { "Nuages__PubSub__Audience", Audience ?? "" },
+                { "Nuages__PubSub__Secret", Secret ?? "" },
+                { "Nuages__Data__Storage", Storage ?? "" },
+                { "Nuages__Data__ConnectionString", ConnectionString ?? "" },
+                { "Nuages__Data__DatabaseName", DatabaseName ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });
@@ -65,14 +72,11 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             ApiKeyRequired = false
         }));
         
-       
-
         var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
 
 
         var apiDomain = $"{webApi.RestApiId}.execute-api.{Aws.REGION}.amazonaws.com";
         var apiCheckPath = $"{webApi.DeploymentStage.StageName}/swagger";
-
        
         
         var domainName = (string)Node.TryGetContext(ContextDomainNameApi);

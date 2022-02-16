@@ -17,7 +17,7 @@ sealed class Program
 
         var builder = configManager
             .AddJsonFile("appsettings.json",  false, true)
-            .AddJsonFile("appsettings.prod.json",  false, true)
+            .AddJsonFile("appsettings.deploy.json",  true, true)
             .AddEnvironmentVariables();
         
         IConfiguration configuration = builder.Build();
@@ -46,6 +46,13 @@ sealed class Program
         
         stack.Node.SetContext(MyNuagesPubSubStack.ContextCreateDynamoDbStorage, options.CreateDynamoDbStorage);
         stack.Node.SetContext(MyNuagesPubSubStack.ContextTableNamePrefix, options.TableNamePrefix);
+        
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextStorage, options.Env.Data.Storage ?? "");
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextConnectionString, options.Env.Data.ConnectionString ?? "");
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextDatabaseName, options.Env.Data.DatabaseName ?? "");
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextAudience, options.Env.PubSub.Audience ?? "");
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextIssuer, options.Env.PubSub.Issuer ?? "");
+        stack.Node.SetContext(MyNuagesPubSubStack.ContextSecret, options.Env.PubSub.Secret ?? "");
         
         stack.CreateTemplate();
 

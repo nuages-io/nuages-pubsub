@@ -10,6 +10,7 @@ logs/
 appsettings.testdata.json
 appsettings.local.json
 appsettings.prod.json
+appsettings.deploy.json
 appsettings.prod*
 internal-nlog.txt
 node_modules

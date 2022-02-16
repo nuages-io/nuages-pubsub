@@ -66,7 +66,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             serviceCollection.AddPubSubLambdaRoutes(configuration)
             .AddPubSubService();
 
-        var storage = configuration.GetSection("Nuages:PubSub:Storage").Value;
+        var storage = configuration.GetSection("Nuages:Data:Storage").Value;
         switch (storage)
         {
             case "DynamoDb":

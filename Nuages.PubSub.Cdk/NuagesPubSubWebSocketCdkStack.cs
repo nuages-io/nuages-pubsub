@@ -59,15 +59,31 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         
     }
 
-    public const string ContextDomainName = "Nuages/PubSub/WebSocket/Domain";
-    public const string ContextCertificateArn = "Nuages/PubSub/WebSocket/CertificateArn";
+    public const string ContextDomainName = "WebSocket_Domain";
+    public const string ContextCertificateArn = "WebSocket_CertificateArn";
     
-    public const string ContextDomainNameApi = "Nuages/PubSub/API/Domain";
-    public const string ContextCertificateArnApi = "Nuages/PubSub/API/CertificateArn";
-    public const string ContextApiKeyApi = "Nuages/PubSub/API/ApiKey";
+    public const string ContextDomainNameApi = "API_Domain";
+    public const string ContextCertificateArnApi = "PubSub_API_CertificateArn";
+    public const string ContextApiKeyApi = "API_ApiKey";
     
-    public const string ContextCreateDynamoDbStorage = "Nuages/PubSub/CreateDynamoDbStorage";
-    public const string ContextTableNamePrefix = "Nuages/PubSub/TableNamePrefix";
+    public const string ContextCreateDynamoDbStorage = "Data_CreateDynamoDbStorage";
+    public const string ContextTableNamePrefix = "Data_TableNamePrefix";
+    
+    public const string ContextStorage = "Data_Storage";
+    public const string ContextConnectionString = "Data_ConnectionString";
+    public const string ContextDatabaseName = "Data_DatabaseName";
+    public const string ContextAudience = "Audience";
+    public const string ContextIssuer = "Issuer";
+    public const string ContextSecret = "Secret";
+    
+    public string? TableNamePrefix { get; set; }
+    public string? Issuer { get; set; }
+    public string? Audience { get; set; }
+    public string? Secret { get; set; }
+    
+    public string? Storage { get; set; }
+    public string? ConnectionString { get; set; }
+    public string? DatabaseName { get; set; }
     
     public List<CfnRoute> Routes { get; set; } = new ();
 
@@ -83,6 +99,30 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
         TableNamePrefix = Node.TryGetContext(ContextTableNamePrefix) != null!
             ? Node.TryGetContext(ContextTableNamePrefix).ToString()
+            : null;
+        
+        Issuer = Node.TryGetContext(ContextIssuer) != null!
+            ? Node.TryGetContext(ContextIssuer).ToString()
+            : null;
+        
+        Audience = Node.TryGetContext(ContextAudience) != null!
+            ? Node.TryGetContext(ContextAudience).ToString()
+            : null;
+        
+        Secret = Node.TryGetContext(ContextSecret) != null!
+            ? Node.TryGetContext(ContextSecret).ToString()
+            : null;
+        
+        Storage = Node.TryGetContext(ContextStorage) != null!
+            ? Node.TryGetContext(ContextStorage).ToString()
+            : null;
+        
+        ConnectionString = Node.TryGetContext(ContextConnectionString) != null!
+            ? Node.TryGetContext(ContextConnectionString).ToString()
+            : null;
+        
+        DatabaseName = Node.TryGetContext(ContextDatabaseName) != null!
+            ? Node.TryGetContext(ContextDatabaseName).ToString()
             : null;
         
         var role = CreateWebSocketRole();
@@ -138,7 +178,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
         
-        var createDynamodb = Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbStorage));
+        var createDynamodb = Storage == "DynamoDb" && Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbStorage));
         
         Console.WriteLine("createDynamodb = " + createDynamodb);
         if (createDynamodb)
@@ -158,7 +198,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         });
     }
 
-    public string? TableNamePrefix { get; set; }
+    
 
     private void NormalizeHandlerName()
     {
@@ -323,7 +363,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             Handler = handler,
             Runtime = Runtime.DOTNET_CORE_3_1,
             //FunctionName = MakeId(name),
-            MemorySize = 256,
+            MemorySize = 512,
             Role = role,
             Timeout = Duration.Seconds(30),
             Environment = new Dictionary<string, string>
@@ -331,7 +371,13 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                 {"Nuages__PubSub__Region", Aws.REGION},
                 {"Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}"},
                 {"Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
-                {"Nuages__PubSub__StackName", StackName }
+                {"Nuages__PubSub__StackName", StackName },
+                { "Nuages__PubSub__Issuer", Issuer ?? "" },
+                { "Nuages__PubSub__Audience", Audience ?? "" },
+                { "Nuages__PubSub__Secret", Secret ?? "" },
+                { "Nuages__Data__Storage", Storage ?? "" },
+                { "Nuages__Data__ConnectionString", ConnectionString ?? "" },
+                { "Nuages__Data__DatabaseName", DatabaseName ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });

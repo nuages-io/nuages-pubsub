@@ -13,7 +13,7 @@ public static class PubSubMongoConfigExtensions
     {
         if (builder.Configuration != null)
         {
-            builder.Services.Configure<PubSubMongoOptions>(builder.Configuration.GetSection("Nuages:Mongo"));
+            builder.Services.Configure<PubSubMongoOptions>(builder.Configuration.GetSection("Nuages:Data"));
         }
         
         if (options != null)
