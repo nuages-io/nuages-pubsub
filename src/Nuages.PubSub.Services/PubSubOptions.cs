@@ -5,10 +5,7 @@ namespace Nuages.PubSub.Services;
 [ExcludeFromCodeCoverage]
 public class PubSubOptions
 {
-    public ExternalAuth ExternalAuth { get; set; } = new ();
-    
     public string? Secret { get; set; }
-
     public string Issuer { get; set; } = "";
     public string Audience { get; set; } = "";
     public string? Uri { get; set; }
@@ -17,7 +14,7 @@ public class PubSubOptions
 }
 
 [ExcludeFromCodeCoverage]
-public class ExternalAuth
+public class PubSubExternalAuthOption
 {
     public string ValidIssuers { get; set; } = "";
     public string? ValidAudiences { get; set; }

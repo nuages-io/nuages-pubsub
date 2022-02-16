@@ -28,6 +28,11 @@
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.WebSocket.Endpoints\Nuages.PubSub.WebSocket.Endpoints.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <None Remove="appsettings.local.json" />
+        <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.local.json')" />
+    </ItemGroup>
+    
 
 
   

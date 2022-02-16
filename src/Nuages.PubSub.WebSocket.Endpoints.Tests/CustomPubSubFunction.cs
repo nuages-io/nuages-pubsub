@@ -38,7 +38,9 @@ public class CustomPubSubFunction : PubSubFunction
         LoadRoutes(serviceProvider);
 
         PubSubOpt = serviceProvider.GetRequiredService<IOptions<PubSubOptions>>();
+        PubSubExternalAuthOption = serviceProvider.GetRequiredService<IOptions<PubSubExternalAuthOption>>();
     }
 
     public IOptions<PubSubOptions> PubSubOpt { get; set; }
+    public IOptions<PubSubExternalAuthOption> PubSubExternalAuthOption { get; set; }
 }

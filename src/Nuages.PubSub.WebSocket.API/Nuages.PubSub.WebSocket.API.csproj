@@ -22,7 +22,9 @@
     </ItemGroup>
     <ItemGroup>
         <None Remove="appsettings.prod.json" />
+        <Content Include="appsettings.prod.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.prod.json')" />
     </ItemGroup>
+  
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj" />
