@@ -36,8 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Cdk", "Nuages
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".CDK", ".CDK", "{0B49A1C7-30FE-49E1-A4C6-FDD645EBB0CF}"
 	ProjectSection(SolutionItems) = preProject
-		build.sh = build.sh
-		cdk.json = cdk.json
+		build.sh = ../build.sh
+		cdk.json = ../cdk.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Endpoints", "Nuages.PubSub.API.Endpoints\Nuages.PubSub.API.Endpoints.csproj", "{F2AA5B71-79A4-4807-8E25-02ECE28FCDF3}"

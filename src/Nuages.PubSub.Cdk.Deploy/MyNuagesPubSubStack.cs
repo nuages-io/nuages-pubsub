@@ -13,7 +13,7 @@ public class MyNuagesPubSubStack : Cdk.NuagesPubSubWebSocketCdkStack<PubSubFunct
     public MyNuagesPubSubStack(IConfiguration configuration, Construct scope, string id, IStackProps? props = null) 
         : base(scope, id, props)
     {
-        Asset = "./Nuages.PubSub.WebSocket.API/bin/Release/net6.0/linux-x64/publish";
-        WebApiAsset = "./Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
+        Asset = "./src/Nuages.PubSub.WebSocket.API/bin/Release/net6.0/linux-x64/publish";
+        WebApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
     }
 }
