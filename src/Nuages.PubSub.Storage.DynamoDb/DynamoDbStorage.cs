@@ -270,7 +270,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         var search2 =  _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>
         {
             new ("Hub",  ScanOperator.Equal, hub),
-            new ("ConnectionId",  ScanOperator.Equal, connectionId),
+            new ("ConnectionId",  ScanOperator.Equal, connectionId)
         },
             GetNewTableConfig());
 

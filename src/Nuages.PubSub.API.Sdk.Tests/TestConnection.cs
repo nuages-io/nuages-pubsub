@@ -130,7 +130,7 @@ public class TestConnection : BaseTest
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
 
-                switch (@msg.type)
+                switch (msg.type)
                 {
                     case "echo":
                     {
@@ -173,7 +173,7 @@ public class TestConnection : BaseTest
             {
                 var msg = JsonSerializer.Deserialize<Response>(response.Text)!;
 
-                switch (@msg.type)
+                switch (msg.type)
                 {
                     case "echo":
                     {

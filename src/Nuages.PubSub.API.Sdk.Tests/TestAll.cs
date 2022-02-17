@@ -23,7 +23,7 @@ public class TestAll : BaseTest
 
         string? received = null;
         var receivedEvent = new ManualResetEvent(false);
-        string? connectionId = null;
+        string? connectionId ;
 
         client.MessageReceived
             .Subscribe( response =>

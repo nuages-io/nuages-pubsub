@@ -21,7 +21,7 @@ namespace Nuages.PubSub.Cdk;
 [ExcludeFromCodeCoverage]
 public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 {
-    public string? Asset { get; set; }
+    public string? WebSocketAsset { get; set; }
 
     private string? OnConnectHandler { get; set; }
     private string? OnDisconnectHandler { get; set; }
@@ -57,6 +57,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     public NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
     {
+        
     }
 
     public const string ContextDomainName = "WebSocket_Domain";
@@ -351,12 +352,12 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         if (string.IsNullOrEmpty(handler))
             throw new Exception($"Handler for {name} must be set");
 
-        if (string.IsNullOrEmpty(Asset))
+        if (string.IsNullOrEmpty(WebSocketAsset))
             throw new Exception("Asset  must be set");
 
         var func = new Function(this, name, new FunctionProps
         {
-            Code = Code.FromAsset(Asset),
+            Code = Code.FromAsset(WebSocketAsset),
             Handler = handler,
             Runtime = Runtime.DOTNET_CORE_3_1,
             MemorySize = 512,
@@ -534,5 +535,25 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             }
         });
         return apiGatewayDomainName;
+    }
+    
+    public void InitializeContextFromOptions(ConfigOptions options)
+    {
+        Node.SetContext(ContextDomainName,  options.WebSocket.Domain);
+        Node.SetContext(ContextCertificateArn,options.WebSocket.CertificateArn);
+        
+        Node.SetContext(ContextDomainNameApi,  options.Api.Domain);
+        Node.SetContext(ContextCertificateArnApi, options.Api.CertificateArn);
+        Node.SetContext(ContextApiKeyApi, options.Api.ApiKey);
+        
+        Node.SetContext(ContextCreateDynamoDbStorage, options.CreateDynamoDbStorage);
+        Node.SetContext(ContextTableNamePrefix, options.TableNamePrefix);
+        
+        Node.SetContext(ContextStorage, options.Env.Data.Storage ?? "");
+        Node.SetContext(ContextConnectionString, options.Env.Data.ConnectionString ?? "");
+        Node.SetContext(ContextDatabaseName, options.Env.Data.DatabaseName ?? "");
+        Node.SetContext(ContextAudience, options.Env.PubSub.Audience ?? "");
+        Node.SetContext(ContextIssuer, options.Env.PubSub.Issuer ?? "");
+        Node.SetContext(ContextSecret, options.Env.PubSub.Secret ?? "");
     }
 }

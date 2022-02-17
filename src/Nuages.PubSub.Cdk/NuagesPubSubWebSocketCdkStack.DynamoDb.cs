@@ -5,6 +5,7 @@ namespace Nuages.PubSub.Cdk;
 
 public partial class NuagesPubSubWebSocketCdkStack<T>
 {
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
     protected virtual void CreateTables()
     {
         // ReSharper disable once UnusedVariable

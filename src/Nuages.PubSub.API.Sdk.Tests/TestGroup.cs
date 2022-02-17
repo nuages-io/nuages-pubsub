@@ -184,7 +184,7 @@ public class TestGroup : BaseTest
                     case "echo":
                     {
                         connectionId = msg.data!.connectionId;
-                        PubSubClient.AddConnectionToGroupAsync(TestGroup, connectionId!).Wait();
+                        PubSubClient.AddConnectionToGroupAsync(TestGroup, connectionId).Wait();
                         receivedEvent.Set();
                         break;
                     }

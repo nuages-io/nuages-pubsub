@@ -2,6 +2,7 @@
 
 
 using Amazon.DynamoDBv2.DataModel;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Nuages.PubSub.Storage.DynamoDb.DataModel;
 
