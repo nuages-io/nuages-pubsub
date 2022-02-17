@@ -18,31 +18,10 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                 Name = "Id",
                 Type = AttributeType.STRING
             },
-            RemovalPolicy = RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            
         });
         
-        // pubSubConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
-        // {
-        //     IndexName = "HubAndConnectionId",
-        //     ProjectionType = ProjectionType.ALL,
-        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
-        //     {
-        //         Name = "HubAndConnectionId",
-        //         Type = AttributeType.STRING
-        //     }
-        // });
-        //
-        // pubSubConnection.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
-        // {
-        //     IndexName = "HubAndUserId",
-        //     ProjectionType = ProjectionType.ALL,
-        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
-        //     {
-        //         Name = "HubAndUserId",
-        //         Type = AttributeType.STRING
-        //     }
-        // });
-
 
         // ReSharper disable once UnusedVariable
         var pubSubAck = new Table(this, "pub_sub_ack", new TableProps
@@ -139,7 +118,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         // ReSharper disable once UnusedVariable
         var pubSubGroupUser = new Table(this, "pub_sub_group_user", new TableProps
         {
-            TableName = StackName + "+pub_sub_group_user",
+            TableName = StackName + "_pub_sub_group_user",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {

@@ -26,7 +26,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         return new DynamoDBOperationConfig
         {
-            
+            TableNamePrefix = _options.StackName
         };
     }
     

@@ -5,6 +5,7 @@ using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
+using Nuages.PubSub.Storage.DynamoDb;
 using Nuages.PubSub.Storage.Mongo;
 
 namespace Nuages.PubSub.API;
@@ -48,7 +49,9 @@ public class Startup
         //     }
         // }
         //
-        pubSubBuilder.AddPubSubMongoStorage();
+        //pubSubBuilder.AddPubSubMongoStorage();
+        
+        pubSubBuilder.AddPubSubDynamoDbStorage();
         
         services.AddControllers().AddJsonOptions(options =>
         {

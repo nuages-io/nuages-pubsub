@@ -22,7 +22,7 @@ public class LocalEntryPoint
                 config.AddJsonFile(
                     hostingContext.HostingEnvironment.IsDevelopment()
                         ? "appsettings.local.json"
-                        : "appsettings.prod.json", true, true);
+                        : "appsettings.prod.json", false, true);
             })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
 }

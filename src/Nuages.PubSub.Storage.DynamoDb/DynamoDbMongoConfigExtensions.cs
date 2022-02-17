@@ -20,5 +20,6 @@ public static class DynamoDbMongoConfigExtensions
             builder.Services.Configure(options);
         
         builder.Services.AddScoped<IPubSubStorage, DynamoDbStorage>();
+        builder.Services.AddHostedService<DynamoDbIndexCreator>();
     }
 }

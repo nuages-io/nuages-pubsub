@@ -42,10 +42,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                 { "Nuages__PubSub__StackName", StackName },
                 { "Nuages__PubSub__Issuer", Issuer ?? "" },
                 { "Nuages__PubSub__Audience", Audience ?? "" },
-                { "Nuages__PubSub__Secret", Secret ?? "" },
-                { "Nuages__Data__Storage", Storage ?? "" },
-                { "Nuages__Data__ConnectionString", ConnectionString ?? "" },
-                { "Nuages__Data__DatabaseName", DatabaseName ?? "" }
+                { "Nuages__PubSub__Secret", Secret ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });
