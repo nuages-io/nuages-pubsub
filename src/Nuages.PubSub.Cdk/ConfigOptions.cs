@@ -6,8 +6,6 @@ namespace Nuages.PubSub.Cdk;
 public class ConfigOptions
 {
     public string StackName { get; set; } = "";
-    public string TableNamePrefix { get; set; }= "";
-    public bool CreateDynamoDbStorage { get; set; } = true;
     
     public WebSocket WebSocket { get; set; } = new ();
     public Api Api { get; set; } = new();

@@ -32,7 +32,7 @@ public class TestMongoPubSubStorage
         serviceCollection
             .AddPubSubService(configuration, subOptions =>
             {
-                subOptions.TableNamePrefix = "test.";
+                
             })
             .AddPubSubMongoStorage();
         

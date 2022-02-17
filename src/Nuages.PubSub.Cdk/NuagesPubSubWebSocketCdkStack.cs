@@ -67,9 +67,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextCertificateArnApi = "PubSub_API_CertificateArn";
     public const string ContextApiKeyApi = "API_ApiKey";
 
-    public const string ContextCreateDynamoDbStorage = "Data_CreateDynamoDbStorage";
-    public const string ContextTableNamePrefix = "Data_TableNamePrefix";
-
     public const string ContextStorage = "Data_Storage";
     public const string ContextConnectionString = "Data_ConnectionString";
     public const string ContextDatabaseName = "Data_DatabaseName";
@@ -77,7 +74,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextIssuer = "Issuer";
     public const string ContextSecret = "Secret";
 
-    public string? TableNamePrefix { get; set; }
     public string? Issuer { get; set; }
     public string? Audience { get; set; }
     public string? Secret { get; set; }
@@ -97,11 +93,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public virtual void CreateTemplate()
     {
         NormalizeHandlerName();
-
-        TableNamePrefix = Node.TryGetContext(ContextTableNamePrefix) != null!
-            ? Node.TryGetContext(ContextTableNamePrefix).ToString()
-            : null;
-
+        
         Issuer = Node.TryGetContext(ContextIssuer) != null!
             ? Node.TryGetContext(ContextIssuer).ToString()
             : null;
@@ -180,7 +172,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         }
 
         var createDynamodb =
-            Storage == "DynamoDb" && Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbStorage));
+            Storage == "DynamoDb";
 
         Console.WriteLine("createDynamodb = " + createDynamodb);
         if (createDynamodb)
@@ -367,7 +359,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             {
                 { "Nuages__PubSub__Region", Aws.REGION },
                 { "Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}" },
-                { "Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
                 { "Nuages__PubSub__StackName", StackName },
                 { "Nuages__PubSub__Issuer", Issuer ?? "" },
                 { "Nuages__PubSub__Audience", Audience ?? "" },
@@ -545,10 +536,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         Node.SetContext(ContextDomainNameApi,  options.Api.Domain);
         Node.SetContext(ContextCertificateArnApi, options.Api.CertificateArn);
         Node.SetContext(ContextApiKeyApi, options.Api.ApiKey);
-        
-        Node.SetContext(ContextCreateDynamoDbStorage, options.CreateDynamoDbStorage);
-        Node.SetContext(ContextTableNamePrefix, options.TableNamePrefix);
-        
+
         Node.SetContext(ContextStorage, options.Env.Data.Storage ?? "");
         Node.SetContext(ContextConnectionString, options.Env.Data.ConnectionString ?? "");
         Node.SetContext(ContextDatabaseName, options.Env.Data.DatabaseName ?? "");

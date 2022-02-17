@@ -39,7 +39,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             {
                 { "Nuages__PubSub__Uri", url },
                 { "Nuages__PubSub__Region", Aws.REGION },
-                { "Nuages__PubSub__TableNamePrefix", TableNamePrefix ?? "" },
                 { "Nuages__PubSub__StackName", StackName },
                 { "Nuages__PubSub__Issuer", Issuer ?? "" },
                 { "Nuages__PubSub__Audience", Audience ?? "" },

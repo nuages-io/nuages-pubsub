@@ -26,7 +26,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         var mongoCLient = new MongoClient(connectionString);
         var database = mongoCLient.GetDatabase(dbName);
 
-        var prefix = pubSubOptions.Value.TableNamePrefix ?? "";
+        var prefix = pubSubOptions.Value.StackName + "_";
         _pubSubConnectionCollection = database.GetCollection<PubSubConnection>(prefix + "pub_sub_connection");
         _pubSubGroupConnectionCollection = database.GetCollection<PubSubGroupConnection>(prefix + "pub_sub_group_connection");
         _pubSubGroupUserCollection = database.GetCollection<PubSubGroupUser>(prefix + "pub_sub_group_user");

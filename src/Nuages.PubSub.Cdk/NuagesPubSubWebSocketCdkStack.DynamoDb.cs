@@ -11,7 +11,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         // ReSharper disable once UnusedVariable
         var pubSubConnection = new Table(this, "pub_sub_connection", new TableProps
         {
-            TableName = TableNamePrefix + "pub_sub_connection",
+            TableName = StackName + "_pub_sub_connection",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
@@ -47,7 +47,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         // ReSharper disable once UnusedVariable
         var pubSubAck = new Table(this, "pub_sub_ack", new TableProps
         {
-            TableName = TableNamePrefix + "pub_sub_ack",
+            TableName = StackName + "_pub_sub_ack",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
@@ -71,7 +71,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         // ReSharper disable once UnusedVariable
         var pubSubGroupConnection = new Table(this, "pub_sub_group_connection", new TableProps
         {
-            TableName = TableNamePrefix + "pub_sub_group_connection",
+            TableName = StackName + "_pub_sub_group_connection",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
@@ -139,7 +139,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         // ReSharper disable once UnusedVariable
         var pubSubGroupUser = new Table(this, "pub_sub_group_user", new TableProps
         {
-            TableName = TableNamePrefix + "pub_sub_group_user",
+            TableName = StackName + "+pub_sub_group_user",
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {

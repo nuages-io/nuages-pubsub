@@ -10,7 +10,7 @@ public class PubSubOptions
     public string Audience { get; set; } = "";
     public string? Uri { get; set; }
     public string Region { get; set; } = "";
-    public string? TableNamePrefix { get; set; }
+    public string StackName { get; set; } = "";
 }
 
 [ExcludeFromCodeCoverage]
