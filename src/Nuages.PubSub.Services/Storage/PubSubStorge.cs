@@ -7,7 +7,7 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
     public abstract Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId);
     protected abstract Task UpdateAsync(IPubSubConnection connection);
     public abstract Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId);
-    public abstract Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId);
+    public abstract Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
     protected abstract Task InsertAsync(IPubSubConnection conn);
     
     protected abstract string GetNewId();
@@ -89,7 +89,7 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
         var connections = await GetConnectionsForUserAsync(hub, userId);
         foreach (var conn in connections)
         {
-            await AddConnectionToGroupAsync(hub, group, conn.ConnectionId, userId);
+            await AddConnectionToGroupAsync(hub, group, conn.ConnectionId);
         }
     }
 

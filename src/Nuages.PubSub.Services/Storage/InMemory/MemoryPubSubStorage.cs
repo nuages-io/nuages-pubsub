@@ -115,7 +115,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
     }
 
 
-    public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
+    public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
     {
         var conn = await GetConnectionAsync(hub, connectionId);
 
@@ -128,7 +128,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
                 Hub = hub,
                 ConnectionId = connectionId,
                 CreatedOn = DateTime.UtcNow,
-                UserId = userId,
+                UserId = conn.UserId,
                 ExpireOn = conn.ExpireOn
             };
             

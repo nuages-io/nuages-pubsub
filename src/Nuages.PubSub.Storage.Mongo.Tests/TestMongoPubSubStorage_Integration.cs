@@ -115,7 +115,7 @@ public class TestMongoPubSubStorage
 
         Assert.False(connection.IsExpired());
         
-        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _userId);
+        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId);
 
         Assert.False(await _pubSubStorage.GroupHasConnectionsAsync("Bad_hub", group));
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
@@ -135,7 +135,7 @@ public class TestMongoPubSubStorage
 
        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, null);
 
-        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _userId);
+        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId);
 
         var collOne = await _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
         Assert.Single(collOne);

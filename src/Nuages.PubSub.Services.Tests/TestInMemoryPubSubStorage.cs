@@ -85,7 +85,7 @@ public class TestInMemoryPubSubStorage
 
         Assert.False(connection.IsExpired());
         
-        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
+        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId);
 
         Assert.True(await _pubSubStorage.IsConnectionInGroup(_hub, group, connectionId));
         
@@ -107,7 +107,7 @@ public class TestInMemoryPubSubStorage
 
         await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, new TimeSpan(1,0,0));
 
-        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId, _sub);
+        await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId);
 
         var collOne = await _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
         Assert.Single(collOne);

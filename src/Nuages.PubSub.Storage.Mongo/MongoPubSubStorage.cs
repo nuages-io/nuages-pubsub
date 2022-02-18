@@ -194,7 +194,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         );
     }
 
-    public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId)
+    public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId)
     {
         var existing = _pubSubGroupConnectionCollection.AsQueryable()
             .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
@@ -211,7 +211,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
                     Group = group,
                     Hub = hub,
                     CreatedOn = DateTime.UtcNow,
-                    UserId = userId,
+                    UserId = conn.UserId,
                     ExpireOn = conn.ExpireOn
                 };
 

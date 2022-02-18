@@ -16,9 +16,12 @@
     <ItemGroup>
       <None Remove="appsettings.json" />
       <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
-      <None Remove="appsettings.local.json" />
-      <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
     </ItemGroup>
+    <ItemGroup>
+        <None Remove="appsettings.local.json" />
+        <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.local.json')" />
+    </ItemGroup>
+
 
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />

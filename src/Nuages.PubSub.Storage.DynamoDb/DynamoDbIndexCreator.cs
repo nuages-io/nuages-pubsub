@@ -73,16 +73,16 @@ public class DynamoDbIndexCreator : BackgroundService
         //
         var groupTable = $"{_options.StackName}_pub_sub_group_connection";
         var group = new PubSubGroupConnection();
-        await CreateIndex(groupTable, nameof(group.HubAndGroup), cancellationToken);
-        await CreateIndex(groupTable, nameof(group.HubAndGroupAndConnectionId), cancellationToken);
-        await CreateIndex(groupTable, nameof(group.HubAndConnectionId), cancellationToken);
-        await CreateIndex(groupTable, nameof(group.HubAndUserId), cancellationToken);
-        await CreateIndex(groupTable, nameof(group.HubAndGroupAndUserId), cancellationToken);
+        // await CreateIndex(groupTable, nameof(group.HubAndGroup), cancellationToken);
+        // await CreateIndex(groupTable, nameof(group.HubAndGroupAndConnectionId), cancellationToken);
+        // await CreateIndex(groupTable, nameof(group.HubAndConnectionId), cancellationToken);
+        // await CreateIndex(groupTable, nameof(group.HubAndUserId), cancellationToken);
+        // await CreateIndex(groupTable, nameof(group.HubAndGroupAndUserId), cancellationToken);
         
         var userTable = $"{_options.StackName}_pub_sub_group_user";
         var user = new PubSubGroupUser();
-        await CreateIndex(userTable, nameof(user.HubAndUserId), cancellationToken);
-        await CreateIndex(userTable, nameof(user.HubAndGroupAndUserId), cancellationToken);
+        // await CreateIndex(userTable, nameof(user.HubAndUserId), cancellationToken);
+        // await CreateIndex(userTable, nameof(user.HubAndGroupAndUserId), cancellationToken);
     }
 
     private async Task<UpdateTableResponse?> CreateIndex(string tableName, string attributeName,

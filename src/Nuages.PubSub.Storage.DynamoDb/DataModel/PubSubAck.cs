@@ -14,10 +14,8 @@ public class PubSubAck
     [DynamoDBRangeKey]
     public string ConnectionIdAndAckId { get; set; } = null!;
     
-    [DynamoDBIgnore]
     public string ConnectionId { get; set; } = null!;
 
-    [DynamoDBIgnore]
     public string AckId { get; set; } = null!;
 
     public void Initialize()

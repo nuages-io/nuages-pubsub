@@ -20,7 +20,7 @@ public interface IPubSubStorage
     
     Task<bool> HasPermissionAsync(string hub, string connectionId, string permissionString);
     
-    Task AddConnectionToGroupAsync(string hub, string group, string connectionId, string userId);
+    Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
     Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId);
     
     Task<bool> IsUserInGroupAsync(string hub, string group, string userId);

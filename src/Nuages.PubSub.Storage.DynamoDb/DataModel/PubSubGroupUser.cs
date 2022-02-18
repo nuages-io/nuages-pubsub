@@ -8,19 +8,19 @@ namespace Nuages.PubSub.Storage.DynamoDb.DataModel;
 public class PubSubGroupUser 
 {
     [DynamoDBHashKey]
-    public string Id { get; set; }  = null!;
+    public string Hub { get; set; } = null!;
+    
+    [DynamoDBRangeKey]
+    public string GroupAndUserId { get; set; } = null!;
+    
+    public string UserId { get; set; } = null!; //LSI
+    
+    public DateTime CreatedOn { get; set; } 
     
     public string Group { get; set; } = null!;
-    public string UserId { get; set; } = null!;
-    public DateTime CreatedOn { get; set; } 
-    public string Hub { get; set; } = null!;
-
-    public string HubAndGroupAndUserId { get; set; } = null!;
-    public string HubAndUserId { get; set; } = null!;
 
     public void Initialize()
     {
-        HubAndUserId = $"{Hub}-{UserId}";
-        HubAndGroupAndUserId = $"{Hub}-{Group}-{UserId}";
+        GroupAndUserId = $"{Group}-{UserId}";
     }
 }

@@ -64,11 +64,50 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Id",
+                Name = "Hub",
                 Type = AttributeType.STRING
             },
-            RemovalPolicy = RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "GroupAndConnectionId",
+                Type = AttributeType.STRING
+            }
         });
+        
+        pubSubGroupConnection.AddLocalSecondaryIndex(new LocalSecondaryIndexProps
+        {
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "ConnectionId",
+                Type = AttributeType.STRING
+            },
+            IndexName = "GroupConnection_ConnectionId",
+            ProjectionType = ProjectionType.ALL
+        });
+        
+        pubSubGroupConnection.AddLocalSecondaryIndex(new LocalSecondaryIndexProps
+        {
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "GroupAndUserId",
+                Type = AttributeType.STRING
+            },
+            IndexName = "GroupConnection_GroupAndUserId",
+            ProjectionType = ProjectionType.ALL
+        });
+        
+        pubSubGroupConnection.AddLocalSecondaryIndex(new LocalSecondaryIndexProps
+        {
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "UserId",
+                Type = AttributeType.STRING
+            },
+            IndexName = "GroupConnection_UserId",
+            ProjectionType = ProjectionType.ALL
+        });
+        
         
         // ReSharper disable once UnusedVariable
         var pubSubGroupUser = new Table(this, "pub_sub_group_user", new TableProps
@@ -77,32 +116,26 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Id",
+                Name = "Hub",
                 Type = AttributeType.STRING
             },
-            RemovalPolicy = RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "GroupAndUserId",
+                Type = AttributeType.STRING
+            }
         });
         
-        // pubSubGroupUser.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
-        // {
-        //     IndexName = "HubAndUserId",
-        //     ProjectionType = ProjectionType.ALL,
-        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
-        //     {
-        //         Name = "HubAndUserId",
-        //         Type = AttributeType.STRING
-        //     }
-        // });
-        //
-        // pubSubGroupUser.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
-        // {
-        //     IndexName = "HubAndGroupAndUserId",
-        //     ProjectionType = ProjectionType.ALL,
-        //     PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
-        //     {
-        //         Name = "HubAndGroupAndUserId",
-        //         Type = AttributeType.STRING
-        //     }
-        // });
+        pubSubGroupUser.AddLocalSecondaryIndex(new LocalSecondaryIndexProps
+        {
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "UserId",
+                Type = AttributeType.STRING
+            },
+            IndexName = "GroupUser_UserId",
+            ProjectionType = ProjectionType.ALL
+        });
     }
 }
