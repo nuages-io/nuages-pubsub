@@ -19,6 +19,7 @@ public class DynamoDbIndexCreator : BackgroundService
     public DynamoDbIndexCreator(IOptions<PubSubOptions> options)
     {
         _client = new AmazonDynamoDBClient();
+    
         _options = options.Value;
     }
 
@@ -27,90 +28,81 @@ public class DynamoDbIndexCreator : BackgroundService
         await CreatePubSubConnectionIndexes(stoppingToken);
     }
 
-    private Task CreatePubSubConnectionIndexes(CancellationToken cancellationToken)
+    async Task WaitForTablesAndIndexes(CancellationToken cancellationToken)
     {
+        var tables = await DescribeTables(cancellationToken);
 
-        var connectionTableName = $"{_options.StackName}_pub_sub_connection";
-        var connection = new PubSubConnection();
-        CreateIndex(connectionTableName, nameof(connection.HubAndConnectionId), cancellationToken)
-            .Wait(cancellationToken);
-        CreateIndex(connectionTableName, nameof(connection.HubAndUserId), cancellationToken)
-            .Wait(cancellationToken);
-
-        return Task.CompletedTask;
-        // var connectionTable = await _client.DescribeTableAsync(connectionTableName, cancellationToken);
-        //
-        // Console.WriteLine(connectionTableName + " " + connectionTable.Table.TableStatus);
-        //
-        // while (connectionTable.Table.TableStatus != TableStatus.ACTIVE)
-        // {
-        //     Thread.Sleep(10000);
-        //     connectionTable = await _client.DescribeTableAsync(connectionTable.Table.TableName, cancellationToken);
-        //     Console.WriteLine(connectionTable.Table.TableName + " " + connectionTable.Table.TableStatus + " 1");
-        // }
-        //
-        // 
-        // await CreateIndex(connectionTableName, nameof(connection.HubAndConnectionId), cancellationToken);
-        // Thread.Sleep(10000);
-        //
-        // connectionTable = await _client.DescribeTableAsync(connectionTable.Table.TableName, cancellationToken);
-        // while (connectionTable.Table.TableStatus != TableStatus.ACTIVE)
-        // {
-        //     Thread.Sleep(10000);
-        //     connectionTable = await _client.DescribeTableAsync(connectionTable.Table.TableName, cancellationToken);
-        //     Console.WriteLine(connectionTable.Table.TableName + " " + connectionTable.Table.TableStatus  + " 2");
-        // }
-        // await CreateIndex(connectionTableName, nameof(connection.HubAndUserId), cancellationToken);
-        // Thread.Sleep(10000);
-        //
-        // connectionTable = await _client.DescribeTableAsync(connectionTable.Table.TableName, cancellationToken);
-        // while (connectionTable.Table.TableStatus != TableStatus.ACTIVE)
-        // {
-        //     Thread.Sleep(10000);
-        //     connectionTable = await _client.DescribeTableAsync(connectionTable.Table.TableName, cancellationToken);
-        //     Console.WriteLine(connectionTable.Table.TableName + " " + connectionTable.Table.TableStatus + " 3");
-        // }
-
-
-        //
-        // var ackTable = $"{_options.StackName}_pub_sub_ack";
-        // var ack = new PubSubAck();
-        // await CreateIndex(ackTable, nameof(ack.HubAndConnectionIdAndAckId), cancellationToken);
-        // await WaitForActiveTable(ackTable, cancellationToken);
-        //
-        // var groupTable = $"{_options.StackName}_pub_sub_group_connection";
-        // var group = new PubSubGroupConnection();
-        // await CreateIndex(groupTable, nameof(group.HubAndGroup), cancellationToken);
-        // await CreateIndex(groupTable, nameof(group.HubAndGroupAndConnectionId), cancellationToken);
-        // await CreateIndex(groupTable, nameof(group.HubAndConnectionId), cancellationToken);
-        // await CreateIndex(groupTable, nameof(group.HubAndUserId), cancellationToken);
-        // await CreateIndex(groupTable, nameof(group.HubAndGroupAndUserId), cancellationToken);
-        // await WaitForActiveTable(groupTable, cancellationToken);
-        //
-        // var userTable = $"{_options.StackName}_pub_sub_group_user";
-        // var user = new PubSubGroupUser();
-        // await CreateIndex(userTable, nameof(user.HubAndUserId), cancellationToken);
-        // await CreateIndex(userTable, nameof(user.HubAndGroupAndUserId), cancellationToken);
-        // await WaitForActiveTable(userTable, cancellationToken);
+        while (tables.Any(t => t.TableStatus != TableStatus.ACTIVE) ||
+               tables.Any(t => t.GlobalSecondaryIndexes.Any(i => i.IndexStatus != IndexStatus.ACTIVE)))
+        {
+            Thread.Sleep(10000);
+            Console.WriteLine("Updating...");
+            tables = await DescribeTables(cancellationToken);
+            
+        }
     }
 
-    private async Task CreateIndex(string tableName, string attributeName,
+    private async Task<List<TableDescription>> DescribeTables(CancellationToken cancellationToken)
+    {
+        var tables = new List<TableDescription>();
+        var tableConnection =
+            await _client.DescribeTableAsync($"{_options.StackName}_pub_sub_connection", cancellationToken);
+        var tableAck = await _client.DescribeTableAsync($"{_options.StackName}_pub_sub_ack", cancellationToken);
+        var tableGroupConnection =
+            await _client.DescribeTableAsync($"{_options.StackName}_pub_sub_group_connection", cancellationToken);
+        var tableGroupUser =
+            await _client.DescribeTableAsync($"{_options.StackName}_pub_sub_group_user", cancellationToken);
+
+        tables.Add(tableConnection.Table);
+        tables.Add(tableAck.Table);
+        tables.Add(tableGroupConnection.Table);
+        tables.Add(tableGroupUser.Table);
+        return tables;
+    }
+
+    private async Task CreatePubSubConnectionIndexes(CancellationToken cancellationToken)
+    {
+        var connectionTable = $"{_options.StackName}_pub_sub_connection";
+        var connection = new PubSubConnection();
+        await CreateIndex(connectionTable, nameof(connection.HubAndConnectionId), cancellationToken);
+        await CreateIndex(connectionTable, nameof(connection.HubAndUserId), cancellationToken);
+        
+        var ackTable = $"{_options.StackName}_pub_sub_ack";
+        var ack = new PubSubAck();
+        await CreateIndex(ackTable, nameof(ack.HubAndConnectionIdAndAckId), cancellationToken);
+        
+        var groupTable = $"{_options.StackName}_pub_sub_group_connection";
+        var group = new PubSubGroupConnection();
+        await CreateIndex(groupTable, nameof(group.HubAndGroup), cancellationToken);
+        await CreateIndex(groupTable, nameof(group.HubAndGroupAndConnectionId), cancellationToken);
+        await CreateIndex(groupTable, nameof(group.HubAndConnectionId), cancellationToken);
+        await CreateIndex(groupTable, nameof(group.HubAndUserId), cancellationToken);
+        await CreateIndex(groupTable, nameof(group.HubAndGroupAndUserId), cancellationToken);
+        
+        var userTable = $"{_options.StackName}_pub_sub_group_user";
+        var user = new PubSubGroupUser();
+        await CreateIndex(userTable, nameof(user.HubAndUserId), cancellationToken);
+        await CreateIndex(userTable, nameof(user.HubAndGroupAndUserId), cancellationToken);
+    }
+
+    private async Task<UpdateTableResponse?> CreateIndex(string tableName, string attributeName,
         CancellationToken cancellationToken, bool retry = true)
     {
+        await WaitForTablesAndIndexes(cancellationToken);
+        
         var indexName = $"{attributeName}_Index";
-
         var response = await _client.DescribeTableAsync(tableName, cancellationToken);
 
         if (response.Table.GlobalSecondaryIndexes.Exists(i => i.IndexName == indexName))
-            return;
+            return null;
         
         Console.WriteLine($"Creating index on table {tableName} {indexName}");
 
         try
         {
-            await _client.UpdateTableAsync(new UpdateTableRequest
+            return  await _client.UpdateTableAsync(new UpdateTableRequest
             {
-                TableName = response.Table.TableName,
+                TableName = tableName,
                 AttributeDefinitions = new List<AttributeDefinition>
                 {
                     new()
@@ -144,34 +136,15 @@ public class DynamoDbIndexCreator : BackgroundService
             }, cancellationToken);
             
         }
-        catch (LimitExceededException e)
+        catch (LimitExceededException)
         {
             if (retry)
             {
                 Thread.Sleep(10000);
-                await CreateIndex(tableName, attributeName, cancellationToken, false);
+                return await CreateIndex(tableName, attributeName, cancellationToken, false);
             }
-            else
-            {
-                throw;
-            }
+            
+            throw;
         }
-        
-    }
-
-    private async Task<DescribeTableResponse> WaitForActiveTable(string tableName, CancellationToken cancellationToken)
-    {
-        var table = await _client.DescribeTableAsync(tableName, cancellationToken);
-        
-        Console.WriteLine(tableName + " " + table.Table.TableStatus);
-        
-        while (table.Table.TableStatus != TableStatus.ACTIVE)
-        {
-            Thread.Sleep(10000);
-            table = await _client.DescribeTableAsync(tableName, cancellationToken);
-            Console.WriteLine(tableName + " " + table.Table.TableStatus);
-        }
-
-        return table;
     }
 }
