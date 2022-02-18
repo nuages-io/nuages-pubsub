@@ -64,13 +64,13 @@ public class DynamoDbIndexCreator : BackgroundService
     {
         var connectionTable = $"{_options.StackName}_pub_sub_connection";
         var connection = new PubSubConnection();
-        await CreateIndex(connectionTable, nameof(connection.HubAndConnectionId), cancellationToken);
-        await CreateIndex(connectionTable, nameof(connection.HubAndUserId), cancellationToken);
+        //await CreateIndex(connectionTable, nameof(connection.HubAndConnectionId), cancellationToken);
+        //await CreateIndex(connectionTable, nameof(connection.HubAndUserId), cancellationToken);
         
-        var ackTable = $"{_options.StackName}_pub_sub_ack";
-        var ack = new PubSubAck();
-        await CreateIndex(ackTable, nameof(ack.HubAndConnectionIdAndAckId), cancellationToken);
-        
+        // var ackTable = $"{_options.StackName}_pub_sub_ack";
+        // var ack = new PubSubAck();
+        // await CreateIndex(ackTable, nameof(ack.HubAndConnectionIdAndAckId), cancellationToken);
+        //
         var groupTable = $"{_options.StackName}_pub_sub_group_connection";
         var group = new PubSubGroupConnection();
         await CreateIndex(groupTable, nameof(group.HubAndGroup), cancellationToken);

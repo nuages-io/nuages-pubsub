@@ -15,13 +15,27 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Id",
+                Name = "Hub",
                 Type = AttributeType.STRING
             },
             RemovalPolicy = RemovalPolicy.DESTROY,
-            
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "ConnectionId",
+                Type = AttributeType.STRING
+            } 
         });
         
+        pubSubConnection.AddLocalSecondaryIndex(new LocalSecondaryIndexProps
+        {
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "UserId",
+                Type = AttributeType.STRING
+            },
+            IndexName = "Connection_UserId",
+            ProjectionType = ProjectionType.ALL
+        });
 
         // ReSharper disable once UnusedVariable
         var pubSubAck = new Table(this, "pub_sub_ack", new TableProps
@@ -30,10 +44,15 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             BillingMode = BillingMode.PAY_PER_REQUEST,
             PartitionKey = new Amazon.CDK.AWS.DynamoDB.Attribute
             {
-                Name = "Id",
+                Name = "Hub",
                 Type = AttributeType.STRING
             },
-            RemovalPolicy = RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            SortKey = new Amazon.CDK.AWS.DynamoDB.Attribute
+            {
+                Name = "ConnectionIdAndAckId",
+                Type = AttributeType.STRING
+            }
         });
         
      

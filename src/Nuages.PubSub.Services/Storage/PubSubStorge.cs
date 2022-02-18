@@ -16,7 +16,7 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
     {
         var conn = new T
         {
-            Id = GetNewId(),
+           // Id = GetNewId(),
             ConnectionId = connectionid,
             UserId = userId,
             Hub = hub,
