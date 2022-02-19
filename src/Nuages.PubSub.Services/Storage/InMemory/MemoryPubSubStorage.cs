@@ -133,7 +133,6 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         {
             var connection = new PubSubGroupConnection
             {
-                Id = Guid.NewGuid().ToString(),
                 Group = group,
                 Hub = hub,
                 ConnectionId = connectionId,
