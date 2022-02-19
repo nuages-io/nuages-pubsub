@@ -9,9 +9,7 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
     public abstract Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId);
     public abstract Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
     protected abstract Task InsertAsync(IPubSubConnection conn);
-    
-    protected abstract string GetNewId();
-    
+
     public async Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay) 
     {
         var conn = new T

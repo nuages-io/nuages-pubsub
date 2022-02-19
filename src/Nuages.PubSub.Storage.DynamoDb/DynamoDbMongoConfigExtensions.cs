@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Services.Storage;
 
@@ -20,7 +19,5 @@ public static class DynamoDbMongoConfigExtensions
             builder.Services.Configure(options);
         
         builder.Services.AddScoped<IPubSubStorage, DynamoDbStorage>();
-        
-        //builder.Services.AddHostedService<DynamoDbIndexCreator>();
     }
 }

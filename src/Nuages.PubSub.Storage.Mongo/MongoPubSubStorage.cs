@@ -61,7 +61,9 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
     protected override async Task UpdateAsync(IPubSubConnection connection)
     {
-        await _pubSubConnectionCollection.ReplaceOneAsync(doc => doc.Id ==connection.Id, (PubSubConnection) connection);
+        var conn = (PubSubConnection)connection;
+        
+        await _pubSubConnectionCollection.ReplaceOneAsync(doc => doc.Id ==conn.Id, conn);
     }
 
     public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
@@ -304,19 +306,18 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
             .Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
     }
     
+    protected override async Task InsertAsync(IPubSubConnection conn)
+    {
+        var connection = (PubSubConnection)conn;
+        connection.Id = ObjectId.GenerateNewId().ToString();
+        await _pubSubConnectionCollection.InsertOneAsync(connection);
+    }
+    
     [ExcludeFromCodeCoverage]
     public void DeleteAll()
     {
         //Not Required
     }
 
-    protected override async Task InsertAsync(IPubSubConnection conn)
-    {
-        await _pubSubConnectionCollection.InsertOneAsync((PubSubConnection) conn);
-    }
 
-    protected override string GetNewId()
-    {
-        return ObjectId.GenerateNewId().ToString();
-    }
 }

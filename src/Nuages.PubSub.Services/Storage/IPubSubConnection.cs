@@ -3,7 +3,6 @@ namespace Nuages.PubSub.Services.Storage;
 
 public interface IPubSubConnection
 {
-    public string Id { get; set; }
     public string ConnectionId { get; set; } 
     public string UserId { get; set; } 
     public DateTime CreatedOn { get;  set;}

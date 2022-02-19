@@ -336,7 +336,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                 { "Nuages__PubSub__StackName", StackName },
                 { "Nuages__PubSub__Issuer", Issuer ?? "" },
                 { "Nuages__PubSub__Audience", Audience ?? "" },
-                { "Nuages__PubSub__Secret", Secret ?? "" },
+                { "Nuages__PubSub__Secret", Secret ?? "" }
             },
             Tracing = Tracing.ACTIVE
         });

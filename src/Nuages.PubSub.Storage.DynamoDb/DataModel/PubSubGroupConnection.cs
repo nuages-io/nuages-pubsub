@@ -14,15 +14,12 @@ public class PubSubGroupConnection  : IPubSubGroupConnection
     [DynamoDBRangeKey]
     public string GroupAndConnectionId { get; set; } = null!;
     
-    public string UserId { get; set; } = null!; //LSI
-    public string GroupAndUserId { get; set; } = null!; //LSI
-    public string ConnectionId { get; set; } = null!; //LSI
+    public string UserId { get; set; } = null!; 
+    public string GroupAndUserId { get; set; } = null!; 
+    public string ConnectionId { get; set; } = null!; 
      
     public DateTime? ExpireOn { get; set; }
     public DateTime CreatedOn { get; set; }
-    
-    [DynamoDBIgnore]
-    public string Id { get; set; } = null!;
 
     public string Group { get; set; } = null!; 
     

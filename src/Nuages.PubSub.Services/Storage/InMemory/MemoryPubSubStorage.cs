@@ -51,11 +51,6 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
 
         return HubAck[hub];
     }
-    
-    protected override string GetNewId()
-    {
-        return Guid.NewGuid().ToString();
-    }
 
     private async Task DeleteConnectionFromAllGroupsAsync(string hub, string connectionId)
     {
@@ -123,7 +118,7 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         {
             var connection = new PubSubGroupConnection
             {
-                Id = GetNewId(),
+                Id = Guid.NewGuid().ToString(),
                 Group = group,
                 Hub = hub,
                 ConnectionId = connectionId,

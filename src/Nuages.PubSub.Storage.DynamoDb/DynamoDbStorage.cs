@@ -289,7 +289,6 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             {
                 var groupConnection = new PubSubGroupConnection
                 {
-                    Id = Guid.NewGuid().ToString(),
                     ConnectionId = connectionId,
                     Group = group,
                     Hub = hub,
@@ -309,15 +308,8 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     {
         var dynamoDbConn = (PubSubConnection)conn;
 
-        //dynamoDbConn.Initialize();
-
         await _context.SaveAsync(dynamoDbConn,
             GetOperationConfig());
-    }
-
-    protected override string GetNewId()
-    {
-        return Guid.NewGuid().ToString();
     }
 
     [ExcludeFromCodeCoverage]

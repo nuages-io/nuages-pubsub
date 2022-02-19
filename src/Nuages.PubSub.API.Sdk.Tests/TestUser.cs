@@ -65,7 +65,7 @@ public class TestUser : BaseTest
     {
         using var client = await CreateWebsocketClient();
 
-        var receivedEvent = new ManualResetEvent(false);
+        //var receivedEvent = new ManualResetEvent(false);
 
         await client.Start();
 

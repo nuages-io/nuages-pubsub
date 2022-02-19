@@ -6,7 +6,6 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
-using Nuages.PubSub.Storage.Mongo;
 
 namespace Nuages.PubSub.API;
 

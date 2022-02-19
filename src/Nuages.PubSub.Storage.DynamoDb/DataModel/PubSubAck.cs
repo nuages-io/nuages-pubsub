@@ -15,7 +15,6 @@ public class PubSubAck
     public string ConnectionIdAndAckId { get; set; } = null!;
     
     public string ConnectionId { get; set; } = null!;
-
     public string AckId { get; set; } = null!;
 
     public void Initialize()

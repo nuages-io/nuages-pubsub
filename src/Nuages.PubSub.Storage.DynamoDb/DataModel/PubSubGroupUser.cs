@@ -13,10 +13,8 @@ public class PubSubGroupUser
     [DynamoDBRangeKey]
     public string GroupAndUserId { get; set; } = null!;
     
-    public string UserId { get; set; } = null!; //LSI
-    
-    public DateTime CreatedOn { get; set; } 
-    
+    public string UserId { get; set; } = null!;
+    public DateTime CreatedOn { get; set; }
     public string Group { get; set; } = null!;
 
     public void Initialize()
