@@ -66,8 +66,8 @@ public partial class PubSubService : IPubSubService
     {
         await _pubSubStorage.CreateConnectionAsync(hub, connectionid, userId, expireDelay);
 
-        var groups = await  _pubSubStorage.GetGroupsForUser(hub, userId);
-        foreach (var g in groups)
+        var groups =   _pubSubStorage.GetGroupsForUser(hub, userId);
+        await foreach (var g in groups)
         {
             await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid);
         }
@@ -102,7 +102,7 @@ public partial class PubSubService : IPubSubService
         return await _pubSubStorage.HasPermissionAsync(hub ,connectionId, permissionString);
     }
 
-    protected virtual async Task SendMessageAsync(string hub, IEnumerable<string> connectionIds,  PubSubMessage message)
+    protected virtual async Task SendMessageAsync(string hub, IAsyncEnumerable<string> connectionIds,  PubSubMessage message)
     {
         var text = JsonSerializer.Serialize(message, new JsonSerializerOptions
         {
@@ -117,7 +117,7 @@ public partial class PubSubService : IPubSubService
         
         using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
         
-        foreach (var connectionId in connectionIds)
+        await foreach (var connectionId in connectionIds)
         {
             var postConnectionRequest = new PostToConnectionRequest
             {
@@ -151,11 +151,11 @@ public partial class PubSubService : IPubSubService
         }
     }
 
-    private async Task CloseConnectionsAsync(string hub, IEnumerable<string> connectionIds)
+    private async Task CloseConnectionsAsync(string hub, IAsyncEnumerable<string> connectionIds)
     {
         var api = CreateApiGateway(_pubSubOptions.Uri!);
 
-        foreach (var connectionId in connectionIds.ToList())
+        await foreach (var connectionId in connectionIds)
         {
             try
             {

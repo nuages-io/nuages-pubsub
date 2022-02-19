@@ -9,7 +9,7 @@ public partial class PubSubService
 {
     public virtual async Task<APIGatewayProxyResponse> SendToAllAsync(string hub, PubSubMessage message, List<string>? excludedIds = null)
     {
-        var connections = await _pubSubStorage.GetAllConnectionAsync(hub);
+        var connections =  _pubSubStorage.GetAllConnectionAsync(hub);
         if (excludedIds != null)
         {
             connections = connections.Where(c => !excludedIds.Contains(c.ConnectionId));
@@ -27,7 +27,7 @@ public partial class PubSubService
     
     public async Task CloseAllConnectionsAsync(string hub)
     {
-        var connections = await _pubSubStorage.GetAllConnectionAsync(hub);
+        var connections = _pubSubStorage.GetAllConnectionAsync(hub);
 
         await CloseConnectionsAsync(hub, connections.Select(c => c.ConnectionId));
     }

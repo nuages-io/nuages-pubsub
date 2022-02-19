@@ -38,9 +38,12 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     }
     
     
-    public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
+    public async IAsyncEnumerable<IPubSubConnection> GetAllConnectionAsync(string hub)
     {
-        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub));
+        var coll = _pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub).ToAsyncEnumerable();
+
+        await foreach (var item in coll)
+            yield return item;
     }
 
     public override async Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
@@ -48,10 +51,13 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId));
     }
 
-    public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
+    public async IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
-        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable()
-            .Where(c => c.Hub == hub && c.Group == group).ToList().Where(c => !c.IsExpired()).Select(c => c.ConnectionId));
+        var coll = _pubSubGroupConnectionCollection.AsQueryable()
+            .Where(c => c.Hub == hub && c.Group == group).ToList().Where(c => !c.IsExpired()).Select(c => c.ConnectionId).ToAsyncEnumerable();
+
+        await foreach (var item in coll)
+            yield return item;
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
@@ -66,9 +72,14 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         await _pubSubConnectionCollection.ReplaceOneAsync(doc => doc.Id ==conn.Id, conn);
     }
 
-    public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    public override async IAsyncEnumerable<IPubSubConnection> GetConnectionsForUserAsync(string hub, string userId)
     {
-        return await Task.FromResult(_pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.UserId == userId));
+        var coll = _pubSubConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.UserId == userId).ToAsyncEnumerable();
+
+        await foreach (var item in coll)
+        {
+            yield return item;
+        }
     }
 
     public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
@@ -268,10 +279,13 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         await _pubSubGroupConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.UserId == userId);
     }
 
-    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId)
+    public async IAsyncEnumerable<string> GetGroupsForUser(string hub, string userId)
     {
-        return await Task.FromResult(_pubSubGroupConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.UserId == userId)
-            .Select(c => c.Group));
+        var coll = _pubSubGroupConnectionCollection.AsQueryable().Where(c => c.Hub == hub && c.UserId == userId)
+            .Select(c => c.Group).ToAsyncEnumerable();
+
+        await foreach (var item in coll)
+            yield return item;
     }
 
     public async Task DeleteConnectionAsync(string hub, string connectionId)

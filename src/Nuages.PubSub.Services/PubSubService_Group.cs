@@ -7,7 +7,7 @@ public partial class PubSubService
 {
     public async Task<APIGatewayProxyResponse> SendToGroupAsync(string hub, string group, PubSubMessage message, List<string>? excludedIds = null)
     {
-        var connections = await _pubSubStorage.GetConnectionsIdsForGroupAsync(hub, group);
+        var connections = _pubSubStorage.GetConnectionsIdsForGroupAsync(hub, group);
 
         if (excludedIds != null)
         {
@@ -24,7 +24,7 @@ public partial class PubSubService
 
     public async Task CloseGroupConnectionsAsync(string hub, string group)
     {
-        var connections = await _pubSubStorage.GetConnectionsIdsForGroupAsync(hub, group);
+        var connections = _pubSubStorage.GetConnectionsIdsForGroupAsync(hub, group);
 
         await CloseConnectionsAsync(hub, connections);
     }

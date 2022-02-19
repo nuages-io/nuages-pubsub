@@ -5,13 +5,16 @@ public interface IPubSubStorage
 {
     Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay);
 
-    Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub);
+    //Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub);
+    //IEnumerable<IPubSubConnection> GetAllConnections(string hub);
+    IAsyncEnumerable<IPubSubConnection> GetAllConnectionAsync(string hub);
+    
     Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId);
     
-    Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group);
+    IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group);
     Task<bool> GroupHasConnectionsAsync(string hub, string group);
     
-    Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId);
+    IAsyncEnumerable<IPubSubConnection> GetConnectionsForUserAsync(string hub, string userId);
     Task<bool> UserHasConnectionsAsync(string hub, string userId);
     Task<bool> ConnectionExistsAsync(string hub, string connectionid);
     
@@ -29,7 +32,7 @@ public interface IPubSubStorage
     Task RemoveUserFromGroupAsync(string hub, string group, string userId);
     Task RemoveUserFromAllGroupsAsync(string hub, string userId);
     
-    Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId);
+    IAsyncEnumerable<string> GetGroupsForUser(string hub, string userId);
     Task DeleteConnectionAsync(string hub, string connectionId);
 
     Task<bool> ExistAckAsync(string hub, string connectionId, string ackId);

@@ -68,9 +68,16 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
     }
 
 
-    public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
+    public async IAsyncEnumerable<IPubSubConnection> GetAllConnectionAsync(string hub)
     {
-        return await Task.FromResult(GetHubConnections(hub));
+        var list = new List<IPubSubConnection>(GetHubConnections(hub));
+        
+        var connections = list.ToAsyncEnumerable();
+
+        await foreach (var item in connections)
+        {
+            yield return item;
+        }
     }
 
     public override async Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
@@ -79,10 +86,15 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         return await Task.FromResult(connection);
     }
 
-    public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
+    public async IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
-        return await Task.FromResult(GetHubConnectionsAndGroups(hub).Where(c => c.Group == group && !c.IsExpired())
-            .Select(c => c.ConnectionId));
+        var list = new List<PubSubGroupConnection>(GetHubConnectionsAndGroups(hub));
+        
+        var coll = list.Where(c => c.Group == group && !c.IsExpired())
+            .Select(c => c.ConnectionId).ToAsyncEnumerable();
+
+        await foreach (var item in coll)
+            yield return item;
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
@@ -91,11 +103,14 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         return await Task.FromResult(GetHubConnectionsAndGroups(hub).Any(c => c.Group == group));
     }
 
-    public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    public override async IAsyncEnumerable<IPubSubConnection> GetConnectionsForUserAsync(string hub, string userId)
     {
-        var conn = GetHubConnections(hub).Where(c => c.UserId == userId);
+        var list = new List<IPubSubConnection>(GetHubConnections(hub));
+        
+        var coll = list.Where(c => c.UserId == userId).ToAsyncEnumerable();
 
-        return await Task.FromResult(conn);
+        await foreach (var item in coll)
+            yield return item;
     }
 
     public async Task<bool> UserHasConnectionsAsync(string hub, string userId)
@@ -197,11 +212,12 @@ public class MemoryPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSt
         });
     }
 
-    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId)
+    public async IAsyncEnumerable<string> GetGroupsForUser(string hub, string userId)
     {
-        var ids = GetHubUsersAndGroups(hub).Where(c => c.UserId == userId).Select(c => c.Group);
+        var ids = GetHubUsersAndGroups(hub).Where(c => c.UserId == userId).Select(c => c.Group).ToAsyncEnumerable();
 
-        return await Task.FromResult(ids);
+        await foreach (var item in ids)
+            yield return item;
     }
 
     public async Task<bool> ExistAckAsync(string hub, string connectionId, string ackId)

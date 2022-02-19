@@ -2,15 +2,17 @@ using System.Net;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Runtime;
+using System.Linq;
 
 namespace Nuages.PubSub.Services;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public partial class PubSubService
 {
+    
     public virtual async Task<APIGatewayProxyResponse> SendToConnectionAsync(string hub,  string connectionId, PubSubMessage message)
     {
-        await SendMessageAsync(hub, new List<string>{ connectionId } , message);
+        await SendMessageAsync(hub, new List<string>{ connectionId }.ToAsyncEnumerable() , message);
         
         return new APIGatewayProxyResponse
         {
@@ -20,7 +22,7 @@ public partial class PubSubService
 
     public async Task CloseConnectionAsync(string hub, string connectionId)
     {
-        await CloseConnectionsAsync(hub, new List<string> { connectionId});
+        await CloseConnectionsAsync(hub, new List<string> { connectionId}.ToAsyncEnumerable());
     }
 
     public async Task<bool> ConnectionExistsAsync(string hub, string connectionId)

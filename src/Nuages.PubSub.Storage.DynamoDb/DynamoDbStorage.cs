@@ -30,18 +30,25 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         };
     }
 
-    public async Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub)
+    public async IAsyncEnumerable<IPubSubConnection> GetAllConnectionAsync(string hub)
     {
         var search = _context.QueryAsync<PubSubConnection>(
             hub,
             GetOperationConfig()
         );
 
-        return await search.GetRemainingAsync();
+        while (!search.IsDone)
+        {
+            var list = await search.GetNextSetAsync();
+
+            foreach (var item in list)
+            {
+                yield return item;
+            }
+        }
     }
-
-
-    public async Task<IEnumerable<string>> GetConnectionsIdsForGroupAsync(string hub, string group)
+    
+    public async IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
         var config = GetOperationConfig();
 
@@ -50,7 +57,14 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             config
         );
 
-        return (await search.GetRemainingAsync()).Select(c => c.ConnectionId);
+        while (!search.IsDone)
+        {
+            var list = await search.GetNextSetAsync();
+            foreach (var item in list)
+            {
+                yield return item.ConnectionId;
+            }
+        }
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
@@ -140,12 +154,16 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         
         var search2 = _context.QueryAsync<PubSubGroupConnection>(hub, QueryOperator.Equal, new List<object>{ group + "-" + userId },config);
 
-        var list2 = await search2.GetRemainingAsync();
-
-        foreach (var c in list2)
+        while (!search2.IsDone)
         {
-            await _context.DeleteAsync(c, GetOperationConfig());
+            var list2 = await search2.GetNextSetAsync();
+
+            foreach (var c in list2)
+            {
+                await _context.DeleteAsync(c, GetOperationConfig());
+            }
         }
+       
     }
 
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
@@ -158,27 +176,35 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             userId
         }, config);
 
-        var list = await search.GetRemainingAsync();
-
-        foreach (var c in list)
+        while (!search.IsDone)
         {
-            await _context.DeleteAsync(c, GetOperationConfig());
+            var list = await search.GetNextSetAsync();
+
+            foreach (var c in list)
+            {
+                await _context.DeleteAsync(c, GetOperationConfig());
+            }
         }
+        
 
         config.IndexName = "GroupConnection_UserId";
         
         var search2 = _context.QueryAsync<PubSubGroupConnection>(hub, QueryOperator.Equal, new List<object> { userId },
             config);
 
-        var list2 = await search2.GetRemainingAsync();
-
-        foreach (var c in list2)
+        while (!search2.IsDone)
         {
-            await _context.DeleteAsync(c, GetOperationConfig());
+            var list2 = await search2.GetNextSetAsync();
+
+            foreach (var c in list2)
+            {
+                await _context.DeleteAsync(c, GetOperationConfig());
+            }
         }
+       
     }
 
-    public async Task<IEnumerable<string>> GetGroupsForUser(string hub, string userId)
+    public async IAsyncEnumerable<string> GetGroupsForUser(string hub, string userId)
     {
         var config = GetOperationConfig();
         config.IndexName = "GroupConnection_UserId";
@@ -186,9 +212,15 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         var search = _context.QueryAsync<PubSubGroupConnection>(hub, QueryOperator.Equal, new List<object> { userId },
            config);
 
-        var list = await search.GetRemainingAsync();
-
-        return list.Select(c => c.Group);
+        while (!search.IsDone)
+        {
+            var list = await search.GetNextSetAsync();
+            foreach (var item in list)
+            {
+                yield return item.Group;
+            }
+        }
+        
     }
 
     public async Task DeleteConnectionAsync(string hub, string connectionId)
@@ -206,6 +238,16 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         foreach (var c in list2)
         {
             await _context.DeleteAsync(c, GetOperationConfig());
+        }
+        
+        //Delete from ack
+        var search3 =  _context.QueryAsync<PubSubAck>(hub, QueryOperator.BeginsWith, new List<object>{connectionId},
+            GetOperationConfig());
+
+        var list3 = await search3.GetNextSetAsync();
+        foreach (var a in list3)
+        {
+            await _context.DeleteAsync(a, GetOperationConfig());
         }
     }
 
@@ -253,7 +295,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         await _context.SaveAsync((PubSubConnection)connection, GetOperationConfig());
     }
 
-    public override async Task<IEnumerable<IPubSubConnection>> GetConnectionsForUserAsync(string hub, string userId)
+    public override async IAsyncEnumerable<IPubSubConnection> GetConnectionsForUserAsync(string hub, string userId)
     {
         var config = GetOperationConfig();
         config.IndexName = "Connection_UserId";
@@ -262,15 +304,12 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
             config
         );
 
-        var connections = new List<PubSubConnection>();
-
         while (!search.IsDone)
         {
             var list = await search.GetNextSetAsync();
-            connections.AddRange(list);
+            foreach (var item in list)
+                yield return item;
         }
-
-        return connections;
     }
 
     public override async Task AddConnectionToGroupAsync(string hub, string group, string connectionId)

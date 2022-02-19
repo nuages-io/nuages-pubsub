@@ -37,17 +37,17 @@ public class TestInMemoryPubSubStorage
         var existsNull = await _pubSubStorage.ConnectionExistsAsync("Bad_Hub", connectionId);
         Assert.False(existsNull);
         
-        var coll = await _pubSubStorage.GetAllConnectionAsync(_hub);
-        Assert.Single(coll);
+        var coll =  _pubSubStorage.GetAllConnectionAsync(_hub);
+        Assert.Single(coll.ToEnumerable());
         
-        var collEmpty = await _pubSubStorage.GetAllConnectionAsync("Bad_Hub");
-        Assert.Empty(collEmpty);
+        var collEmpty =  _pubSubStorage.GetAllConnectionAsync("Bad_Hub");
+        Assert.Empty(collEmpty.ToEnumerable());
 
-        var userConnections = await _pubSubStorage.GetConnectionsForUserAsync(_hub, _sub);
-        Assert.Single(userConnections);
+        var userConnections =  _pubSubStorage.GetConnectionsForUserAsync(_hub, _sub);
+        Assert.Single(userConnections.ToEnumerable());
 
-        var userConnectionsEmpty = await _pubSubStorage.GetConnectionsForUserAsync("Bad_Hub", _sub);
-        Assert.Empty(userConnectionsEmpty);
+        var userConnectionsEmpty =  _pubSubStorage.GetConnectionsForUserAsync("Bad_Hub", _sub);
+        Assert.Empty(userConnectionsEmpty.ToEnumerable());
         
         Assert.True(await _pubSubStorage.UserHasConnectionsAsync(_hub, _sub));
 
@@ -95,7 +95,7 @@ public class TestInMemoryPubSubStorage
         await _pubSubStorage.RemoveConnectionFromGroupAsync("Bad_hub", group, connectionId);
         await _pubSubStorage.RemoveConnectionFromGroupAsync(_hub, group, connectionId);
         
-        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _sub));
+        Assert.Empty( _pubSubStorage.GetGroupsForUser(_hub, _sub).ToEnumerable());
         
     }
 
@@ -109,17 +109,17 @@ public class TestInMemoryPubSubStorage
 
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId);
 
-        var collOne = await _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
-        Assert.Single(collOne);
+        var collOne =  _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
+        Assert.Single(collOne.ToEnumerable());
         
-        var collEmpty = await _pubSubStorage.GetConnectionsIdsForGroupAsync("Bad_Hub", group);
-        Assert.Empty(collEmpty);
+        var collEmpty =  _pubSubStorage.GetConnectionsIdsForGroupAsync("Bad_Hub", group);
+        Assert.Empty(collEmpty.ToEnumerable());
         
         await _pubSubStorage.DeleteConnectionAsync("Bad_Hub", connectionId);
         await _pubSubStorage.DeleteConnectionAsync(_hub, connectionId);
 
-        var coll = await _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
-        Assert.Empty(coll);
+        var coll =  _pubSubStorage.GetConnectionsIdsForGroupAsync(_hub, group);
+        Assert.Empty(coll.ToEnumerable());
 
         
      
@@ -138,12 +138,12 @@ public class TestInMemoryPubSubStorage
 
         Assert.True(await _pubSubStorage.GroupHasConnectionsAsync(_hub, group));
 
-        var groups = await _pubSubStorage.GetGroupsForUser(_hub, _sub);
-        Assert.Equal(group, groups.First());
+        var groups =  _pubSubStorage.GetGroupsForUser(_hub, _sub);
+        Assert.Equal(group, groups.ToEnumerable().First());
 
         await _pubSubStorage.RemoveUserFromGroupAsync(_hub, group, _sub);
         
-        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _sub));
+        Assert.Empty( _pubSubStorage.GetGroupsForUser(_hub, _sub).ToEnumerable());
         
         await _pubSubStorage.AddUserToGroupAsync(_hub, group, _sub);
 
@@ -151,7 +151,7 @@ public class TestInMemoryPubSubStorage
 
         await _pubSubStorage.RemoveUserFromAllGroupsAsync(_hub, _sub);
         
-        Assert.Empty(await _pubSubStorage.GetGroupsForUser(_hub, _sub));
+        Assert.Empty( _pubSubStorage.GetGroupsForUser(_hub, _sub).ToEnumerable());
     }
 
     [Fact]
