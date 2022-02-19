@@ -54,10 +54,14 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     public async IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
         var coll = _pubSubGroupConnectionCollection.AsQueryable()
-            .Where(c => c.Hub == hub && c.Group == group).ToList().Where(c => !c.IsExpired()).Select(c => c.ConnectionId).ToAsyncEnumerable();
+            .Where(c => c.Hub == hub && c.Group == group).ToAsyncEnumerable();
 
         await foreach (var item in coll)
-            yield return item;
+        {
+            if (!item.IsExpired())
+                yield return item.ConnectionId;
+        }
+            
     }
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
