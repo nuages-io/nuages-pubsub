@@ -50,7 +50,11 @@ class Program
             
         serviceCollection
             .AddPubSubService(_configuration)
-            .AddPubSubMongoStorage();
+            .AddPubSubMongoStorage(config =>
+            {
+                config.ConnectionString = _configuration["Mongo:ConnectionString"];
+                config.DatabaseName = _configuration["Mongo:DatabaseName"];
+            });
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
         

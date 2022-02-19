@@ -48,7 +48,11 @@ public class TestsPubSubServiceMongo : IDisposable
             
         serviceCollection
             .AddPubSubService(configuration)
-            .AddPubSubMongoStorage();
+            .AddPubSubMongoStorage(config =>
+            {
+                config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
+                config.DatabaseName = configuration["Nuages:Mongo:DatabaseName"];
+            });
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();

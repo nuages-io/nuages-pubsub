@@ -29,6 +29,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             .AddJsonFile("appsettings.prod.json",  true, true)
             .AddEnvironmentVariables();
      
+        
         var name = Environment.GetEnvironmentVariable("Nuages__PubSub__StackName");
 
         if (name != null)
@@ -76,7 +77,11 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             }
             case "MongoDb":
             {
-                pubSubBuilder.AddPubSubMongoStorage();
+                pubSubBuilder.AddPubSubMongoStorage(config =>
+                {
+                    config.ConnectionString = configuration["Mongo:ConnectionString"];
+                    config.DatabaseName = configuration["Mongo:DatabaseName"];
+                });
                 break;
             }
             default:

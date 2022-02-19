@@ -34,7 +34,11 @@ public class TestMongoPubSubStorage
             {
                 
             })
-            .AddPubSubMongoStorage();
+            .AddPubSubMongoStorage(config =>
+            {
+                config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
+                config.DatabaseName = configuration["Nuages:Mongo:DatabaseName"];
+            });
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
