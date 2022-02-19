@@ -39,7 +39,7 @@ public class BaseTest
     
     protected async Task<IWebsocketClient> CreateWebsocketClient()
     {
-        var uri = await PubSubClient.GetClientAccessUriAsync(TestUserId, null,
+        var uri = await PubSubClient.GetClientAccessUriAsync(TestUserId, 
             new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup) });
 
         IWebsocketClient client = new WebsocketClient(new Uri(uri));

@@ -51,7 +51,7 @@ public class TestsPubSubServiceInMemory
         
         _pubSubService = _serviceProvider.GetRequiredService<IPubSubService>();
         
-        _pubSubService.ConnectAsync(_hub, _connectionId, _userId, new TimeSpan(1,0,0));
+        _pubSubService.ConnectAsync(_hub, _connectionId, _userId, 60);
     }
 
     private FakeApiGateway GetApiGateway()

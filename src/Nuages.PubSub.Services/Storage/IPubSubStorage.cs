@@ -3,7 +3,7 @@ namespace Nuages.PubSub.Services.Storage;
 
 public interface IPubSubStorage 
 {
-    Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay);
+    Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, int? expiresAfterSeconds);
 
     //Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub);
     //IEnumerable<IPubSubConnection> GetAllConnections(string hub);

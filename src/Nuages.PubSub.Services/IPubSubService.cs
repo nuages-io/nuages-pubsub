@@ -5,7 +5,7 @@ namespace Nuages.PubSub.Services;
 public interface IPubSubService
 {
     //https://dotnetcoretutorials.com/2020/01/15/creating-and-validating-jwt-tokens-in-asp-net-core/
-    string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default);
+    string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, int? expiresAfterSeconds = null);
     
     //All
     Task<APIGatewayProxyResponse> SendToAllAsync(string hub, PubSubMessage message, List<string>? excludedIds = null);
@@ -13,7 +13,7 @@ public interface IPubSubService
     
     
     //Connection
-    Task ConnectAsync(string hub, string connectionid, string sub, TimeSpan? expireDelay = default);
+    Task ConnectAsync(string hub, string connectionid, string sub, int? expiresAfterSeconds = null);
     
     Task<APIGatewayProxyResponse> SendToConnectionAsync(string hub, string connectionId, PubSubMessage message);
     Task CloseConnectionAsync(string hub, string connectionId);

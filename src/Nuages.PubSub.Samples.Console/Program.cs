@@ -45,10 +45,10 @@ class Program
         const string user = "user";
 
         var client = new PubSubServiceClient(_configuration["Nuages:API:Url"], _configuration["Nuages:API:ApiKey"], hub );
-        var url = client.GetClientAccessUriAsync(user, null, new List<string>
+        var url = client.GetClientAccessUriAsync(user, new List<string>
         {
-            "SendMessageToGroup",
-            "JoinOrLeaveGroup"
+            // "SendMessageToGroup",
+            // "JoinOrLeaveGroup"
         }).Result;
 
         LogData(url);

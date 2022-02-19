@@ -103,7 +103,7 @@ public class TestDynamoDbPubSubStorage_Integration
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, TimeSpan.FromDays(1));
+        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _userId, 60);
 
         Assert.False(connection.IsExpired());
         

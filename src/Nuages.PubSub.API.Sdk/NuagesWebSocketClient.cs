@@ -333,14 +333,14 @@ namespace Nuages.PubSub.API.Sdk
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles)
+        public System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, int? expiresAfterSeconds, System.Collections.Generic.IEnumerable<string> roles)
         {
-            return GetClientAccessTokenAsync(userId, expiresAfter, roles, System.Threading.CancellationToken.None);
+            return GetClientAccessTokenAsync(userId, expiresAfterSeconds, roles, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<string> GetClientAccessTokenAsync(string userId, int? expiresAfterSeconds, System.Collections.Generic.IEnumerable<string> roles, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/auth/getclienttoken?");
@@ -348,9 +348,9 @@ namespace Nuages.PubSub.API.Sdk
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("userId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
-            if (expiresAfter != null)
+            if (expiresAfterSeconds != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("expiresAfter") + "=").Append(System.Uri.EscapeDataString(ConvertToString(expiresAfter, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("expiresAfterSeconds") + "=").Append(System.Uri.EscapeDataString(ConvertToString(expiresAfterSeconds, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (roles != null)
             {
@@ -418,14 +418,14 @@ namespace Nuages.PubSub.API.Sdk
         }
     
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string hub, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, string token)
+        public System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string hub, int? expiresAfterSeconds, System.Collections.Generic.IEnumerable<string> roles, string token)
         {
-            return GetClientAccessUriAsync(userId, hub, expiresAfter, roles, token, System.Threading.CancellationToken.None);
+            return GetClientAccessUriAsync(userId, hub, expiresAfterSeconds, roles, token, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string hub, System.TimeSpan? expiresAfter, System.Collections.Generic.IEnumerable<string> roles, string token, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<string> GetClientAccessUriAsync(string userId, string hub, int? expiresAfterSeconds, System.Collections.Generic.IEnumerable<string> roles, string token, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/auth/getclienturi?");
@@ -437,9 +437,9 @@ namespace Nuages.PubSub.API.Sdk
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("hub") + "=").Append(System.Uri.EscapeDataString(ConvertToString(hub, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
-            if (expiresAfter != null)
+            if (expiresAfterSeconds != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("expiresAfter") + "=").Append(System.Uri.EscapeDataString(ConvertToString(expiresAfter, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("expiresAfterSeconds") + "=").Append(System.Uri.EscapeDataString(ConvertToString(expiresAfterSeconds, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (roles != null)
             {

@@ -81,7 +81,7 @@ public class TestInMemoryPubSubStorage
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, TimeSpan.FromDays(1));
+        var connection = await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, 60);
 
         Assert.False(connection.IsExpired());
         
@@ -105,7 +105,7 @@ public class TestInMemoryPubSubStorage
         var group = Guid.NewGuid().ToString();
         var connectionId = Guid.NewGuid().ToString();
 
-        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, new TimeSpan(1,0,0));
+        await _pubSubStorage.CreateConnectionAsync(_hub, connectionId, _sub, 60);
 
         await _pubSubStorage.AddConnectionToGroupAsync(_hub, group, connectionId);
 

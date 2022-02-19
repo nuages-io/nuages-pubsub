@@ -23,7 +23,7 @@ public class AuthController : Controller
     [HttpGet("getclienttoken")]
     public async Task<ActionResult<string>> GetClientAccessTokenAsync(
         string userId, 
-        TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
+        int? expiresAfterSeconds = null, IEnumerable<string>? roles = null)
     {
         try
         {
@@ -43,7 +43,7 @@ public class AuthController : Controller
                 throw new ArgumentException("audience must be provided");
             
             var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
-                expiresAfter);
+                expiresAfterSeconds);
 
             return await Task.FromResult(token);
         }
@@ -64,7 +64,7 @@ public class AuthController : Controller
     [HttpGet("getclienturi")]
     public async Task<ActionResult<string>> GetClientAccessUriAsync(
         string userId, string hub,
-        TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null, string? token = null)
+        int? expiresAfterSeconds = null, IEnumerable<string>? roles = null, string? token = null)
     {
         try
         {
@@ -89,7 +89,7 @@ public class AuthController : Controller
                     throw new ArgumentException("audience must be provided");
 
                 token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
-                    expiresAfter);
+                    expiresAfterSeconds);
             }
             
             var uri = $"{_options.Uri}?hub={hub}&access_token={token}";

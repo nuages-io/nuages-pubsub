@@ -23,23 +23,23 @@ public partial class PubSubServiceClient
     /// <param name="expiresAfter"></param>
     /// <param name="roles"></param>
     /// <returns></returns>
-    public async Task<string> GetClientAccessTokenAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null)
+    public async Task<string> GetClientAccessTokenAsync(string userId,  IEnumerable<string>? roles = null, int? expiresAfterSeconds = null)
     {
         var webService = new AuthClient(_httpClient)
         {
             BaseUrl = _url
         };
     
-        return await webService.GetClientAccessTokenAsync(userId, expiresAfter, roles).ConfigureAwait(false);
+        return await webService.GetClientAccessTokenAsync(userId, expiresAfterSeconds, roles).ConfigureAwait(false);
     }
     
-    public async Task<string> GetClientAccessUriAsync(string userId, TimeSpan? expiresAfter = default, IEnumerable<string>? roles = null, string? token = null)
+    public async Task<string> GetClientAccessUriAsync(string userId,IEnumerable<string>? roles = null, string? token = null,  int? expiresAfterSeconds = null )
     {
         var webService = new AuthClient(_httpClient)
         {
             BaseUrl = _url
         };
 
-        return await webService.GetClientAccessUriAsync(userId, _hub, expiresAfter, roles, token).ConfigureAwait(false);
+        return await webService.GetClientAccessUriAsync(userId, _hub, expiresAfterSeconds, roles, token).ConfigureAwait(false);
     }
 }

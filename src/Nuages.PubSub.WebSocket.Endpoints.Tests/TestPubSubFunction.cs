@@ -51,7 +51,7 @@ public class TestPubSubFunction
         Assert.Equal(200, res.StatusCode);
         
         //Throw
-        pubSubService.Setup(c => c.ConnectAsync(hub, connectionId, userId, It.IsAny<TimeSpan?>())).ThrowsAsync(new Exception());
+        pubSubService.Setup(c => c.ConnectAsync(hub, connectionId, userId, It.IsAny<int?>())).ThrowsAsync(new Exception());
 
         res = await function.OnConnectHandlerAsync(request, lambdaContext);
         

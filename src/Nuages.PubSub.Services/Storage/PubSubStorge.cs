@@ -10,7 +10,7 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
     public abstract Task AddConnectionToGroupAsync(string hub, string group, string connectionId);
     protected abstract Task InsertAsync(IPubSubConnection conn);
 
-    public async Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay) 
+    public async Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, int? expiresInSeconds) 
     {
         var conn = new T
         {
@@ -21,9 +21,9 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
             CreatedOn = DateTime.UtcNow
         };
 
-        if (expireDelay.HasValue)
+        if (expiresInSeconds.HasValue)
         {
-            conn.ExpireOn = conn.CreatedOn.Add(expireDelay.Value);
+            conn.ExpireOn = conn.CreatedOn.Add(TimeSpan.FromSeconds(expiresInSeconds.Value));
         }
         
         await  InsertAsync(conn);

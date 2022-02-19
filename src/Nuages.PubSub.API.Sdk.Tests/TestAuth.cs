@@ -14,7 +14,7 @@ public class TestAuth : BaseTest
     {
         var client = new PubSubServiceClient(TestUrl, TestApiKey, TestHub);
 
-       var token = await client.GetClientAccessTokenAsync(TestUserId, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup) });
+       var token = await client.GetClientAccessTokenAsync(TestUserId,  new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup) });
        
        TestOutputHelper.WriteLine($"token={token}");
     }
@@ -24,7 +24,7 @@ public class TestAuth : BaseTest
     {
         var client = new PubSubServiceClient(TestUrl, TestApiKey, TestHub);
     
-        var url = await client.GetClientAccessUriAsync(TestUserId, null, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup)});
+        var url = await client.GetClientAccessUriAsync(TestUserId, new List<string> { nameof(PubSubPermission.SendMessageToGroup), nameof(PubSubPermission.JoinOrLeaveGroup)});
        
         TestOutputHelper.WriteLine($"url={url}");
     }

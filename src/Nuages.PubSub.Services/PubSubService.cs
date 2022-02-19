@@ -32,8 +32,11 @@ public partial class PubSubService : IPubSubService
         return _apiClientientProvider.Create(url, _pubSubOptions.Region);
     }
 
-    public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, TimeSpan? expireDelay = default)
+    public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, int? expiresAfterSeconds = null)
     {
+        if (expiresAfterSeconds == null)
+            expiresAfterSeconds = 60 * 60 * 24;
+        
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -43,7 +46,7 @@ public partial class PubSubService : IPubSubService
             {
                 new Claim("sub", userId)
             }),
-            Expires = DateTime.UtcNow.Add(expireDelay ?? TimeSpan.FromDays(1)),
+            Expires = DateTime.UtcNow.Add(TimeSpan.FromSeconds(expiresAfterSeconds.Value )),
             Issuer = issuer,
             Audience = audience,
             SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
@@ -62,9 +65,9 @@ public partial class PubSubService : IPubSubService
         return tokenHandler.WriteToken(token);
     }
 
-    public async Task ConnectAsync(string hub, string connectionid, string userId, TimeSpan? expireDelay = default)
+    public async Task ConnectAsync(string hub, string connectionid, string userId, int? expiresAfterSeconds = null)
     {
-        await _pubSubStorage.CreateConnectionAsync(hub, connectionid, userId, expireDelay);
+        await _pubSubStorage.CreateConnectionAsync(hub, connectionid, userId, expiresAfterSeconds);
 
         var groups =   _pubSubStorage.GetGroupsForUser(hub, userId);
         await foreach (var g in groups)

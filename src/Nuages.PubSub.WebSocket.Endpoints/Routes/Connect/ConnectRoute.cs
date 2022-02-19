@@ -61,6 +61,9 @@ public class ConnectRoute : IConnectRoute
 
     protected virtual IEnumerable<string> GetRoles(APIGatewayProxyRequest request)
     {
+        if (!request.RequestContext.Authorizer.ContainsKey("roles"))
+            return new List<string>();
+        
         var roleClaim = request.RequestContext.Authorizer["roles"];
         return roleClaim != null ? roleClaim.ToString()!.Split(" ") : Array.Empty<string>();
     }
