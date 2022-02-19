@@ -79,8 +79,8 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubMongoStorage(config =>
                 {
-                    config.ConnectionString = configuration["Mongo:ConnectionString"];
-                    config.DatabaseName = configuration["Mongo:DatabaseName"];
+                    config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
+                    config.DatabaseName = configuration["Nuages:Mongo:DatabaseName"];
                 });
                 break;
             }

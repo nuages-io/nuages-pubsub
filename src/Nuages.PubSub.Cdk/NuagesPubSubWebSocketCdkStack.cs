@@ -71,10 +71,13 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextIssuer = "Issuer";
     public const string ContextSecret = "Secret";
 
+    public const string ContextStorage = "Storage";
+    
     public string? Issuer { get; set; }
     public string? Audience { get; set; }
     public string? Secret { get; set; }
-
+    public string? Storage { get; set; }
+    
     public List<CfnRoute> Routes { get; set; } = new();
 
     public virtual string MakeId(string id)
@@ -97,6 +100,10 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
         Secret = Node.TryGetContext(ContextSecret) != null!
             ? Node.TryGetContext(ContextSecret).ToString()
+            : null;
+        
+        Storage = Node.TryGetContext(ContextStorage) != null!
+            ? Node.TryGetContext(ContextStorage).ToString()
             : null;
 
         var role = CreateWebSocketRole();
@@ -152,7 +159,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
 
-        CreateTables();
+        if (Storage == "DynamoDb")
+            CreateTables();
 
         var webSocketUrl = $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{stage.Ref}";
 
@@ -511,5 +519,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         Node.SetContext(ContextAudience, options.Env.PubSub.Audience ?? "");
         Node.SetContext(ContextIssuer, options.Env.PubSub.Issuer ?? "");
         Node.SetContext(ContextSecret, options.Env.PubSub.Secret ?? "");
+        
+        Node.SetContext(ContextStorage, options.Env.Data.Storage ?? "");
     }
 }

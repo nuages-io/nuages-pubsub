@@ -10,9 +10,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.Services;
-using Nuages.PubSub.Storage.Mongo;
+using Nuages.PubSub.API.Sdk;
 // ReSharper disable SuggestBaseTypeForParameter
 
 #endregion
@@ -29,10 +27,6 @@ class Program
     private static ClientWebSocket _webSocket;
 
     private static IConfigurationRoot _configuration;
-    private static string _wssUrl;
-    private static string _issuer;
-    private static string _secret;
-    private static string _audience;
 
     // ReSharper disable once UnusedParameter.Local
     private static async Task Main(string[] args)
@@ -44,57 +38,29 @@ class Program
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 
-        var serviceCollection = new ServiceCollection();
 
-        serviceCollection.AddSingleton<IConfiguration>(_configuration);
-            
-        serviceCollection
-            .AddPubSubService(_configuration)
-            .AddPubSubMongoStorage(config =>
-            {
-                config.ConnectionString = _configuration["Mongo:ConnectionString"];
-                config.DatabaseName = _configuration["Mongo:DatabaseName"];
-            });
-        
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        
-        PubSubService = serviceProvider.GetRequiredService<IPubSubService>();
-        
-        _wssUrl = _configuration.GetSection("Nuages:WebSocket:Url").Value;
-        _issuer = _configuration.GetSection("Nuages:PubSub:Issuer").Value;
-        _secret = _configuration.GetSection("Nuages:PubSub:Secret").Value;
-        _audience = _configuration.GetSection("Nuages:PubSub:Audience").Value;
-        
-        System.Console.WriteLine("Getting Token...");
+        System.Console.WriteLine("Getting url...");
 
         const string hub = "hub";
         const string user = "user";
-        
-        var token = GenerateToken(user, _audience);
-        LogData(token);
-        
-        System.Console.WriteLine("Try connect to Server with Uri");
-        var url = string.Format(_wssUrl, token, hub);
+
+        var client = new PubSubServiceClient(_configuration["Nuages:API:Url"], _configuration["Nuages:API:ApiKey"], hub );
+        var url = client.GetClientAccessUriAsync(user, null, new List<string>
+        {
+            "SendMessageToGroup",
+            "JoinOrLeaveGroup"
+        }).Result;
 
         LogData(url);
             
         await ConnectAsync(url);
     }
 
-    private static IPubSubService PubSubService { get; set; }
-
     private static void LogLine()
     {
         System.Console.WriteLine("----------------------------");
     }
 
-    
-    private static string GenerateToken(string userId, string audience)
-    {
-        return PubSubService.GenerateToken(_issuer, audience, userId, new List<string>(), _secret,
-            TimeSpan.FromDays(1));
-    }
-    
     private static async Task ConnectAsync(string uri)
     {
         try

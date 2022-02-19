@@ -6,6 +6,7 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
+using Nuages.PubSub.Storage.Mongo;
 
 namespace Nuages.PubSub.API;
 
@@ -23,35 +24,34 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton(_configuration);
-        
+
         var pubSubBuilder = services
             .AddPubSubService(_configuration);
-            
-        //var storage = _configuration.GetSection("Nuages:Data:Storage").Value;
-        
-        // switch (storage)
-        // {
-        //     
-        //     // case "DynamoDb":
-        //     // {
-        //     //     pubSubBuilder.AddPubSubDynamoDbStorage();
-        //     //     break;
-        //     // }
-        //     case "MongoDb":
-        //     {
-        //         pubSubBuilder.AddPubSubMongoStorage();
-        //         break;
-        //     }
-        //     default:
-        //     {
-        //         throw new NotSupportedException("Storage not supported");
-        //     }
-        // }
-        //
-        //pubSubBuilder.AddPubSubMongoStorage();
-        
-        pubSubBuilder.AddPubSubDynamoDbStorage();
-        
+
+        var storage = _configuration.GetSection("Nuages:Data:Storage").Value;
+
+        switch (storage)
+        {
+            case "DynamoDb":
+            {
+                pubSubBuilder.AddPubSubDynamoDbStorage();
+                break;
+            }
+            case "MongoDb":
+            {
+                pubSubBuilder.AddPubSubMongoStorage(config =>
+                {
+                    config.ConnectionString = _configuration["NuagesMongo:ConnectionString"];
+                    config.DatabaseName = _configuration["NUages:Mongo:DatabaseName"];
+                });
+                break;
+            }
+            default:
+            {
+                throw new NotSupportedException("Storage not supported");
+            }
+        }
+
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -87,12 +87,12 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
         else
-        {   
+        {
             var stackName = _configuration.GetSection("Nuages:PubSub:StackName").Value;
-            
+
             AWSXRayRecorder.InitializeInstance(_configuration);
             AWSSDKHandler.RegisterXRayForAllServices();
-            
+
             app.UseXRay(stackName);
         }
 
@@ -108,21 +108,21 @@ public class Startup
             endpoints.MapGet("/",
                 async context =>
                 {
-                    var option = app.ApplicationServices.GetService <IOptions<PubSubOptions>>();
+                    var option = app.ApplicationServices.GetService<IOptions<PubSubOptions>>();
 
                     var config = new
                     {
                         PubSubOptions = option,
                         Storage = _configuration.GetSection("Nuages:Data:Storage").Value
                     };
-                    
+
                     await context.Response.WriteAsync(JsonSerializer.Serialize(config, new JsonSerializerOptions
-                    { 
+                    {
                         WriteIndented = true
                     }));
                 });
         });
-        
+
         app.UseOpenApi();
         app.UseSwaggerUi3();
     }
