@@ -16,5 +16,14 @@ public class PubSubDbContext : DbContext
     {
     }
 
-    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<PubSubConnection>()
+            .Property(e => e.Permissions)
+            .HasConversion(
+                v => string.Join(",", v),
+                v => v.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList());
+    }
 }
