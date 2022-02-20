@@ -14,6 +14,7 @@
         <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
         <RepositoryType>GitHub</RepositoryType>
         <OutputType>Library</OutputType>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>

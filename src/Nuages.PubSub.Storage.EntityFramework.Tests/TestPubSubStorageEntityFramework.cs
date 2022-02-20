@@ -3,26 +3,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Nuages.PubSub.Services.Storage;
-
-using Nuages.PubSub.Services.Storage.InMemory;
-
+using Nuages.PubSub.Storage.EntityFramework;
 using Xunit;
 
-namespace Nuages.PubSub.Services.Tests;
+namespace NUages.PubSub.Storage.EntityFramework.Tests;
 
-public class TestInMemoryPubSubStorage
+public class TestPubSubStorageEntityFramework
 {
     private readonly IPubSubStorage _pubSubStorage;
     private readonly string _hub;
     private readonly string _sub;
 
-    public TestInMemoryPubSubStorage()
+    public TestPubSubStorageEntityFramework()
     {
         var contextOptions = new DbContextOptionsBuilder<PubSubDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
         
-        _pubSubStorage = new PubSubStorageInMemory(new PubSubDbContext(contextOptions));
+        _pubSubStorage = new PubSubStorageEntityFramework(new PubSubDbContext(contextOptions));
         _hub = "Hub";
         _sub = "sub-test";
     }

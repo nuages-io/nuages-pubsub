@@ -5,16 +5,23 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <Title>Nuages.PubSub.Storag.Mongo</Title>
+        <Title>Nuages.PubSub.Storag.DynamoDb</Title>
         <Authors>Nuages.io</Authors>
-        <Description>MongoDb storage support for Nuages.PubSub</Description>
+        <Description>EntityFramwork storage support for Nuages.PubSub</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageIcon>nuages.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
         <RepositoryType>GitHub</RepositoryType>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
-
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
+    </ItemGroup>
+    
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
 
@@ -26,13 +33,6 @@
             <Pack>true</Pack>
             <PackagePath>/</PackagePath>
         </None>
-        
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="MongoDB.Driver" Version="2.14.1" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\Nuages.PubSub.WebSocket.Endpoints\Nuages.PubSub.WebSocket.Endpoints.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
+
     </ItemGroup>
 </Project>
