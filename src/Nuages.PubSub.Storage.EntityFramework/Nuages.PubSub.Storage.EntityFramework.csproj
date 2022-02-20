@@ -4,6 +4,16 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <Title>Nuages.PubSub.Storag.DynamoDb</Title>
+        <Authors>Nuages.io</Authors>
+        <Description>EntityFramwork storage support for Nuages.PubSub</Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>nuages.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
@@ -11,10 +21,18 @@
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
     </ItemGroup>
+    
     <ItemGroup>
-      <None Update="README.md">
-        <Pack>true</Pack>
-        <PackagePath>/</PackagePath>
-      </None>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+
+        <None Include="../../LICENSE">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="../../nuages.png">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+
     </ItemGroup>
 </Project>

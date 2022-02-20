@@ -7,7 +7,7 @@
 
         <Title>Nuages.PubSub.Storag.Mongo</Title>
         <Authors>Nuages.io</Authors>
-        <Description>Mongo storage support for Nuages.PubSub</Description>
+        <Description>MongoDb storage support for Nuages.PubSub</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageIcon>nuages.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
