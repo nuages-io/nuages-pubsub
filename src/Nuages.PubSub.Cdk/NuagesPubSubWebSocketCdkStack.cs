@@ -53,6 +53,9 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     public string StageName { get; set; } = "prod";
 
+    public string WebApiHandler { get; set; } =
+        "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync";
+    
     public string NuagesPubSubRole { get; set; } = "Role";
 
     public NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
