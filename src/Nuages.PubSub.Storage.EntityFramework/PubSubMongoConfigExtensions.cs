@@ -8,15 +8,12 @@ namespace Nuages.PubSub.Storage.EntityFramework;
 
 
 [ExcludeFromCodeCoverage]
-public static class PubSubMemoryConfigExtensions
+public static class PubSubEntityFrameworkConfigExtensions
 {
     // ReSharper disable once UnusedMember.Global
-    public static void AddPubSubInMemoryStorage(this IPubSubBuilder builder)
+    public static void AddPubSubEntityFrameworkStorage(this IPubSubBuilder builder)
     {
-        builder.Services.AddDbContext<PubSubDbContext>(options =>
-        {
-            options.UseInMemoryDatabase("PubSubDbContext");
-        });
+      
         
         builder.Services.AddScoped<IPubSubStorage, PubSubStorageEntityFramework>();
     }

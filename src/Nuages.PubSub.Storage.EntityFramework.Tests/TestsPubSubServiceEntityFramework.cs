@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.ApiGatewayManagementApi;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -42,9 +43,14 @@ public class TestsPubSubServiceEntityFramework
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
             
+        serviceCollection.AddDbContext<PubSubDbContext>(options =>
+        {
+            options.UseInMemoryDatabase("PubSubDbContext");
+        });
+        
         serviceCollection
             .AddPubSubService(configuration)
-            .AddPubSubInMemoryStorage();
+            .AddPubSubEntityFrameworkStorage();
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();
