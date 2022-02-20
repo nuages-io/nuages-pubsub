@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Nuages.PubSub.Services.Storage.InMemory.DataModel;
+using Nuages.PubSub.Storage.EntityFramework.DataModel;
+
 #pragma warning disable CS8618
 
-namespace Nuages.PubSub.Services.Storage.InMemory;
+namespace Nuages.PubSub.Storage.EntityFramework;
 
 public class PubSubDbContext : DbContext
 {

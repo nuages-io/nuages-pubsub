@@ -1,21 +1,24 @@
 using System.Diagnostics.CodeAnalysis;
-using Nuages.PubSub.Services.Storage.InMemory.DataModel;
+using Nuages.PubSub.Services.Storage;
+using Nuages.PubSub.Storage.EntityFramework.DataModel;
 
-namespace Nuages.PubSub.Services.Storage.InMemory;
+namespace Nuages.PubSub.Storage.EntityFramework;
 
 
-public class PubSubStorageInMemory : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
+public class PubSubStorageEntityFramework : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
     private readonly PubSubDbContext _context;
 
-    public PubSubStorageInMemory(PubSubDbContext context)
+    public PubSubStorageEntityFramework(PubSubDbContext context)
     {
         _context = context;
     }
 
     public void Initialize()
     {
-        _context.Database.EnsureDeleted();
+        if (_context.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+            _context.Database.EnsureDeleted();
+        
         _context.Database.EnsureCreated();
     }
 
@@ -31,7 +34,6 @@ public class PubSubStorageInMemory : PubSubStorgeBase<PubSubConnection>, IPubSub
             .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
         
         await _context.SaveChangesAsync();
-        
     }
 
     public async  Task DeleteConnectionAsync(string hub, string connectionId)
@@ -156,7 +158,6 @@ public class PubSubStorageInMemory : PubSubStorgeBase<PubSubConnection>, IPubSub
         }
 
         await AddConnectionToGroupFromUserGroups(hub, group, userId);
-    
     }
     
     public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)

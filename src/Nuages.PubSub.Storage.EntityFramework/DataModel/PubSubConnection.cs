@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using Nuages.PubSub.Services.Storage;
 
-namespace Nuages.PubSub.Services.Storage.InMemory.DataModel;
+namespace Nuages.PubSub.Storage.EntityFramework.DataModel;
 
 [ExcludeFromCodeCoverage]
 public class PubSubConnection : IPubSubConnection

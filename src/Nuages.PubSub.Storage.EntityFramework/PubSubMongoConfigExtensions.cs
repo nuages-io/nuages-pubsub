@@ -1,8 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Nuages.PubSub.Services;
+using Nuages.PubSub.Services.Storage;
 
-namespace Nuages.PubSub.Services.Storage.InMemory;
+namespace Nuages.PubSub.Storage.EntityFramework;
 
 
 [ExcludeFromCodeCoverage]
@@ -15,6 +17,7 @@ public static class PubSubMemoryConfigExtensions
         {
             options.UseInMemoryDatabase("PubSubDbContext");
         });
-        builder.Services.AddScoped<IPubSubStorage, PubSubStorageInMemory>();
+        
+        builder.Services.AddScoped<IPubSubStorage, PubSubStorageEntityFramework>();
     }
 }

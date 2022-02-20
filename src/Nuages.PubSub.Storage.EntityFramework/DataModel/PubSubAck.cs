@@ -1,7 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Nuages.PubSub.Services.Storage.InMemory.DataModel;
+namespace Nuages.PubSub.Storage.EntityFramework.DataModel;
 
 public class PubSubAck 
 {

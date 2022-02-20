@@ -10,12 +10,14 @@ using Amazon.ApiGatewayManagementApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Nuages.PubSub.Services.Storage.InMemory;
+using Nuages.PubSub.Services;
+using Nuages.PubSub.Services.Tests;
+using Nuages.PubSub.Storage.EntityFramework;
 using Xunit;
 
-namespace Nuages.PubSub.Services.Tests;
+namespace NUages.PubSub.Storage.EntityFramework.Tests;
 
-public class TestsPubSubServiceInMemory
+public class TestsPubSubServiceEntityFramework
 {
     private readonly IPubSubService _pubSubService;
     private readonly string _hub;
@@ -24,7 +26,7 @@ public class TestsPubSubServiceInMemory
     private readonly string _userId;
     private readonly ServiceProvider _serviceProvider;
 
-    public TestsPubSubServiceInMemory()
+    public TestsPubSubServiceEntityFramework()
     {
         _hub = "Hub";
         _group = "Groupe1";
@@ -254,7 +256,7 @@ public class TestsPubSubServiceInMemory
         {
             ackId = null,
             type = "message",
-            group = _group
+            @group = _group
         };
 
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
@@ -273,7 +275,7 @@ public class TestsPubSubServiceInMemory
         {
             ackId = null,
             type = "message",
-            group = _group
+            @group = _group
         };
 
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
@@ -292,7 +294,7 @@ public class TestsPubSubServiceInMemory
         {
             ackId = null,
             type = "message",
-            group = _group
+            @group = _group
         };
         
         await _pubSubService.SendToGroupAsync(_hub, _group, message);
