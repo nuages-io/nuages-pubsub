@@ -25,6 +25,8 @@ public partial class PubSubService : IPubSubService
         _pubSubStorage = pubSubStorage;
         _apiClientientProvider = apiClientientProvider;
         _pubSubOptions = pubSubOptions.Value;
+        
+        _pubSubStorage.Initialize();
     }
     
     private IAmazonApiGatewayManagementApi CreateApiGateway(string url)
@@ -34,8 +36,7 @@ public partial class PubSubService : IPubSubService
 
     public string GenerateToken(string issuer, string audience, string userId, IEnumerable<string> roles, string secret, int? expiresAfterSeconds = null)
     {
-        if (expiresAfterSeconds == null)
-            expiresAfterSeconds = 60 * 60 * 24;
+        expiresAfterSeconds ??= 60 * 60 * 24;
         
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
@@ -74,6 +75,7 @@ public partial class PubSubService : IPubSubService
         {
             await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid);
         }
+        
     }
 
     public async Task GrantPermissionAsync(string hub, PubSubPermission permission, string connectionId, string? target = null)

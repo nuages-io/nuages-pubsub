@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Nuages.PubSub.Services.Storage;
 
 using Nuages.PubSub.Services.Storage.InMemory;
@@ -17,7 +18,11 @@ public class TestInMemoryPubSubStorage
 
     public TestInMemoryPubSubStorage()
     {
-        _pubSubStorage = new MemoryPubSubStorage();
+        var contextOptions = new DbContextOptionsBuilder<PubSubDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        
+        _pubSubStorage = new PubSubStorageInMemory(new PubSubDbContext(contextOptions));
         _hub = "Hub";
         _sub = "sub-test";
     }

@@ -14,6 +14,11 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     private readonly DynamoDBContext _context;
     private readonly PubSubOptions _options;
 
+
+    public void Initialize()
+    {
+    }
+
     public DynamoDbStorage(IOptions<PubSubOptions> options)
     {
         _options = options.Value;

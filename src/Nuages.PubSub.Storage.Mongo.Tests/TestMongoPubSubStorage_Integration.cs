@@ -30,10 +30,7 @@ public class TestMongoPubSubStorage
         serviceCollection.AddSingleton<IConfiguration>(configuration);
             
         serviceCollection
-            .AddPubSubService(configuration, subOptions =>
-            {
-                
-            })
+            .AddPubSubService(configuration)
             .AddPubSubMongoStorage(config =>
             {
                 config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
@@ -54,6 +51,7 @@ public class TestMongoPubSubStorage
         mongoCLient.DropDatabase(dbName);
         
         _pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
+        _pubSubStorage.Initialize();
     }
     
     [Fact]

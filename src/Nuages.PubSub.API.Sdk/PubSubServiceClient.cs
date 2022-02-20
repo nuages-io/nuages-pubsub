@@ -20,7 +20,7 @@ public partial class PubSubServiceClient
     /// 
     /// </summary>
     /// <param name="userId"></param>
-    /// <param name="expiresAfter"></param>
+    /// <param name="expiresAfterSeconds"></param>
     /// <param name="roles"></param>
     /// <returns></returns>
     public async Task<string> GetClientAccessTokenAsync(string userId,  IEnumerable<string>? roles = null, int? expiresAfterSeconds = null)

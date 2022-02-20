@@ -2,7 +2,6 @@ using System.Net;
 using Amazon.ApiGatewayManagementApi.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Runtime;
-using System.Linq;
 
 namespace Nuages.PubSub.Services;
 

@@ -5,8 +5,6 @@ public interface IPubSubStorage
 {
     Task<IPubSubConnection> CreateConnectionAsync(string hub, string connectionid, string userId, int? expiresAfterSeconds);
 
-    //Task<IEnumerable<IPubSubConnection>> GetAllConnectionAsync(string hub);
-    //IEnumerable<IPubSubConnection> GetAllConnections(string hub);
     IAsyncEnumerable<IPubSubConnection> GetAllConnectionAsync(string hub);
     
     Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId);
@@ -42,4 +40,6 @@ public interface IPubSubStorage
     Task<bool> IsConnectionInGroup(string hub, string group, string connectionId);
 
     void DeleteAll();
+    void Initialize();
+    
 }
