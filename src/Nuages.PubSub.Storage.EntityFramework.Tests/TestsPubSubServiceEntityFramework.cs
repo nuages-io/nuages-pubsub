@@ -36,7 +36,7 @@ public class TestsPubSubServiceEntityFramework
         
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
-            .AddJsonFile("appsettings.local.json", false)
+            .AddJsonFile("appsettings.local.json", true)
             .Build();
 
         var serviceCollection = new ServiceCollection();

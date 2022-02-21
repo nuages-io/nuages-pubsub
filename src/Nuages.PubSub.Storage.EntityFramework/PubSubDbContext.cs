@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Nuages.PubSub.Storage.EntityFramework.DataModel;
 
 #pragma warning disable CS8618
@@ -20,10 +21,17 @@ public class PubSubDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
+        var valueComparer = new ValueComparer<List<string>>(
+            (c1, c2) => c1.SequenceEqual(c2),
+            c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+            c => c.ToList());
+        
         modelBuilder.Entity<PubSubConnection>()
             .Property(e => e.Permissions)
             .HasConversion(
                 v => string.Join(",", v),
-                v => v.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList());
+                v => v.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList())
+            .Metadata
+            .SetValueComparer(valueComparer);
     }
 }
