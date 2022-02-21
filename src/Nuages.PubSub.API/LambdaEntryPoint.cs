@@ -16,7 +16,8 @@ public class LambdaEntryPoint :
         builder.ConfigureAppConfiguration((context, configBuilder) =>
         {
             configBuilder.AddJsonFile("appsettings.prod.json", true, true);
-
+            configBuilder.AddEnvironmentVariables();
+            
             var name = Environment.GetEnvironmentVariable("Nuages__PubSub__StackName");
 
             if (name != null)
@@ -28,8 +29,6 @@ public class LambdaEntryPoint :
                     configureSource.Optional = true;
                 });
             }
-           
-
         }).UseNLog();
 
     }

@@ -36,7 +36,7 @@ public class Env
 
 public class EnvData
 {
-    public string? Storage { get; set; }
+    public bool CreateDynamoDbTables { get; set; } = true;
 }
 
 public class EnvPuSub

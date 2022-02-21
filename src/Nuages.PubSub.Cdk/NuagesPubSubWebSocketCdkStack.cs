@@ -31,7 +31,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     private string? JoinHandler { get; set; }
     private string? LeaveHandler { get; set; }
 
-    public string ApiName { get; set; } = "NuagesPubSub";
+    public string ApiNameWebSocket { get; set; } = "WebSocket";
 
     public string RouteSelectionExpression { get; set; } = "$request.body.type";
 
@@ -74,12 +74,12 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextIssuer = "Issuer";
     public const string ContextSecret = "Secret";
 
-    public const string ContextStorage = "Storage";
+    public const string ContextCreateDynamoDbTables = "CreateDynamoDbTables";
     
     public string? Issuer { get; set; }
     public string? Audience { get; set; }
     public string? Secret { get; set; }
-    public string? Storage { get; set; }
+    public bool CreateDynamoDbTables { get; set; }
     
     public List<CfnRoute> Routes { get; set; } = new();
 
@@ -105,9 +105,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             ? Node.TryGetContext(ContextSecret).ToString()
             : null;
         
-        Storage = Node.TryGetContext(ContextStorage) != null!
-            ? Node.TryGetContext(ContextStorage).ToString()
-            : null;
+        CreateDynamoDbTables = Node.TryGetContext(ContextCreateDynamoDbTables) == null! || 
+                               Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbTables).ToString());
 
         var role = CreateWebSocketRole();
 
@@ -162,7 +161,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
 
-        if (Storage == "DynamoDb")
+        if (CreateDynamoDbTables)
             CreateTables();
 
         var webSocketUrl = $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{stage.Ref}";
@@ -313,7 +312,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     protected virtual CfnApi CreateWebSocketApi()
     {
-        var name = MakeId(ApiName);
+        var name = MakeId(ApiNameWebSocket);
 
         var api = new CfnApi(this, name, new CfnApiProps
         {
@@ -523,6 +522,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         Node.SetContext(ContextIssuer, options.Env.PubSub.Issuer ?? "");
         Node.SetContext(ContextSecret, options.Env.PubSub.Secret ?? "");
         
-        Node.SetContext(ContextStorage, options.Env.Data.Storage ?? "");
+        Node.SetContext(ContextCreateDynamoDbTables, options.Env.Data.CreateDynamoDbTables.ToString());
     }
 }
