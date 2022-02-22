@@ -5,6 +5,16 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
+
+        <Title>Nuages.PubSub.Storage.EntityFramework.SqlServer</Title>
+        <Authors>Nuages.io</Authors>
+        <Description>SqlServer storage support for Nuages.PubSub</Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>nuages.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">

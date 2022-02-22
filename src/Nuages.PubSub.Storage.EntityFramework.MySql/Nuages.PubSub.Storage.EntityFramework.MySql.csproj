@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
 
-        <Title>Nuages.PubSub.Storag.EntityFramework.MySql</Title>
+        <Title>Nuages.PubSub.Storage.EntityFramework.MySql</Title>
         <Authors>Nuages.io</Authors>
         <Description>MySql storage support for Nuages.PubSub</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>

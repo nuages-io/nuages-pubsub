@@ -45,6 +45,16 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         await _context.SaveChangesAsync();
         
         await DeleteConnectionFromAllGroupsAsync(hub, connectionId);
+
+        await DeleteAckForConnectionAsync(hub, connectionId);
+    }
+    
+    private async Task DeleteAckForConnectionAsync(string hub, string connectionId)
+    {
+        _context.Acks.RemoveRange(_context.Acks
+            .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
+        
+        await _context.SaveChangesAsync();
     }
 
     public async IAsyncEnumerable<IPubSubConnection> GetAllConnectionAsync(string hub)

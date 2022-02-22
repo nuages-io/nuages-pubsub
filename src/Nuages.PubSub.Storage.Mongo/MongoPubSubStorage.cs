@@ -295,6 +295,8 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
         await _pubSubConnectionCollection.DeleteOneAsync(c => c.ConnectionId == connectionId && c.Hub == hub);
         
         await _pubSubGroupConnectionCollection.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
+        
+        await _pubSubAckCollection.DeleteManyAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
 
     public async Task<bool> ExistAckAsync(string hub, string connectionId, string ackId)
