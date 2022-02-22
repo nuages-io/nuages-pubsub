@@ -1,7 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
 using NLog.Web;
 
 namespace Nuages.PubSub.API;
+// ReSharper disable once UnusedType.Global
 public class LambdaEntryPoint :
     Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
 {

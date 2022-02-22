@@ -5,20 +5,18 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Nuages.PubSub.Storage.EntityFramework;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests;
+namespace NUages.PubSub.Storage.EntityFramework.Tests.MySql;
 
 public class MySqlPubSubContext : PubSubDbContext
 {
-
     public MySqlPubSubContext(DbContextOptions context) : base(context)
     {
     }
 }
 
+// ReSharper disable once UnusedType.Global
 public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSubContext>
 {
-    
-    
     public MySqlPubSubContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()

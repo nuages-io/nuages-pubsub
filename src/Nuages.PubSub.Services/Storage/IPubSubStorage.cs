@@ -36,10 +36,9 @@ public interface IPubSubStorage
     Task<bool> ExistAckAsync(string hub, string connectionId, string ackId);
     Task InsertAckAsync(string hub, string connectionId, string ackId);
 
-
     Task<bool> IsConnectionInGroup(string hub, string group, string connectionId);
 
-    void DeleteAll();
+    void TruncateAllData();
     void Initialize();
     
 }

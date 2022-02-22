@@ -331,7 +331,7 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     }
     
     [ExcludeFromCodeCoverage]
-    public void DeleteAll()
+    public void TruncateAllData()
     {
         //Not Required
     }

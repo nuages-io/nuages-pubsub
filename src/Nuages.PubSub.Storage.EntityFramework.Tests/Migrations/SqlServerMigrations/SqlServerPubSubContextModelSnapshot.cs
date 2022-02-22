@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NUages.PubSub.Storage.EntityFramework.Tests.SqlServer;
+// ReSharper disable All
 
 #nullable disable
 

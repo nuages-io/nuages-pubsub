@@ -41,7 +41,7 @@ public class TestDynamoDbPubSubStorage_Integration
         _pubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
         
         
-        _pubSubStorage.DeleteAll();
+        _pubSubStorage.TruncateAllData();
     }
     
     [Fact]

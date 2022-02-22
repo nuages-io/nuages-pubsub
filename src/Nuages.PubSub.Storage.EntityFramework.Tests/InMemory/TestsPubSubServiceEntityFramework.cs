@@ -13,10 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Services.Tests;
-using Nuages.PubSub.Storage.EntityFramework;
 using Xunit;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests;
+namespace Nuages.PubSub.Storage.EntityFramework.Tests.InMemory;
 
 public class TestsPubSubServiceEntityFramework
 {
@@ -262,7 +261,7 @@ public class TestsPubSubServiceEntityFramework
         {
             ackId = null,
             type = "message",
-            @group = _group
+            group = _group
         };
 
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
@@ -281,7 +280,7 @@ public class TestsPubSubServiceEntityFramework
         {
             ackId = null,
             type = "message",
-            @group = _group
+            group = _group
         };
 
         await _pubSubService.AddConnectionToGroupAsync(_hub, _group, _connectionId);
@@ -300,7 +299,7 @@ public class TestsPubSubServiceEntityFramework
         {
             ackId = null,
             type = "message",
-            @group = _group
+            group = _group
         };
         
         await _pubSubService.SendToGroupAsync(_hub, _group, message);

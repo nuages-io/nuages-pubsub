@@ -70,8 +70,8 @@ public partial class PubSubService : IPubSubService
     {
         await _pubSubStorage.CreateConnectionAsync(hub, connectionid, userId, expiresAfterSeconds);
 
-        var groups =  _pubSubStorage.GetGroupsForUser(hub, userId);
-        await foreach (var g in groups)
+        var groups =  await _pubSubStorage.GetGroupsForUser(hub, userId).ToListAsync();
+        foreach (var g in groups)
         {
             await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid);
         }
@@ -121,7 +121,7 @@ public partial class PubSubService : IPubSubService
         Console.WriteLine($"_pubSubOptions.Uri {_pubSubOptions.Uri}");
         
         using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
-        
+
         await foreach (var connectionId in connectionIds)
         {
             var postConnectionRequest = new PostToConnectionRequest
@@ -160,7 +160,9 @@ public partial class PubSubService : IPubSubService
     {
         var api = CreateApiGateway(_pubSubOptions.Uri!);
 
-        await foreach (var connectionId in connectionIds)
+        var ids = await connectionIds.ToListAsync();
+        
+        foreach (var connectionId in ids)
         {
             try
             {
@@ -176,6 +178,7 @@ public partial class PubSubService : IPubSubService
 
             await _pubSubStorage.DeleteConnectionAsync(hub, connectionId);
         }
+        
     }
     
     public async Task<bool> CreateAckAsync(string hub, string connectionId, string? ackId)

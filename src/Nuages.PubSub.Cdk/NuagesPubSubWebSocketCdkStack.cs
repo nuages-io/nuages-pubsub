@@ -3,7 +3,6 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
-using Amazon.CDK.AWS.RDS;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
 

@@ -357,7 +357,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     }
 
     [ExcludeFromCodeCoverage]
-    public void DeleteAll()
+    public void TruncateAllData()
     {
         var groupConnectionToDelete = _context.ScanAsync<PubSubGroupConnection>(new List<ScanCondition>(), GetOperationConfig())
             .GetRemainingAsync().Result;

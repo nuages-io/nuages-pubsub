@@ -15,10 +15,9 @@ public class SqlServerPubSubContext : PubSubDbContext
     }
 }
 
+// ReSharper disable once UnusedType.Global
 public class SqlServerPubSubContextFactory : IDesignTimeDbContextFactory<SqlServerPubSubContext>
 {
-   
-    
     public SqlServerPubSubContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()

@@ -84,7 +84,7 @@ public abstract class PubSubStorgeBase<T> where T : IPubSubConnection, new()
     
     protected async Task AddConnectionToGroupFromUserGroups(string hub, string group, string userId)
     {
-        var connections = await GetConnectionsForUserAsync(hub, userId).ToListAsync(); 
+        var connections =  await GetConnectionsForUserAsync(hub, userId).ToListAsync();
         
         foreach (var conn in connections)
         {

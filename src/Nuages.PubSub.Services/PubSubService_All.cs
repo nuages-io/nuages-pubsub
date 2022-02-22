@@ -27,7 +27,7 @@ public partial class PubSubService
     
     public async Task CloseAllConnectionsAsync(string hub)
     {
-        var connections = _pubSubStorage.GetAllConnectionAsync(hub);
+        var connections =  _pubSubStorage.GetAllConnectionAsync(hub);
 
         await CloseConnectionsAsync(hub, connections.Select(c => c.ConnectionId));
     }

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.EntityFramework.DataModel;
 
@@ -59,8 +60,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public override async Task<IPubSubConnection?> GetConnectionAsync(string hub, string connectionId)
     {
-        var connection = _context.Connections.SingleOrDefault(c => c.Hub == hub && c.ConnectionId == connectionId);
-        return await Task.FromResult(connection);
+        return await _context.Connections.SingleOrDefaultAsync(c => c.Hub == hub && c.ConnectionId == connectionId);
     }
 
     public async IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group)
@@ -230,7 +230,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
     }
 
     [ExcludeFromCodeCoverage]
-    public void DeleteAll()
+    public void TruncateAllData()
     {
         _context.Database.EnsureDeleted();
     }

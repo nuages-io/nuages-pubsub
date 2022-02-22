@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NUages.PubSub.Storage.EntityFramework.Tests;
+using NUages.PubSub.Storage.EntityFramework.Tests.MySql;
 
 #nullable disable
 
