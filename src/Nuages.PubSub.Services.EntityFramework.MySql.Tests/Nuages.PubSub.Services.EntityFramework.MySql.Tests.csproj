@@ -28,11 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="appsettings.local.json">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </Content>
+        <None Remove="appsettings.local.json" />
+        <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.local.json')" />
     </ItemGroup>
 
 </Project>

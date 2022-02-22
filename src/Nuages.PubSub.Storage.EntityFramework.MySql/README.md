@@ -1,0 +1,1 @@
+Nuages.PubSub.Storage.EntityFramework.MySql

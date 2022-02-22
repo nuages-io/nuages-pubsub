@@ -5,6 +5,16 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <OutputType>Library</OutputType>
+
+        <Title>Nuages.PubSub.Storag.EntityFramework.MySql</Title>
+        <Authors>Nuages.io</Authors>
+        <Description>MySql storage support for Nuages.PubSub</Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>nuages.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,5 +33,19 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+
+        <None Include="../../LICENSE">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="../../nuages.png">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+
+    </ItemGroup>
+    
 
 </Project>

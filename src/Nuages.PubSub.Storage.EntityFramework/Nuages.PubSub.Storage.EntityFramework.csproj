@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <Title>Nuages.PubSub.Storag.DynamoDb</Title>
+        <Title>Nuages.PubSub.Storage.EntityFramework</Title>
         <Authors>Nuages.io</Authors>
         <Description>EntityFramwork storage support for Nuages.PubSub</Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
