@@ -5,9 +5,9 @@ using Nuages.PubSub.Storage.EntityFramework;
 namespace NUages.PubSub.Storage.EntityFramework.Tests.InMemory;
 
 // ReSharper disable once UnusedType.Global
-public class TestPubSubStorageInMemory : TestPubSubStorageBase
+public class TestsPubSubStorageInMemory : TestPubSubStorageBase
 {
-    public TestPubSubStorageInMemory()
+    public TestsPubSubStorageInMemory()
     {
         var contextOptions = new DbContextOptionsBuilder<PubSubDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
