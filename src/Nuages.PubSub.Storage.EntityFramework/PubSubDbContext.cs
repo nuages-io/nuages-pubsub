@@ -6,7 +6,7 @@ using Nuages.PubSub.Storage.EntityFramework.DataModel;
 
 namespace Nuages.PubSub.Storage.EntityFramework;
 
-public class PubSubDbContext : DbContext
+public abstract class PubSubDbContext : DbContext
 {
     public DbSet<PubSubAck> Acks { get; set; }
     public DbSet<PubSubConnection> Connections { get; set; }
@@ -40,11 +40,31 @@ public class PubSubDbContext : DbContext
         modelBuilder.Entity<PubSubConnection>()
             .HasKey(c => new { c.Hub, c.ConnectionId });
         
+        modelBuilder.Entity<PubSubConnection>()
+            .HasIndex(c => new { c.Hub });
+        
+        modelBuilder.Entity<PubSubConnection>()
+            .HasIndex(c => new { c.Hub, c.UserId });
+        
         modelBuilder.Entity<PubSubGroupConnection>()
             .HasKey(c => new { c.Hub, c.Group, c.ConnectionId });
+        
+        modelBuilder.Entity<PubSubGroupConnection>()
+            .HasIndex(c => new { c.Hub, c.Group });
+
         
         modelBuilder.Entity<PubSubGroupUser>()
             .HasKey(c => new { c.Hub, c.Group, c.UserId });
         
+        modelBuilder.Entity<PubSubGroupUser>()
+            .HasIndex(c => new { c.Hub, c.Group });
+        
+        modelBuilder.Entity<PubSubGroupUser>()
+            .HasIndex(c => new { c.Hub, c.UserId });
+        
     }
+
+    //public abstract Task DeleteAllConnectionsAsync();
+    
+    
 }

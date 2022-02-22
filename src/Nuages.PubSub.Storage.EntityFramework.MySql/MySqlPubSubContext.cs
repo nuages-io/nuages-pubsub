@@ -8,7 +8,9 @@ public class MySqlPubSubContext : PubSubDbContext
 {
     public MySqlPubSubContext(DbContextOptions context) : base(context)
     {
+      
     }
+
 }
 
 // ReSharper disable once UnusedType.Global

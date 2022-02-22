@@ -30,14 +30,14 @@ public class TestsPubSubServiceInMemory : TestsPubSubServiceBase
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
             
-        serviceCollection.AddDbContext<PubSubDbContext>(options =>
+        serviceCollection.AddDbContext<InMemoryPubSubDbContext>(options =>
         {
             options.UseInMemoryDatabase("PubSubDbContext");
         });
         
         serviceCollection
             .AddPubSubService(configuration)
-            .AddPubSubEntityFrameworkStorage<PubSubDbContext>();
+            .AddPubSubEntityFrameworkStorage<InMemoryPubSubDbContext>();
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();

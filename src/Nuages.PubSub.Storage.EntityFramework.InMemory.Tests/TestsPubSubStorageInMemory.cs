@@ -13,9 +13,9 @@ public class TestsPubSubStorageInMemory : TestPubSubStorageBase
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        var context = new PubSubDbContext(contextOptions);
+        var context = new InMemoryPubSubDbContext(contextOptions);
         
-        PubSubStorage = new PubSubStorageEntityFramework<PubSubDbContext>(context);
+        PubSubStorage = new PubSubStorageEntityFramework<InMemoryPubSubDbContext>(context);
         Hub = "Hub";
         Sub = "sub-test";
         

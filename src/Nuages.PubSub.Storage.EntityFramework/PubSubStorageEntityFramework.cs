@@ -8,7 +8,7 @@ namespace Nuages.PubSub.Storage.EntityFramework;
 public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
     where T : PubSubDbContext
 {
-    private readonly PubSubDbContext _context;
+    private readonly T _context;
 
     public PubSubStorageEntityFramework(T context)
     {
