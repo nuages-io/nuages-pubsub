@@ -38,9 +38,12 @@ jobs:
     #  run: dotnet test Nuages.PubSub.Services.Tests/Nuages.PubSub.Services.Tests.csproj -c RELEASE
     - name: Pack
       run: |
+        dotnet pack Nuages.PubSub.Storage/Nuages.PubSub.Storage.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Storage.Mongo/Nuages.PubSub.Storage.Mongo.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Storage.DynamoDb/Nuages.PubSub.Storage.DynamoDb.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Storage.EntityFramework/Nuages.PubSub.Storage.EntityFramework.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
+        dotnet pack Nuages.PubSub.Storage.EntityFramework.SqlServer/Nuages.PubSub.Storage.EntityFramework.SqlServer.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
+        dotnet pack Nuages.PubSub.Storage.EntityFramework.MySql/Nuages.PubSub.Storage.EntityFramework.MySql.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Services/Nuages.PubSub.Services.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.WebSocket.Endpoints/Nuages.PubSub.WebSocket.Endpoints.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Cdk/Nuages.PubSub.Cdk.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
