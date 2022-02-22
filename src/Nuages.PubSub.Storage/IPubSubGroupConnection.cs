@@ -1,4 +1,4 @@
-namespace Nuages.PubSub.Services.Storage;
+namespace Nuages.PubSub.Storage;
 
 public interface IPubSubGroupConnection
 {

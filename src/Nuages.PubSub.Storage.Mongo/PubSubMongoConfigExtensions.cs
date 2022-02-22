@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Services.Storage;
 
 namespace Nuages.PubSub.Storage.Mongo;
 

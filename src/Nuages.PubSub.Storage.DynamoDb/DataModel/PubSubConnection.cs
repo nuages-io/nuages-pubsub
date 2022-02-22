@@ -1,5 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
-using Nuages.PubSub.Services.Storage;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Nuages.PubSub.Storage.DynamoDb.DataModel;

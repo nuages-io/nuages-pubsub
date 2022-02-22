@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Services.Storage;
 using Xunit;
 
 namespace Nuages.PubSub.Storage.DynamoDb.Tests;

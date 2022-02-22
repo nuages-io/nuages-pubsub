@@ -1,11 +1,8 @@
-using System;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-using Nuages.PubSub.Storage.EntityFramework;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.MySql;
+namespace Nuages.PubSub.Storage.EntityFramework.MySql;
 
 public class MySqlPubSubContext : PubSubDbContext
 {
@@ -15,6 +12,7 @@ public class MySqlPubSubContext : PubSubDbContext
 }
 
 // ReSharper disable once UnusedType.Global
+[ExcludeFromCodeCoverage]
 public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSubContext>
 {
     public MySqlPubSubContext CreateDbContext(string[] args)

@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using Nuages.PubSub.Services.Storage;
 
 namespace Nuages.PubSub.Storage.EntityFramework.DataModel;
 

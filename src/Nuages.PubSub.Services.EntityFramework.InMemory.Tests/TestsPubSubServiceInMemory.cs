@@ -1,23 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Amazon.ApiGatewayManagementApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Nuages.PubSub.Services;
 using Nuages.PubSub.Services.Tests;
-using NUages.PubSub.Storage.EntityFramework.Tests;
-using Xunit;
+using Nuages.PubSub.Storage.EntityFramework;
 
-namespace Nuages.PubSub.Storage.EntityFramework.Tests.InMemory;
+namespace Nuages.PubSub.Services.EntityFramework.InMemory.Tests;
 
+// ReSharper disable once UnusedType.Global
 public class TestsPubSubServiceInMemory : TestsPubSubServiceBase
 {
 
@@ -56,13 +49,13 @@ public class TestsPubSubServiceInMemory : TestsPubSubServiceBase
         Task.Run(() => PubSubService.ConnectAsync(Hub, ConnectionId, UserId, 60)).Wait();
     }
 
-    private FakeApiGateway GetApiGateway()
-    {
-        var gatewayProvider = ServiceProvider.GetRequiredService<IAmazonApiGatewayManagementApiClientProvider>();
-        var apiGateWay = gatewayProvider.Create(string.Empty, string.Empty);
-
-        return (apiGateWay as FakeApiGateway)!;
-    }
+    // private FakeApiGateway GetApiGateway()
+    // {
+    //     var gatewayProvider = ServiceProvider.GetRequiredService<IAmazonApiGatewayManagementApiClientProvider>();
+    //     var apiGateWay = gatewayProvider.Create(string.Empty, string.Empty);
+    //
+    //     return (apiGateWay as FakeApiGateway)!;
+    // }
     //
     // [Fact]
     // public async Task ShouldCloseConnectionAsync()

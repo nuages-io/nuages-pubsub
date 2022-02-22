@@ -5,15 +5,15 @@ using Amazon.ApiGatewayManagementApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.Services;
-using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Services.Tests;
+using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.EntityFramework;
+using Nuages.PubSub.Storage.EntityFramework.MySql;
 using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.MySql;
+namespace Nuages.PubSub.Services.MySql.Tests;
 
 [Collection("MySql")]
 // ReSharper disable once UnusedType.Global

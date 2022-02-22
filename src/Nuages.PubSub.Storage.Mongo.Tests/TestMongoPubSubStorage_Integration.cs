@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Services.Storage;
 using Xunit;
 
 namespace Nuages.PubSub.Storage.Mongo.Tests;

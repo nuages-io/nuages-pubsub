@@ -11,6 +11,7 @@ using Nuages.PubSub.Storage.Mongo;
 
 namespace Nuages.PubSub.Services.Mongo.Tests;
 
+// ReSharper disable once UnusedType.Global
 public class TestsPubSubServiceMongo : TestsPubSubServiceBase, IDisposable
 {
    
@@ -59,13 +60,13 @@ public class TestsPubSubServiceMongo : TestsPubSubServiceBase, IDisposable
         Task.Run(() => PubSubService.ConnectAsync(Hub, ConnectionId, UserId, 60)).Wait();
     }
 
-    private FakeApiGateway GetApiGateway()
-    {
-        var gatewayProvider = ServiceProvider.GetRequiredService<IAmazonApiGatewayManagementApiClientProvider>();
-        var apiGateWay = gatewayProvider.Create(string.Empty, string.Empty);
-
-        return (apiGateWay as FakeApiGateway)!;
-    }
+    // private FakeApiGateway GetApiGateway()
+    // {
+    //     var gatewayProvider = ServiceProvider.GetRequiredService<IAmazonApiGatewayManagementApiClientProvider>();
+    //     var apiGateWay = gatewayProvider.Create(string.Empty, string.Empty);
+    //
+    //     return (apiGateWay as FakeApiGateway)!;
+    // }
     
 
     public void Dispose()

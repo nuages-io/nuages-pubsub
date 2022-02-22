@@ -1,8 +1,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Nuages.PubSub.Storage.EntityFramework;
+using Nuages.PubSub.Storage.Tests;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.InMemory;
+namespace Nuages.PubSub.Storage.EntityFramework.Tests;
 
 // ReSharper disable once UnusedType.Global
 public class TestsPubSubStorageInMemory : TestPubSubStorageBase

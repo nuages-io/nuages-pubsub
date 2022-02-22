@@ -28,17 +28,20 @@ public class Api
     public string ApiKey { get; set; } = "";
 }
 
+[ExcludeFromCodeCoverage]
 public class Env
 {
     public EnvData Data { get; set; } = new();
     public EnvPuSub PubSub { get; set; } = new();
 }
 
+[ExcludeFromCodeCoverage]
 public class EnvData
 {
     public bool CreateDynamoDbTables { get; set; } = true;
 }
 
+[ExcludeFromCodeCoverage]
 public class EnvPuSub
 {
     public string? Audience { get; set; }

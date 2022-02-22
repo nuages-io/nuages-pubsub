@@ -223,7 +223,7 @@ public abstract class TestsPubSubServiceBase
         {
             ackId = null,
             type = "message",
-            @group = Group
+            group = Group
         };
 
         await PubSubService.AddConnectionToGroupAsync(Hub, Group, ConnectionId);
@@ -242,7 +242,7 @@ public abstract class TestsPubSubServiceBase
         {
             ackId = null,
             type = "message",
-            @group = Group
+            group = Group
         };
 
         await PubSubService.AddConnectionToGroupAsync(Hub, Group, ConnectionId);
@@ -261,7 +261,7 @@ public abstract class TestsPubSubServiceBase
         {
             ackId = null,
             type = "message",
-            @group = Group
+            group = Group
         };
         
         await PubSubService.SendToGroupAsync(Hub, Group, message);

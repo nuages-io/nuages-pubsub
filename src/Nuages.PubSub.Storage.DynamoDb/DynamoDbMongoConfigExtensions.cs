@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Services.Storage;
 
 namespace Nuages.PubSub.Storage.DynamoDb;
 

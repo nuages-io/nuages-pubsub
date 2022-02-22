@@ -1,5 +1,5 @@
 // ReSharper disable UnusedMemberInSuper.Global
-namespace Nuages.PubSub.Services.Storage;
+namespace Nuages.PubSub.Storage;
 
 public interface IPubSubConnection
 {

@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.EntityFramework.DataModel;
 
 namespace Nuages.PubSub.Storage.EntityFramework;

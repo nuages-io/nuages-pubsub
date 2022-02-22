@@ -5,14 +5,13 @@ using Amazon.ApiGatewayManagementApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nuages.PubSub.Services;
-using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Services.Tests;
+using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.EntityFramework;
 using Nuages.PubSub.Storage.EntityFramework.SqlServer;
 using Xunit;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.SqlServer;
+namespace Nuages.PubSub.Services.EntityFramework.SqlServer.Tests;
 
 [Collection("SqlServer")]
 // ReSharper disable once UnusedType.Global

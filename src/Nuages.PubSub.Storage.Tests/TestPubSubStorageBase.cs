@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Nuages.PubSub.Services.Storage;
 using Xunit;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests;
+namespace Nuages.PubSub.Storage.Tests;
 
 public abstract class TestPubSubStorageBase
 {

@@ -2,8 +2,7 @@ using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NUages.PubSub.Storage.EntityFramework.Tests;
-using NUages.PubSub.Storage.EntityFramework.Tests.MySql;
+using Nuages.PubSub.Storage.Tests;
 using Xunit;
 
 namespace Nuages.PubSub.Storage.EntityFramework.MySql.Tests;

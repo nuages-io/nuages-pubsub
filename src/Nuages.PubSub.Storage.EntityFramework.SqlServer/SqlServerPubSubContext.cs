@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -12,6 +13,7 @@ public class SqlServerPubSubContext : PubSubDbContext
 }
 
 // ReSharper disable once UnusedType.Global
+[ExcludeFromCodeCoverage]
 public class SqlServerPubSubContextFactory : IDesignTimeDbContextFactory<SqlServerPubSubContext>
 {
     public SqlServerPubSubContext CreateDbContext(string[] args)

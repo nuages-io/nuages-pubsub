@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+
+        <RootNamespace>Nuages.PubSub.Services.MySql.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,9 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.SqlServer\Nuages.PubSub.Storage.EntityFramework.SqlServer.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.InMemory.Tests\Nuages.PubSub.Storage.EntityFramework.InMemory.Tests.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Storage.Tests\Nuages.PubSub.Storage.Tests.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Services.Tests\Nuages.PubSub.Services.Tests.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.MySql\Nuages.PubSub.Storage.EntityFramework.MySql.csproj" />
     </ItemGroup>
 
     <ItemGroup>

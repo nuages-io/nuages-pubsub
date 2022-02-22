@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NUages.PubSub.Storage.EntityFramework.Tests;
+using Nuages.PubSub.Storage.Tests;
 using Xunit;
 
 namespace Nuages.PubSub.Storage.EntityFramework.SqlServer.Tests;
