@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NUages.PubSub.Storage.EntityFramework.Tests.SqlServer;
+using Nuages.PubSub.Storage.EntityFramework.SqlServer;
 
 #nullable disable
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.Migrations.SqlServerMigrations
+namespace Nuages.PubSub.Storage.EntityFramework.SqlServer.Migrations
 {
     [DbContext(typeof(SqlServerPubSubContext))]
-    [Migration("20220222022238_InitialCreate")]
+    [Migration("20220222143812_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -3,12 +3,11 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NUages.PubSub.Storage.EntityFramework.Tests;
 using NUages.PubSub.Storage.EntityFramework.Tests.MySql;
 
 #nullable disable
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.Migrations.MySqlMigrations
+namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
 {
     [DbContext(typeof(MySqlPubSubContext))]
     partial class MySqlPubSubContextModelSnapshot : ModelSnapshot

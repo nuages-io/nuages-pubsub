@@ -1,2 +1,0 @@
-dotnet ef migrations add InitialCreate --context MySqlPubSubContext --output-dir Migrations/MySqlMigrations
-dotnet ef migrations add InitialCreate --context SqlServerPubSubContext --output-dir Migrations/SqlServerMigrations

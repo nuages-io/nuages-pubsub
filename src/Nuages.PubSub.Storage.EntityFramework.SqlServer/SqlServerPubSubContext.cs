@@ -1,11 +1,7 @@
-using System;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-using Nuages.PubSub.Storage.EntityFramework;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.SqlServer;
+namespace Nuages.PubSub.Storage.EntityFramework.SqlServer;
 
 public class SqlServerPubSubContext : PubSubDbContext
 {

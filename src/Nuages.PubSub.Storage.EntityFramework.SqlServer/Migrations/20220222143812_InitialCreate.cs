@@ -1,10 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-// ReSharper disable All
 
 #nullable disable
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.Migrations.SqlServerMigrations
+namespace Nuages.PubSub.Storage.EntityFramework.SqlServer.Migrations
 {
     public partial class InitialCreate : Migration
     {

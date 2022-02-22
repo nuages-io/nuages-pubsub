@@ -2,33 +2,36 @@ using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Nuages.PubSub.Storage.EntityFramework;
+using NUages.PubSub.Storage.EntityFramework.Tests;
+using NUages.PubSub.Storage.EntityFramework.Tests.MySql;
 using Xunit;
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.SqlServer;
+namespace Nuages.PubSub.Storage.EntityFramework.MySql.Tests;
 
-[Collection("SqlServer")]
+[Collection("MySql")]
 // ReSharper disable once UnusedType.Global
-public class TestsPubSubStorageSqlServer : TestPubSubStorageBase
+public class TestsPubSubStorageMySql : TestPubSubStorageBase
 {
-    public TestsPubSubStorageSqlServer()
+    public TestsPubSubStorageMySql()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 
-        var connectionString = configuration["ConnectionStrings:SqlServer"];
+        var connectionString = configuration["ConnectionStrings:MySql"];
+
+        var serverVersion = ServerVersion.AutoDetect(connectionString);
 
         var contextOptions = new DbContextOptionsBuilder<PubSubDbContext>()
-            .UseSqlServer(connectionString)
+            .UseMySql(connectionString, serverVersion)
             .Options;
 
-        var context = new SqlServerPubSubContext(contextOptions);
+        var context = new MySqlPubSubContext(contextOptions);
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
         
-        PubSubStorage = new PubSubStorageEntityFramework<SqlServerPubSubContext>(context);
+        PubSubStorage = new PubSubStorageEntityFramework<MySqlPubSubContext>(context);
         Hub = "Hub";
         Sub = "sub-test";
     }

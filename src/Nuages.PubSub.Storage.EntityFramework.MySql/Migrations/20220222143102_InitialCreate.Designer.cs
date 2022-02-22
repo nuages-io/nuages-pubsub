@@ -4,15 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NUages.PubSub.Storage.EntityFramework.Tests;
 using NUages.PubSub.Storage.EntityFramework.Tests.MySql;
 
 #nullable disable
 
-namespace NUages.PubSub.Storage.EntityFramework.Tests.Migrations.MySqlMigrations
+namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
 {
     [DbContext(typeof(MySqlPubSubContext))]
-    [Migration("20220222010421_InitialCreate")]
+    [Migration("20220222143102_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
