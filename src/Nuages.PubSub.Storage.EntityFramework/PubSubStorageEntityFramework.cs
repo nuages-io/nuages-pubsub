@@ -104,7 +104,6 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         {
             var connection = new PubSubGroupConnection
             {
-                Id = Guid.NewGuid().ToString(),
                 Group = group,
                 Hub = hub,
                 ConnectionId = connectionId,
@@ -145,7 +144,6 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         {
             var userConnection = new PubSubGroupUser
             {
-                Id = Guid.NewGuid().ToString(),
                 UserId = userId,
                 Group = group,
                 Hub = hub,
@@ -183,7 +181,6 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         await Task.Run(() =>
         {
             var conn = (PubSubConnection)connection;
-            conn.Id = Guid.NewGuid().ToString();
             _context.Connections.Add(conn);
 
             _context.SaveChanges();
@@ -212,7 +209,6 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         {
             var pubSubAck = new PubSubAck
             {
-                Id = Guid.NewGuid().ToString(),
                 Hub = hub,
                 ConnectionId = connectionId,
                 AckId = ackId

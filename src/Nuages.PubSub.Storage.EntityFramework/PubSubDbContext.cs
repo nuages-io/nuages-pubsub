@@ -33,5 +33,18 @@ public class PubSubDbContext : DbContext
                 v => v.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList())
             .Metadata
             .SetValueComparer(valueComparer);
+        
+        modelBuilder.Entity<PubSubAck>()
+            .HasKey(c => new { c.Hub, c.ConnectionId, c.AckId });
+        
+        modelBuilder.Entity<PubSubConnection>()
+            .HasKey(c => new { c.Hub, c.ConnectionId });
+        
+        modelBuilder.Entity<PubSubGroupConnection>()
+            .HasKey(c => new { c.Hub, c.Group, c.ConnectionId });
+        
+        modelBuilder.Entity<PubSubGroupUser>()
+            .HasKey(c => new { c.Hub, c.Group, c.UserId });
+        
     }
 }

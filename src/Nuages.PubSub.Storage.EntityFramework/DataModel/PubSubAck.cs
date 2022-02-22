@@ -1,15 +1,13 @@
-
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Nuages.PubSub.Storage.EntityFramework.DataModel;
 
-public class PubSubAck 
+public class PubSubAck
 {
-    [Key]
-    public string Id { get; set; } = "";
+    public string Hub { [ExcludeFromCodeCoverage] get; set; } = "";
 
-    public string Hub { get; set; } = "";
-    public string ConnectionId { get; set; } = "";
-    public string AckId { get; set; } = "";
+    public string ConnectionId { [ExcludeFromCodeCoverage] get; set; } = "";
 
+    public string AckId { [ExcludeFromCodeCoverage] get; set; } = "";
 }

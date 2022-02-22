@@ -2,22 +2,19 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.ApiGatewayManagementApi;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services.Tests;
 using Nuages.PubSub.Storage;
-using Nuages.PubSub.Storage.EntityFramework;
-using Nuages.PubSub.Storage.EntityFramework.SqlServer;
-using Xunit;
+using Nuages.PubSub.Storage.DynamoDb;
 
-namespace Nuages.PubSub.Services.EntityFramework.SqlServer.Tests;
+namespace Nuages.PubSub.Services.DynamoDb.Tests;
 
-[Collection("SqlServer")]
 // ReSharper disable once UnusedType.Global
-public class TestsPubSubServiceSqlServer : TestsPubSubServiceBase
+public class TestsPubSubServiceDynamoDb : TestsPubSubServiceBase
 {
-    public TestsPubSubServiceSqlServer()
+   
+    public TestsPubSubServiceDynamoDb()
     {
         Hub = "Hub";
         Group = "Groupe1";
@@ -26,28 +23,19 @@ public class TestsPubSubServiceSqlServer : TestsPubSubServiceBase
         
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
-            .AddJsonFile("appsettings.local.json", true)
+            .AddJsonFile("appsettings.local.json", false)
             .Build();
 
         var serviceCollection = new ServiceCollection();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
             
-        serviceCollection.AddDbContext<SqlServerPubSubContext>(builder =>
-        {
-            var connectionString =  configuration["ConnectionStrings:SqlServer"];
-
-            builder
-                .UseSqlServer(connectionString);
-        });
-        
         serviceCollection
             .AddPubSubService(configuration)
-            .AddPubSubEntityFrameworkStorage<SqlServerPubSubContext>();
+            .AddPubSubDynamoDbStorage();
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();
-        
         ServiceProvider = serviceCollection.BuildServiceProvider();
         
         var context = ServiceProvider.GetRequiredService<IPubSubStorage>();
@@ -57,4 +45,5 @@ public class TestsPubSubServiceSqlServer : TestsPubSubServiceBase
         
         Task.Run(() => PubSubService.ConnectAsync(Hub, ConnectionId, UserId)).Wait();
     }
+
 }

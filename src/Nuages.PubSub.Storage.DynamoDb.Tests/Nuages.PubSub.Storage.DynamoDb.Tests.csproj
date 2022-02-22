@@ -27,6 +27,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.Tests\Nuages.PubSub.Storage.Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>

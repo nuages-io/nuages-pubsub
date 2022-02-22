@@ -46,7 +46,7 @@ public class TestsPubSubServiceInMemory : TestsPubSubServiceBase
         
         PubSubService = ServiceProvider.GetRequiredService<IPubSubService>();
         
-        Task.Run(() => PubSubService.ConnectAsync(Hub, ConnectionId, UserId, 60)).Wait();
+        Task.Run(() => PubSubService.ConnectAsync(Hub, ConnectionId, UserId)).Wait();
     }
 
     // private FakeApiGateway GetApiGateway()

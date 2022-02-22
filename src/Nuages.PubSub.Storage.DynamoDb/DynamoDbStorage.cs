@@ -14,6 +14,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
     private readonly PubSubOptions _options;
 
 
+    [ExcludeFromCodeCoverage]
     public void Initialize()
     {
     }

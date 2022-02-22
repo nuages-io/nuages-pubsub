@@ -21,9 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.MySql\Nuages.PubSub.Storage.EntityFramework.MySql.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.InMemory.Tests\Nuages.PubSub.Storage.EntityFramework.InMemory.Tests.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Storage.Tests\Nuages.PubSub.Storage.Tests.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Services.Tests\Nuages.PubSub.Services.Tests.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj" />
     </ItemGroup>
 
     <ItemGroup>

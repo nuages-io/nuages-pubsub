@@ -20,8 +20,6 @@ public abstract class TestsPubSubServiceBase
     protected string UserId = string.Empty;  
     protected ServiceProvider ServiceProvider = null!;   
 
-   
-
     private FakeApiGateway GetApiGateway()
     {
         var gatewayProvider = ServiceProvider.GetRequiredService<IAmazonApiGatewayManagementApiClientProvider>();
@@ -289,7 +287,6 @@ public abstract class TestsPubSubServiceBase
             ackId = null,
             type = "message"
         };
-
         
         await PubSubService.SendToUserAsync(Hub, UserId, message);
         
@@ -322,7 +319,6 @@ public abstract class TestsPubSubServiceBase
             ackId = null,
             type = "message"
         };
-
         
         await PubSubService.SendToAllAsync(Hub, message);
         

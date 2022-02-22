@@ -27,11 +27,11 @@ public class TestsPubSubStorageMySql : TestPubSubStorageBase
             .Options;
 
         var context = new MySqlPubSubContext(contextOptions);
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
         
         PubSubStorage = new PubSubStorageEntityFramework<MySqlPubSubContext>(context);
         Hub = "Hub";
         Sub = "sub-test";
+        PubSubStorage.TruncateAllData();
+        PubSubStorage.Initialize();
     }
 }

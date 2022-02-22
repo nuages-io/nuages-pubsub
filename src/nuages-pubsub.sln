@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.Enti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.EntityFramework.InMemory.Tests", "Nuages.PubSub.Services.EntityFramework.InMemory.Tests\Nuages.PubSub.Services.EntityFramework.InMemory.Tests.csproj", "{E4203E95-551B-4D20-AE97-0AFC756D980E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.DynamoDb.Tests", "Nuages.PubSub.Services.DynamoDb.Tests\Nuages.PubSub.Services.DynamoDb.Tests.csproj", "{D19404F1-404A-4812-B6E5-BDE45791C38A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -182,6 +184,10 @@ Global
 		{E4203E95-551B-4D20-AE97-0AFC756D980E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4203E95-551B-4D20-AE97-0AFC756D980E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4203E95-551B-4D20-AE97-0AFC756D980E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D19404F1-404A-4812-B6E5-BDE45791C38A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D19404F1-404A-4812-B6E5-BDE45791C38A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D19404F1-404A-4812-B6E5-BDE45791C38A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D19404F1-404A-4812-B6E5-BDE45791C38A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B13D2D4B-4BA4-43B0-95FB-BBEE1052531C} = {A0AB3C7E-15A9-4DEC-BCEF-0D2720BECE61}
@@ -209,5 +215,6 @@ Global
 		{7FE78D00-E589-40EB-B2A3-D28D314F4ED8} = {A0AB3C7E-15A9-4DEC-BCEF-0D2720BECE61}
 		{E22B4E9B-D89D-484B-966B-B09940A28458} = {5F8FC58F-1215-4549-ACFC-BF4CFBC0ABA3}
 		{E4203E95-551B-4D20-AE97-0AFC756D980E} = {5F8FC58F-1215-4549-ACFC-BF4CFBC0ABA3}
+		{D19404F1-404A-4812-B6E5-BDE45791C38A} = {5F8FC58F-1215-4549-ACFC-BF4CFBC0ABA3}
 	EndGlobalSection
 EndGlobal

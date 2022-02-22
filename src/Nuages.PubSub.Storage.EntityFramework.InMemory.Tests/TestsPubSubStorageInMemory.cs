@@ -20,5 +20,6 @@ public class TestsPubSubStorageInMemory : TestPubSubStorageBase
         Sub = "sub-test";
         
         PubSubStorage.TruncateAllData();
+        PubSubStorage.Initialize();
     }
 }

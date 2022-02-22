@@ -25,11 +25,10 @@ public class TestsPubSubStorageSqlServer : TestPubSubStorageBase
             .Options;
 
         var context = new SqlServerPubSubContext(contextOptions);
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
-        
         PubSubStorage = new PubSubStorageEntityFramework<SqlServerPubSubContext>(context);
         Hub = "Hub";
         Sub = "sub-test";
+        PubSubStorage.TruncateAllData();
+        PubSubStorage.Initialize();
     }
 }
