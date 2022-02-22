@@ -1,26 +1,41 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.EntityFramework;
 using Xunit;
 
 namespace NUages.PubSub.Storage.EntityFramework.Tests;
 
-public class TestPubSubStorageEntityFramework
+public class TestPubSubStorageMySQL
 {
     private readonly IPubSubStorage _pubSubStorage;
     private readonly string _hub;
     private readonly string _sub;
 
-    public TestPubSubStorageEntityFramework()
+    public TestPubSubStorageMySQL()
     {
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .AddJsonFile("appsettings.local.json", true)
+            .Build();
+
+        var connectionString = configuration["ConnectionStrings:MySql"];
+
+        var serverVersion = ServerVersion.AutoDetect(connectionString);
+
         var contextOptions = new DbContextOptionsBuilder<PubSubDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .UseMySql(connectionString, serverVersion)
             .Options;
+
+        var context = new MySqlPubSubContext(contextOptions);
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
         
-        _pubSubStorage = new PubSubStorageEntityFramework(new PubSubDbContext(contextOptions));
+        _pubSubStorage = new PubSubStorageEntityFramework<MySqlPubSubContext>(context);
         _hub = "Hub";
         _sub = "sub-test";
     }

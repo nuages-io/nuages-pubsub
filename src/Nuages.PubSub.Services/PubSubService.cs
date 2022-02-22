@@ -70,7 +70,7 @@ public partial class PubSubService : IPubSubService
     {
         await _pubSubStorage.CreateConnectionAsync(hub, connectionid, userId, expiresAfterSeconds);
 
-        var groups =   _pubSubStorage.GetGroupsForUser(hub, userId);
+        var groups =  _pubSubStorage.GetGroupsForUser(hub, userId);
         await foreach (var g in groups)
         {
             await  _pubSubStorage.AddConnectionToGroupAsync(hub,g, connectionid);

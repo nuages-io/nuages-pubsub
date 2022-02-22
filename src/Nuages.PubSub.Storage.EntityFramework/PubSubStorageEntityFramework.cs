@@ -5,11 +5,12 @@ using Nuages.PubSub.Storage.EntityFramework.DataModel;
 namespace Nuages.PubSub.Storage.EntityFramework;
 
 
-public class PubSubStorageEntityFramework : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
+public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
+    where T : PubSubDbContext
 {
     private readonly PubSubDbContext _context;
 
-    public PubSubStorageEntityFramework(PubSubDbContext context)
+    public PubSubStorageEntityFramework(T context)
     {
         _context = context;
     }

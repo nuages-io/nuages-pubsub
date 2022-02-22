@@ -50,7 +50,7 @@ public class TestsPubSubServiceEntityFramework
         
         serviceCollection
             .AddPubSubService(configuration)
-            .AddPubSubEntityFrameworkStorage();
+            .AddPubSubEntityFrameworkStorage<PubSubDbContext>();
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();
