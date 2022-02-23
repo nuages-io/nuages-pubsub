@@ -14,7 +14,7 @@ namespace Nuages.PubSub.Cdk.Deploy;
 [ExcludeFromCodeCoverage]
 public class MyNuagesPubSubStack : NuagesPubSubWebSocketCdkStack<PubSubFunction>
 {
-    private ISecurityGroup? _sg;
+    private ISecurityGroup? _proxySg;
     private IDatabaseProxy? _proxy;
 
     // ReSharper disable once UnusedParameter.Local
@@ -24,53 +24,55 @@ public class MyNuagesPubSubStack : NuagesPubSubWebSocketCdkStack<PubSubFunction>
         WebSocketAsset = "./src/Nuages.PubSub.WebSocket.API/bin/Release/net6.0/linux-x64/publish";
         ApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
 
-        ProxyArn = configuration["Env:Data:ProxyArn"];
-        
-        
-       
     }
 
-    IDatabaseProxy Proxy
+    private IDatabaseProxy? Proxy
     {
         get
         {
-            if (_proxy == null)
+            if (!string.IsNullOrEmpty(ProxyArn))
             {
-                _proxy = DatabaseProxy.FromDatabaseProxyAttributes(this, "Proxy", new DatabaseProxyAttributes
+                if (string.IsNullOrEmpty(ProxyName))
+                    throw new Exception("ProxyName is required");
+
+                if (string.IsNullOrEmpty(ProxyEndpoint))
+                    throw new Exception("ProxyEndpoint is required");
+                
+                if (string.IsNullOrEmpty(ProxySecurityGroup))
+                    throw new Exception("ProxySecurityGroup is required");
+                
+                _proxy ??= DatabaseProxy.FromDatabaseProxyAttributes(this, "Proxy", new DatabaseProxyAttributes
                 {
                     DbProxyArn = ProxyArn,
-                    DbProxyName = "mysql-dev",
-                    Endpoint = "mysql-dev.proxy-cprjwrwlrdac.ca-central-1.rds.amazonaws.com",
-                    SecurityGroups = new [] { SG}
+                    DbProxyName = ProxyName,
+                    Endpoint = ProxyEndpoint,
+                    SecurityGroups = new[] { ProxySg }
                 });
             }
-
+           
             return _proxy;
         }
     }
-    
-    ISecurityGroup SG
+
+    private ISecurityGroup ProxySg
     {
         get
         {
-            if (_sg == null)
-                _sg = SecurityGroup.FromLookupById(this, "WebApiSGDefault", "sg-88bf57e1");
+            if (_proxySg == null)
+                _proxySg = SecurityGroup.FromLookupById(this, "WebApiSGDefault", "sg-88bf57e1");
 
-            return _sg;
+            return _proxySg;
         }
     }
 
-    public string ProxyArn { get; set; }
+   
+    
 
     protected override Function CreateWebSocketFunction(string name, string? handler, Role role, CfnApi api)
     {
         var func =  base.CreateWebSocketFunction(name, handler, role, api);
 
-        if (!string.IsNullOrEmpty(ProxyArn))
-        {
-            Proxy.GrantConnect(func,"admin");
-        }
-        
+        Proxy?.GrantConnect(func, ProxyUser);
         
         return func;
     }
@@ -79,11 +81,7 @@ public class MyNuagesPubSubStack : NuagesPubSubWebSocketCdkStack<PubSubFunction>
     {
         var func = base.CreateWebApiFunction(url, role);
 
-        if (!string.IsNullOrEmpty(ProxyArn))
-        {
-
-            Proxy.GrantConnect(func,"admin");
-        }
+        Proxy?.GrantConnect(func,ProxyUser);
         
         return func;
     }

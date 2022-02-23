@@ -37,6 +37,13 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
         {
             builder.AddSystemsManager(configureSource =>
             {
+                configureSource.Path = $"/{name}";
+                configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
+                configureSource.Optional = true;
+            });
+            
+            builder.AddSystemsManager(configureSource =>
+            {
                 configureSource.Path = $"/{name}/WebSocket";
                 configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
                 configureSource.Optional = true;
@@ -85,9 +92,11 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             }
             case "MySql":
             {
+                
                 pubSubBuilder.AddPubSubMySqlStorage(config =>
                 {
-                    var connectionString = configuration["Nuages:SqlServer:ConnectionString"];
+                    var connectionString = configuration["Nuages:MySql:ConnectionString"];
+                    Console.WriteLine("ConnectionString=" + connectionString);
                     var serverVersion = ServerVersion.AutoDetect(connectionString);
                     config.UseMySql(connectionString, serverVersion);
                 });

@@ -20,11 +20,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
     {
         var role = CreateWebApiRole();
 
-        if (string.IsNullOrEmpty(ApiAsset))
-        {
-            throw new Exception("WebApiAsset must be assigned");
-        }
-
         // ReSharper disable once UnusedVariable
         var func = CreateWebApiFunction(url, role);
 
@@ -130,6 +125,11 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
 
     protected virtual Function CreateWebApiFunction(string url, Role role)
     {
+        if (string.IsNullOrEmpty(ApiAsset))
+        {
+            throw new Exception("WebApiAsset must be assigned");
+        }
+        
         var func = new Function(this, "API", new FunctionProps
         {
             FunctionName = MakeId("API"),
@@ -148,7 +148,9 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                 { "Nuages__PubSub__Audience", Audience ?? "" },
                 { "Nuages__PubSub__Secret", Secret ?? "" }
             },
-            Tracing = Tracing.ACTIVE
+            Tracing = Tracing.ACTIVE,
+            Vpc = CurrentVpc,
+            AllowPublicSubnet = true
         });
         return func;
     }

@@ -6,12 +6,14 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql;
 
 public static class PubSubMySqlConfigExtensions
 {
+    // ReSharper disable once UnusedMethodReturnValue.Global
     public static IPubSubBuilder AddPubSubMySqlStorage(this IPubSubBuilder builder,
         Action<DbContextOptionsBuilder>? optionsAction = null)
     { 
         return AddPubSubMySqlStorage<MySqlPubSubDbContext>(builder, optionsAction);
     }
     
+    // ReSharper disable once MemberCanBePrivate.Global
     public static IPubSubBuilder AddPubSubMySqlStorage<T>(this IPubSubBuilder builder,  
         Action<DbContextOptionsBuilder>? optionsAction = null) where T : MySqlPubSubDbContext
     {

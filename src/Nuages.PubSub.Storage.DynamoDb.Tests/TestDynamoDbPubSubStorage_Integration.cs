@@ -1,16 +1,14 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Tests;
-using Xunit;
 
 namespace Nuages.PubSub.Storage.DynamoDb.Tests;
 
 // ReSharper disable once InconsistentNaming
+// ReSharper disable once UnusedType.Global
 public class TestDynamoDbPubSubStorage_Integration : TestPubSubStorageBase
 {
     

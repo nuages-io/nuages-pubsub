@@ -1,17 +1,15 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.Tests;
-using Xunit;
 
 namespace Nuages.PubSub.Storage.Mongo.Tests;
 
+// ReSharper disable once UnusedType.Global
 public class TestMongoPubSubStorage : TestPubSubStorageBase
 {
 

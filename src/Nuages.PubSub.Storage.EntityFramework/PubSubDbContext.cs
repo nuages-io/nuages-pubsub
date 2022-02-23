@@ -12,8 +12,8 @@ public abstract class PubSubDbContext : DbContext
     public DbSet<PubSubConnection> Connections { get; set; }
     public DbSet<PubSubGroupConnection> Groups { get; set; }
     public DbSet<PubSubGroupUser> GroupUsers { get; set; }
-    
-    public PubSubDbContext(DbContextOptions context) : base(context)
+
+    protected PubSubDbContext(DbContextOptions context) : base(context)
     {
     }
 

@@ -33,6 +33,9 @@ public class Startup
 
         var storage = _configuration.GetSection("Nuages:Data:Storage").Value;
 
+        Console.WriteLine("Nuages:Mongo:ConnectionString=" + _configuration["Nuages:Mongo:ConnectionString"]);
+        Console.WriteLine("Nuages:MySql:ConnectionString=" + _configuration["Nuages:MySql:ConnectionString"]);
+        
         switch (storage)
         {
             case "DynamoDb":
@@ -44,8 +47,8 @@ public class Startup
             {
                 pubSubBuilder.AddPubSubMongoStorage(config =>
                 {
-                    config.ConnectionString = _configuration["NuagesMongo:ConnectionString"];
-                    config.DatabaseName = _configuration["NUages:Mongo:DatabaseName"];
+                    config.ConnectionString = _configuration["Nuages:Mongo:ConnectionString"];
+                    config.DatabaseName = _configuration["Nuages:Mongo:DatabaseName"];
                 });
                 break;
             }
@@ -62,7 +65,8 @@ public class Startup
             {
                 pubSubBuilder.AddPubSubMySqlStorage(config =>
                 {
-                    var connectionString = _configuration["Nuages:SqlServer:ConnectionString"];
+                    var connectionString = _configuration["Nuages:MySql:ConnectionString"];
+                   
                     var serverVersion = ServerVersion.AutoDetect(connectionString);
                     config.UseMySql(connectionString, serverVersion);
                 });

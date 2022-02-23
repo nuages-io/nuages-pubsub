@@ -14,10 +14,6 @@ namespace Nuages.PubSub.Services.Mongo.Tests;
 // ReSharper disable once UnusedType.Global
 public class TestsPubSubServiceMongo : TestsPubSubServiceBase
 {
-   
-    private readonly string _dbName;
-    private readonly MongoClient _client;
-
     public TestsPubSubServiceMongo()
     {
         Hub = "Hub";
@@ -49,11 +45,11 @@ public class TestsPubSubServiceMongo : TestsPubSubServiceBase
         var options = ServiceProvider.GetRequiredService<IOptions<PubSubMongoOptions>>().Value;
         
         var connectionString = options.ConnectionString;
-        _dbName = options.DatabaseName;
+        var dbName = options.DatabaseName;
         
-        _client = new MongoClient(connectionString);
+        var client = new MongoClient(connectionString);
         
-        _client.DropDatabase(_dbName);
+        client.DropDatabase(dbName);
         
         PubSubService = ServiceProvider.GetRequiredService<IPubSubService>();
         

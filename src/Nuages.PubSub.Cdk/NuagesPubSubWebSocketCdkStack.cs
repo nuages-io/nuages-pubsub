@@ -1,10 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
+using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
+using CfnRoute = Amazon.CDK.AWS.Apigatewayv2.CfnRoute;
+using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
 
 // ReSharper disable InconsistentNaming
 
@@ -58,6 +61,24 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     
     public string NuagesPubSubRole { get; set; } = "Role";
 
+    protected IVpc? _vpc;
+
+    private IVpc? CurrentVpc
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(VpcId))
+            {
+                _vpc ??= Vpc.FromLookup(this, "Vpc", new VpcLookupOptions
+                {
+                    VpcId = VpcId
+                });
+            }
+
+            return _vpc;
+        }
+    }
+    
     public NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
     {
         
@@ -74,11 +95,27 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextIssuer = "Issuer";
     public const string ContextSecret = "Secret";
 
+    public const string ContextVpcId = "VpcId";
+    
+    public const string ContextProxyArn = "ProxyArn";
+    public const string ContextProxyName = "ProxyName";
+    public const string ContextProxySecurityGroup = "VpcProxySecurityGroupId";
+    public const string ContextProxyEndpoint = "ProxyEndpoint";
+    public const string ContextProxyUser = "ProxyUser";
+    
     public const string ContextCreateDynamoDbTables = "CreateDynamoDbTables";
     
     public string? Issuer { get; set; }
     public string? Audience { get; set; }
     public string? Secret { get; set; }
+    public string? VpcId { get; set; }
+    
+    public string? ProxyArn { get; set; }
+    public string? ProxyName { get; set; }
+    public string? ProxySecurityGroup { get; set; }
+    public string? ProxyEndpoint { get; set; }
+    public string? ProxyUser { get; set; }
+    
     public bool CreateDynamoDbTables { get; set; }
     
     public List<CfnRoute> Routes { get; set; } = new();
@@ -93,25 +130,11 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     {
         NormalizeHandlerName();
         
-        Issuer = Node.TryGetContext(ContextIssuer) != null!
-            ? Node.TryGetContext(ContextIssuer).ToString()
-            : null;
-
-        Audience = Node.TryGetContext(ContextAudience) != null!
-            ? Node.TryGetContext(ContextAudience).ToString()
-            : null;
-
-        Secret = Node.TryGetContext(ContextSecret) != null!
-            ? Node.TryGetContext(ContextSecret).ToString()
-            : null;
-        
-        CreateDynamoDbTables = Node.TryGetContext(ContextCreateDynamoDbTables) == null! || 
-                               Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbTables).ToString());
-
+       
         var role = CreateWebSocketRole();
 
         var api = CreateWebSocketApi();
-
+        
         var onAuthorizeFunction = CreateWebSocketFunction(OnAuthorizeFunctionName, OnAuthrorizeHandler, role, api);
         var authorizer = CreateAuthorizer(api, onAuthorizeFunction);
 
@@ -348,9 +371,10 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                 { "Nuages__PubSub__Audience", Audience ?? "" },
                 { "Nuages__PubSub__Secret", Secret ?? "" }
             },
-            Tracing = Tracing.ACTIVE
+            Tracing = Tracing.ACTIVE,
+            Vpc = CurrentVpc,
+            AllowPublicSubnet = true
         });
-
 
         GrantPermissions(func);
 
@@ -432,6 +456,31 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
+
+        var permissions = new []
+        {
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        };
+        
+        if (CurrentVpc != null)
+        {
+            var p = new []
+            {
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface",
+                "ec2:AssignPrivateIpAddresses",
+                "ec2:UnassignPrivateIpAddresses"
+            };
+
+            permissions = permissions.Union(p).ToArray();
+        }
+        
         return new ManagedPolicy(this, MakeId("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
@@ -441,12 +490,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[]
-                        {
-                            "logs:CreateLogGroup",
-                            "logs:CreateLogStream",
-                            "logs:PutLogEvents"
-                        },
+                        Actions = permissions,
                         Resources = new[] { "*" }
                     })
                 }
@@ -511,17 +555,89 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     
     public void InitializeContextFromOptions(ConfigOptions options)
     {
-        Node.SetContext(ContextDomainName,  options.WebSocket.Domain);
-        Node.SetContext(ContextCertificateArn,options.WebSocket.CertificateArn);
+        if (!string.IsNullOrEmpty(options.WebSocket.Domain))
+            Node.SetContext(ContextDomainName,  options.WebSocket.Domain);
         
-        Node.SetContext(ContextDomainNameApi,  options.Api.Domain);
-        Node.SetContext(ContextCertificateArnApi, options.Api.CertificateArn);
-        Node.SetContext(ContextApiKeyApi, options.Api.ApiKey);
+        if (!string.IsNullOrEmpty(options.WebSocket.CertificateArn))
+            Node.SetContext(ContextCertificateArn,options.WebSocket.CertificateArn);
+        
+        if (!string.IsNullOrEmpty(options.Api.Domain))
+            Node.SetContext(ContextDomainNameApi,  options.Api.Domain);
+        
+        if (!string.IsNullOrEmpty(options.Api.CertificateArn))
+            Node.SetContext(ContextCertificateArnApi, options.Api.CertificateArn);
+        
+        if (!string.IsNullOrEmpty(options.Api.ApiKey))
+            Node.SetContext(ContextApiKeyApi, options.Api.ApiKey);
 
-        Node.SetContext(ContextAudience, options.Env.PubSub.Audience ?? "");
-        Node.SetContext(ContextIssuer, options.Env.PubSub.Issuer ?? "");
-        Node.SetContext(ContextSecret, options.Env.PubSub.Secret ?? "");
+        if (!string.IsNullOrEmpty( options.Env.PubSub.Audience))
+            Node.SetContext(ContextAudience, options.Env.PubSub.Audience);
         
-        Node.SetContext(ContextCreateDynamoDbTables, options.Env.Data.CreateDynamoDbTables.ToString());
+        if (!string.IsNullOrEmpty( options.Env.PubSub.Issuer))
+            Node.SetContext(ContextIssuer, options.Env.PubSub.Issuer);
+        
+        if (!string.IsNullOrEmpty( options.Env.PubSub.Secret))
+            Node.SetContext(ContextSecret, options.Env.PubSub.Secret);
+        
+        if (!string.IsNullOrEmpty( options.VpcId))
+            Node.SetContext(ContextVpcId, options.VpcId);
+        
+        if (!string.IsNullOrEmpty( options.Proxy.Arn))
+            Node.SetContext(ContextProxyArn, options.Proxy.Arn);
+        
+        if (!string.IsNullOrEmpty( options.Proxy.Endpoint))
+            Node.SetContext(ContextProxyEndpoint, options.Proxy.Endpoint);
+        
+        if (!string.IsNullOrEmpty( options.Proxy.SecurityGroup))
+            Node.SetContext(ContextProxySecurityGroup, options.Proxy.SecurityGroup);
+        
+        if (!string.IsNullOrEmpty( options.Proxy.Name))
+            Node.SetContext(ContextProxyName, options.Proxy.Name ?? "");
+        
+        if (!string.IsNullOrEmpty( options.Proxy.UserName))
+            Node.SetContext(ContextProxyUser, options.Proxy.UserName ?? "");
+        
+        if ( options.Env.Data.CreateDynamoDbTables.HasValue)
+            Node.SetContext(ContextCreateDynamoDbTables, options.Env.Data.CreateDynamoDbTables.Value.ToString());
+        
+        Issuer = Node.TryGetContext(ContextIssuer) != null!
+            ? Node.TryGetContext(ContextIssuer).ToString()
+            : null;
+
+        Audience = Node.TryGetContext(ContextAudience) != null!
+            ? Node.TryGetContext(ContextAudience).ToString()
+            : null;
+
+        Secret = Node.TryGetContext(ContextSecret) != null!
+            ? Node.TryGetContext(ContextSecret).ToString()
+            : null;
+        
+        VpcId = Node.TryGetContext(ContextVpcId) != null!
+            ? Node.TryGetContext(ContextVpcId).ToString()
+            : null;
+        
+        ProxyArn = Node.TryGetContext(ContextProxyArn) != null!
+            ? Node.TryGetContext(ContextProxyArn).ToString()
+            : null;
+        
+        ProxyEndpoint = Node.TryGetContext(ContextProxyEndpoint) != null!
+            ? Node.TryGetContext(ContextProxyEndpoint).ToString()
+            : null;
+        
+        ProxyName = Node.TryGetContext(ContextProxyName) != null!
+            ? Node.TryGetContext(ContextProxyName).ToString()
+            : null;
+        
+        ProxyUser = Node.TryGetContext(ContextProxyUser) != null!
+            ? Node.TryGetContext(ContextProxyUser).ToString()
+            : null;
+        
+        ProxySecurityGroup = Node.TryGetContext(ContextProxySecurityGroup) != null!
+            ? Node.TryGetContext(ContextProxySecurityGroup).ToString()
+            : null;
+        
+        CreateDynamoDbTables = Node.TryGetContext(ContextCreateDynamoDbTables) == null! || 
+                               Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbTables).ToString());
+
     }
 }
