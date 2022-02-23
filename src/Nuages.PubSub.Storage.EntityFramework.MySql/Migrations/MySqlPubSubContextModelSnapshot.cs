@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
 {
-    [DbContext(typeof(MySqlPubSubContext))]
+    [DbContext(typeof(MySqlPubSubDbContext))]
     partial class MySqlPubSubContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -24,8 +24,8 @@ public class TestsPubSubStorageSqlServer : TestPubSubStorageBase
             .UseSqlServer(connectionString)
             .Options;
 
-        var context = new SqlServerPubSubContext(contextOptions);
-        PubSubStorage = new PubSubStorageEntityFramework<SqlServerPubSubContext>(context);
+        var context = new SqlServerPubSubDbContext(contextOptions);
+        PubSubStorage = new PubSubStorageEntityFramework<SqlServerPubSubDbContext>(context);
         Hub = "Hub";
         Sub = "sub-test";
         PubSubStorage.TruncateAllData();

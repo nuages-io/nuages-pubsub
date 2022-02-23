@@ -3,9 +3,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
+using Nuages.PubSub.Storage.EntityFramework.MySql;
+using Nuages.PubSub.Storage.EntityFramework.SqlServer;
 using Nuages.PubSub.Storage.Mongo;
 
 namespace Nuages.PubSub.API;
@@ -44,6 +47,26 @@ public class Startup
                     config.ConnectionString = _configuration["NuagesMongo:ConnectionString"];
                     config.DatabaseName = _configuration["NUages:Mongo:DatabaseName"];
                 });
+                break;
+            }
+            case "SqlServer":
+            {
+                pubSubBuilder.AddPubSubSqlServerStorage(config =>
+                {
+                    config.UseSqlServer(_configuration["Nuages:SqlServer:ConnectionString"]);
+                });
+
+                break;
+            }
+            case "MySql":
+            {
+                pubSubBuilder.AddPubSubMySqlStorage(config =>
+                {
+                    var connectionString = _configuration["Nuages:SqlServer:ConnectionString"];
+                    var serverVersion = ServerVersion.AutoDetect(connectionString);
+                    config.UseMySql(connectionString, serverVersion);
+                });
+
                 break;
             }
             default:

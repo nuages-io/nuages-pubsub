@@ -112,25 +112,25 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
         var api = CreateWebSocketApi();
 
-        var onAuthorizeFunction = CreateFunction(OnAuthorizeFunctionName, OnAuthrorizeHandler, role, api);
+        var onAuthorizeFunction = CreateWebSocketFunction(OnAuthorizeFunctionName, OnAuthrorizeHandler, role, api);
         var authorizer = CreateAuthorizer(api, onAuthorizeFunction);
 
-        var onConnectFunction = CreateFunction(OnConnectFunctionName, OnConnectHandler, role, api);
+        var onConnectFunction = CreateWebSocketFunction(OnConnectFunctionName, OnConnectHandler, role, api);
         CreateConnectRoute(api, authorizer, onConnectFunction);
 
-        var onDisconnectFunction = CreateFunction(OnDisconnectFunctionName, OnDisconnectHandler, role, api);
+        var onDisconnectFunction = CreateWebSocketFunction(OnDisconnectFunctionName, OnDisconnectHandler, role, api);
         CreateRoute("Disconnect", "$disconnect", api, onDisconnectFunction);
 
-        var sendFunction = CreateFunction(SendToGroupFunctionName, SendHandler, role, api);
+        var sendFunction = CreateWebSocketFunction(SendToGroupFunctionName, SendHandler, role, api);
         CreateRoute("Send", SendRouteKey, api, sendFunction);
 
-        var echoFunction = CreateFunction(EchoFunctionName, EchoHandler, role, api);
+        var echoFunction = CreateWebSocketFunction(EchoFunctionName, EchoHandler, role, api);
         CreateRoute("Echo", EchoRouteKey, api, echoFunction);
 
-        var joinFunction = CreateFunction(JoinFunctionName, JoinHandler, role, api);
+        var joinFunction = CreateWebSocketFunction(JoinFunctionName, JoinHandler, role, api);
         CreateRoute("Join", JoinRouteKey, api, joinFunction);
 
-        var leaveFunction = CreateFunction(LeaveFunctionName, LeaveHandler, role, api);
+        var leaveFunction = CreateWebSocketFunction(LeaveFunctionName, LeaveHandler, role, api);
         CreateRoute("Leave", LeaveRouteKey, api, leaveFunction);
 
         CreateAdditionalFunctionsAndRoutes(api);
@@ -323,7 +323,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         return api;
     }
 
-    protected virtual Function CreateFunction(string name, string? handler, Role role, CfnApi api)
+    protected virtual Function CreateWebSocketFunction(string name, string? handler, Role role, CfnApi api)
     {
         if (string.IsNullOrEmpty(handler))
             throw new Exception($"Handler for {name} must be set");

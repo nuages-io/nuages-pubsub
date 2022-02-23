@@ -21,13 +21,15 @@
         <Content Include="appsettings.json" CopyToOutputDirectory="Always" />     
     </ItemGroup>
     <ItemGroup>
-        <None Remove="appsettings.prod.json" />
-        <Content Include="appsettings.prod.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.prod.json')" />
+        <None Remove="appsettings.local.json" />
+        <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.local.json')" />
     </ItemGroup>
   
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.Services\Nuages.PubSub.Services.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.DynamoDb\Nuages.PubSub.Storage.DynamoDb.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.MySql\Nuages.PubSub.Storage.EntityFramework.MySql.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.SqlServer\Nuages.PubSub.Storage.EntityFramework.SqlServer.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj" />
     </ItemGroup>
 </Project>

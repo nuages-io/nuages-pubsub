@@ -26,9 +26,9 @@ public class TestsPubSubStorageMySql : TestPubSubStorageBase
             .UseMySql(connectionString, serverVersion)
             .Options;
 
-        var context = new MySqlPubSubContext(contextOptions);
+        var context = new MySqlPubSubDbContext(contextOptions);
         
-        PubSubStorage = new PubSubStorageEntityFramework<MySqlPubSubContext>(context);
+        PubSubStorage = new PubSubStorageEntityFramework<MySqlPubSubDbContext>(context);
         Hub = "Hub";
         Sub = "sub-test";
         PubSubStorage.TruncateAllData();

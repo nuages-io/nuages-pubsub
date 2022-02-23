@@ -10,7 +10,7 @@ using Nuages.PubSub.Storage.EntityFramework.SqlServer;
 
 namespace Nuages.PubSub.Storage.EntityFramework.SqlServer.Migrations
 {
-    [DbContext(typeof(SqlServerPubSubContext))]
+    [DbContext(typeof(SqlServerPubSubDbContext))]
     partial class SqlServerPubSubContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

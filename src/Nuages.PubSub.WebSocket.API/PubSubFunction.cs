@@ -3,10 +3,13 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
+using Nuages.PubSub.Storage.EntityFramework.MySql;
+using Nuages.PubSub.Storage.EntityFramework.SqlServer;
 using Nuages.PubSub.Storage.Mongo;
 using Nuages.PubSub.WebSocket.Endpoints;
 
@@ -69,6 +72,26 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                     config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
                     config.DatabaseName = configuration["Nuages:Mongo:DatabaseName"];
                 });
+                break;
+            }
+            case "SqlServer":
+            {
+                pubSubBuilder.AddPubSubSqlServerStorage(config =>
+                {
+                    config.UseSqlServer(configuration["Nuages:SqlServer:ConnectionString"]);
+                });
+
+                break;
+            }
+            case "MySql":
+            {
+                pubSubBuilder.AddPubSubMySqlStorage(config =>
+                {
+                    var connectionString = configuration["Nuages:SqlServer:ConnectionString"];
+                    var serverVersion = ServerVersion.AutoDetect(connectionString);
+                    config.UseMySql(connectionString, serverVersion);
+                });
+
                 break;
             }
             default:

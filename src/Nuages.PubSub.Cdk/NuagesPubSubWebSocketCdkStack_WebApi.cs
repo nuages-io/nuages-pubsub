@@ -26,26 +26,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         }
 
         // ReSharper disable once UnusedVariable
-        var func = new Function(this, "API", new FunctionProps
-        {
-            FunctionName = MakeId("API"),
-            Code = Code.FromAsset(ApiAsset),
-            Handler = WebApiHandler,
-            Runtime = Runtime.DOTNET_CORE_3_1,
-            Role = role,
-            Timeout = Duration.Seconds(30),
-            MemorySize = 512,
-            Environment = new Dictionary<string, string>
-            {
-                { "Nuages__PubSub__Uri", url },
-                { "Nuages__PubSub__Region", Aws.REGION },
-                { "Nuages__PubSub__StackName", StackName },
-                { "Nuages__PubSub__Issuer", Issuer ?? "" },
-                { "Nuages__PubSub__Audience", Audience ?? "" },
-                { "Nuages__PubSub__Secret", Secret ?? "" }
-            },
-            Tracing = Tracing.ACTIVE
-        });
+        var func = CreateWebApiFunction(url, role);
 
         func.AddEventSource(new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
         {
@@ -145,6 +126,31 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         });
 
         usagePlan.AddApiKey(apiKey);
+    }
+
+    protected virtual Function CreateWebApiFunction(string url, Role role)
+    {
+        var func = new Function(this, "API", new FunctionProps
+        {
+            FunctionName = MakeId("API"),
+            Code = Code.FromAsset(ApiAsset),
+            Handler = WebApiHandler,
+            Runtime = Runtime.DOTNET_CORE_3_1,
+            Role = role,
+            Timeout = Duration.Seconds(30),
+            MemorySize = 512,
+            Environment = new Dictionary<string, string>
+            {
+                { "Nuages__PubSub__Uri", url },
+                { "Nuages__PubSub__Region", Aws.REGION },
+                { "Nuages__PubSub__StackName", StackName },
+                { "Nuages__PubSub__Issuer", Issuer ?? "" },
+                { "Nuages__PubSub__Audience", Audience ?? "" },
+                { "Nuages__PubSub__Secret", Secret ?? "" }
+            },
+            Tracing = Tracing.ACTIVE
+        });
+        return func;
     }
 
     protected virtual Role CreateWebApiRole()

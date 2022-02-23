@@ -1,12 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Nuages.PubSub.Storage.EntityFramework.MySql;
 
-public class MySqlPubSubContext : PubSubDbContext
+public class MySqlPubSubDbContext : PubSubDbContext
 {
-    public MySqlPubSubContext(DbContextOptions context) : base(context)
+    public MySqlPubSubDbContext(DbContextOptions context) : base(context)
     {
       
     }
@@ -15,9 +16,9 @@ public class MySqlPubSubContext : PubSubDbContext
 
 // ReSharper disable once UnusedType.Global
 [ExcludeFromCodeCoverage]
-public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSubContext>
+public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSubDbContext>
 {
-    public MySqlPubSubContext CreateDbContext(string[] args)
+    public MySqlPubSubDbContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
@@ -33,6 +34,6 @@ public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSub
         optionsBuilder
             .UseMySql(connectionString, serverVersion);
 
-        return new MySqlPubSubContext(optionsBuilder.Options);
+        return new MySqlPubSubDbContext(optionsBuilder.Options);
     }
 }

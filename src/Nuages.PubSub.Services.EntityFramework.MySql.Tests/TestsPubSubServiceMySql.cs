@@ -36,7 +36,7 @@ public class TestsPubSubServiceMySql : TestsPubSubServiceBase
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
             
-        serviceCollection.AddDbContext<MySqlPubSubContext>(builder =>
+        serviceCollection.AddDbContext<MySqlPubSubDbContext>(builder =>
         {
             var connectionString =  configuration["ConnectionStrings:MySql"];
 
@@ -49,7 +49,7 @@ public class TestsPubSubServiceMySql : TestsPubSubServiceBase
         
         serviceCollection
             .AddPubSubService(configuration)
-            .AddPubSubEntityFrameworkStorage<MySqlPubSubContext>();
+            .AddPubSubEntityFrameworkStorage<MySqlPubSubDbContext>();
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();

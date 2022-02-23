@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
 {
-    [DbContext(typeof(MySqlPubSubContext))]
+    [DbContext(typeof(MySqlPubSubDbContext))]
     [Migration("20220222143102_InitialCreate")]
     partial class InitialCreate
     {

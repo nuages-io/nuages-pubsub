@@ -33,7 +33,7 @@ public class TestsPubSubServiceSqlServer : TestsPubSubServiceBase
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
             
-        serviceCollection.AddDbContext<SqlServerPubSubContext>(builder =>
+        serviceCollection.AddDbContext<SqlServerPubSubDbContext>(builder =>
         {
             var connectionString =  configuration["ConnectionStrings:SqlServer"];
 
@@ -43,7 +43,7 @@ public class TestsPubSubServiceSqlServer : TestsPubSubServiceBase
         
         serviceCollection
             .AddPubSubService(configuration)
-            .AddPubSubEntityFrameworkStorage<SqlServerPubSubContext>();
+            .AddPubSubEntityFrameworkStorage<SqlServerPubSubDbContext>();
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();
