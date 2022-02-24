@@ -24,7 +24,7 @@ sealed class Program
         
         var app = new App();
         
-        var stack = new MyNuagesPubSubStack(configuration, app, options.StackName, new StackProps
+        var stack = new MyNuagesPubSubStack(app, options.StackName, new StackProps
         {
             Env = new Amazon.CDK.Environment
             {

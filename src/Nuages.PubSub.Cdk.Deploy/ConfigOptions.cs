@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Nuages.PubSub.Cdk;
+namespace Nuages.PubSub.Cdk.Deploy;
 
 [ExcludeFromCodeCoverage]
 public class ConfigOptions
@@ -12,7 +12,7 @@ public class ConfigOptions
     
     public Env Env { get; set; } = new ();
 
-    public Proxy DatabaseProxy { get; set; } = new();
+    public DbProxy DatabaseDbProxy { get; set; } = new();
     public Data Data { get; set; } = new();
     
     public string? VpcId { get; set; }
@@ -36,15 +36,25 @@ public class Api
 [ExcludeFromCodeCoverage]
 public class Env
 {
-    public EnvPuSub PubSub { get; set; } = new();
+    public Auth Auth { get; set; } = new();
+    public ExternalAuth ExternalAuth { get; set; } = new();
 }
 
 [ExcludeFromCodeCoverage]
-public class EnvPuSub
+public class Auth
 {
     public string? Audience { get; set; }
     public string? Issuer { get; set; }
     public string? Secret { get; set; }
+}
+
+[ExcludeFromCodeCoverage]
+public class ExternalAuth
+{
+    public string? ValidIssuers { get; set; } 
+    public string? ValidAudiences { get; set; }
+    public string JsonWebKeySetUrlPath { get; set; } = ".well-known/openid-configuration";
+    public bool DisableSslCheck { get; set; }
 }
 
 [ExcludeFromCodeCoverage]
@@ -58,7 +68,7 @@ public class Data
 }
 
 [ExcludeFromCodeCoverage]
-public class Proxy
+public class DbProxy
 {
     public string? Arn { get; set; }
     public string? Name { get; set; }
