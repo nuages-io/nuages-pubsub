@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
+using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
@@ -20,29 +21,10 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
     {
         var role = CreateWebApiRole();
 
-        // ReSharper disable once UnusedVariable
         var func = CreateWebApiFunction(url, role);
 
-        func.AddEventSource(new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
-        {
-            ApiKeyRequired = true
-        }));
+        AddEventSources(func);
 
-        func.AddEventSource(new ApiEventSource("ANY", "/", new MethodOptions
-        {
-            ApiKeyRequired = true
-        }));
-        
-        func.AddEventSource(new ApiEventSource("ANY", "/swagger/{proxy+}", new MethodOptions
-        {
-            ApiKeyRequired = false
-        }));
-        
-        func.AddEventSource(new ApiEventSource("ANY", "/swagger", new MethodOptions
-        {
-            ApiKeyRequired = false
-        }));
-        
         var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
         
         var domainName = (string)Node.TryGetContext(ContextDomainNameApi);
@@ -123,6 +105,54 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         usagePlan.AddApiKey(apiKey);
     }
 
+    protected virtual void AddEventSources(Function func)
+    {
+        func.AddEventSource(new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
+        {
+            ApiKeyRequired = true
+        }));
+
+        func.AddEventSource(new ApiEventSource("ANY", "/", new MethodOptions
+        {
+            ApiKeyRequired = true
+        }));
+
+        func.AddEventSource(new ApiEventSource("ANY", "/swagger/{proxy+}", new MethodOptions
+        {
+            ApiKeyRequired = false
+        }));
+
+        func.AddEventSource(new ApiEventSource("ANY", "/swagger", new MethodOptions
+        {
+            ApiKeyRequired = false
+        }));
+    }
+
+    private ISecurityGroup? _vpcApiSecurityGroup;
+    
+    private ISecurityGroup[]? CurrentVpcApiSecurityGroup
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(VpcId))
+            {
+                _vpcApiSecurityGroup ??= CreateVpcApiSecurityGroup();
+            }
+
+            return _vpcApiSecurityGroup != null ? new[] { _vpcApiSecurityGroup } : null;
+        }
+    }
+
+    protected virtual SecurityGroup CreateVpcApiSecurityGroup()
+    {
+        return new SecurityGroup(this, MakeId("ApiSecurityGroup"), new SecurityGroupProps
+        {
+            Vpc = CurrentVpc!,
+            AllowAllOutbound = true,
+            Description = "PuSub API Security Group"
+        });
+    }
+
     protected virtual Function CreateWebApiFunction(string url, Role role)
     {
         if (string.IsNullOrEmpty(ApiAsset))
@@ -150,8 +180,20 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             },
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
-            AllowPublicSubnet = true
+            AllowPublicSubnet = true,
+            SecurityGroups = CurrentVpcApiSecurityGroup
         });
+        
+        if (Proxy != null)
+        {
+            Proxy.GrantConnect(func, ProxyUser);
+            
+            if (CurrentVpcApiSecurityGroup != null)
+            {
+                ProxySg.AddIngressRule(CurrentVpcApiSecurityGroup.First(), Port.Tcp(3306), "PubSub API MySql");
+            }
+        }
+        
         return func;
     }
 

@@ -4,27 +4,24 @@ using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.RDS;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
 using CfnRoute = Amazon.CDK.AWS.Apigatewayv2.CfnRoute;
 using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable VirtualMemberNeverOverridden.Global
 
 // ReSharper disable InconsistentNaming
-
-// ReSharper disable VirtualMemberNeverOverridden.Global
-// ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable SuggestBaseTypeForParameter
-// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ObjectCreationAsStatement
 
 namespace Nuages.PubSub.Cdk;
 
-// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-// ReSharper disable once UnusedType.Global
 [ExcludeFromCodeCoverage]
 public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 {
-    public string? WebSocketAsset { get; set; }
+    protected string? WebSocketAsset { get; set; }
 
     private string? OnConnectHandler { get; set; }
     private string? OnDisconnectHandler { get; set; }
@@ -62,6 +59,47 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public string NuagesPubSubRole { get; set; } = "Role";
 
     protected IVpc? _vpc;
+    private ISecurityGroup? _proxySg;
+    private IDatabaseProxy? _proxy;
+    
+    private IDatabaseProxy? Proxy
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(ProxyArn))
+            {
+                if (string.IsNullOrEmpty(ProxyName))
+                    throw new Exception("ProxyName is required");
+
+                if (string.IsNullOrEmpty(ProxyEndpoint))
+                    throw new Exception("ProxyEndpoint is required");
+                
+                if (string.IsNullOrEmpty(ProxySecurityGroup))
+                    throw new Exception("ProxySecurityGroup is required");
+
+                _proxy ??= DatabaseProxy.FromDatabaseProxyAttributes(this, MakeId("Proxy"), new DatabaseProxyAttributes
+                {
+                    DbProxyArn = ProxyArn,
+                    DbProxyName = ProxyName,
+                    Endpoint = ProxyEndpoint,
+                    SecurityGroups = new[] { ProxySg }
+                });
+            }
+           
+            return _proxy;
+        }
+    }
+
+    private ISecurityGroup ProxySg
+    {
+        get
+        {
+            if (_proxySg == null)
+                _proxySg = SecurityGroup.FromLookupById(this, "WebApiSGDefault", ProxySecurityGroup!);
+
+            return _proxySg;
+        }
+    }
 
     private IVpc? CurrentVpc
     {
@@ -78,8 +116,33 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             return _vpc;
         }
     }
+
+    private ISecurityGroup? _vpcSecurityGroup;
     
-    public NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
+    private ISecurityGroup[]? CurrentVpcSecurityGroup
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(VpcId))
+            {
+                _vpcSecurityGroup ??= CreateVpcSecurityGroup();
+            }
+
+            return _vpcSecurityGroup != null ? new[] { _vpcSecurityGroup } : null;
+        }
+    }
+
+    protected virtual SecurityGroup CreateVpcSecurityGroup()
+    {
+        return new SecurityGroup(this, MakeId("WSSSecurityGroup"), new SecurityGroupProps
+        {
+            Vpc = CurrentVpc!,
+            AllowAllOutbound = true,
+            Description = "PubSub WSS Security Group"
+        });
+    }
+
+    protected NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
     {
         
     }
@@ -108,8 +171,8 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public string? Issuer { get; set; }
     public string? Audience { get; set; }
     public string? Secret { get; set; }
-    public string? VpcId { get; set; }
     
+    public string? VpcId { get; set; }
     public string? ProxyArn { get; set; }
     public string? ProxyName { get; set; }
     public string? ProxySecurityGroup { get; set; }
@@ -120,7 +183,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     
     public List<CfnRoute> Routes { get; set; } = new();
 
-    public virtual string MakeId(string id)
+    protected virtual string MakeId(string id)
     {
         return $"{StackName}-{id}";
     }
@@ -130,7 +193,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     {
         NormalizeHandlerName();
         
-       
         var role = CreateWebSocketRole();
 
         var api = CreateWebSocketApi();
@@ -373,14 +435,24 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             },
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
+            SecurityGroups = CurrentVpcSecurityGroup,
             AllowPublicSubnet = true
         });
 
         GrantPermissions(func);
+        
+        if (Proxy != null )
+        {
+            Proxy.GrantConnect(func, ProxyUser);
 
+            if (CurrentVpcSecurityGroup != null)
+            {
+                ProxySg.AddIngressRule(CurrentVpcSecurityGroup.First(), Port.Tcp(3306), "PubSub WSS MySql");
+            }
+        }
+        
         return func;
     }
-
 
     protected virtual Role CreateWebSocketRole()
     {
@@ -456,7 +528,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
-
         var permissions = new []
         {
             "logs:CreateLogGroup",
@@ -537,7 +608,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     {
         Console.WriteLine($"certficateArn = {certficateArn}");
         // ReSharper disable once UnusedVariable
-        //var cert = Certificate.FromCertificateArn(this, "NusagePubSubCert", certficateArn);
         var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps
         {
             DomainName = domainName,
