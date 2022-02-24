@@ -4,8 +4,30 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
 
+        <Title>Nuages.PubSub.API.SDK</Title>
+        <Authors>Nuages.io</Authors>
+        <Description>SDK for Nuages.PubSub.API</Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>nuages.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <IsPackable>true</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+
+        <None Include="../../LICENSE">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="../../nuages.png">
+            <Pack>true</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+
+    </ItemGroup>
     <ItemGroup>
       <PackageReference Include="NSwag.MSBuild" Version="13.15.10">
         <PrivateAssets>all</PrivateAssets>

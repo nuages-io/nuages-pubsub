@@ -54,7 +54,12 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             .AddSingleton(configuration);
             
         var pubSubBuilder = 
-            serviceCollection.AddPubSubLambdaRoutes(configuration)
+            serviceCollection
+                .AddPubSubLambdaRoutes(configuration)
+                .UseExternalAuthRoute(options =>
+                {
+                    //Set options here or set application settings
+                })
             .AddPubSubService();
 
         var storage = configuration.GetSection("Nuages:Data:Storage").Value;
@@ -69,7 +74,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubMongoStorage(config =>
                 {
-                    config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
+                    config.ConnectionString = configuration["Nuages:Data:Mongo:ConnectionString"];
                 });
                 break;
             }
@@ -77,7 +82,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubSqlServerStorage(config =>
                 {
-                    config.UseSqlServer(configuration["Nuages:SqlServer:ConnectionString"]);
+                    config.UseSqlServer(configuration["Nuages:Data:SqlServer:ConnectionString"]);
                 });
 
                 break;
@@ -87,7 +92,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 
                 pubSubBuilder.AddPubSubMySqlStorage(config =>
                 {
-                    var connectionString = configuration["Nuages:MySql:ConnectionString"];
+                    var connectionString = configuration["Nuages:Data:MySql:ConnectionString"];
                     Console.WriteLine("ConnectionString=" + connectionString);
                     // var serverVersion = ServerVersion.AutoDetect(connectionString);
                     // Console.WriteLine("serverVersion=" + serverVersion);

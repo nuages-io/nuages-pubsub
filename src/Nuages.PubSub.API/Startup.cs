@@ -46,7 +46,7 @@ public class Startup
             {
                 pubSubBuilder.AddPubSubMongoStorage(config =>
                 {
-                    config.ConnectionString = _configuration["Nuages:Mongo:ConnectionString"];
+                    config.ConnectionString = _configuration["Nuages:Data:Mongo:ConnectionString"];
                 });
                 break;
             }
@@ -54,7 +54,7 @@ public class Startup
             {
                 pubSubBuilder.AddPubSubSqlServerStorage(config =>
                 {
-                    config.UseSqlServer(_configuration["Nuages:SqlServer:ConnectionString"]);
+                    config.UseSqlServer(_configuration["Nuages:Data:SqlServer:ConnectionString"]);
                 });
 
                 break;
@@ -63,7 +63,7 @@ public class Startup
             {
                 pubSubBuilder.AddPubSubMySqlStorage(config =>
                 {
-                    var connectionString = _configuration["Nuages:MySql:ConnectionString"];
+                    var connectionString = _configuration["Nuages:Data:MySql:ConnectionString"];
                     config.UseMySQL(connectionString);
                 });
 

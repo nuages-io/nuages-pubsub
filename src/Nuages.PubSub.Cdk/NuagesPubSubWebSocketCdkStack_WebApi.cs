@@ -169,15 +169,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             Role = role,
             Timeout = Duration.Seconds(30),
             MemorySize = 512,
-            Environment = new Dictionary<string, string>
-            {
-                { "Nuages__PubSub__Uri", url },
-                { "Nuages__PubSub__Region", Aws.REGION },
-                { "Nuages__PubSub__StackName", StackName },
-                { "Nuages__PubSub__Issuer", Issuer ?? "" },
-                { "Nuages__PubSub__Audience", Audience ?? "" },
-                { "Nuages__PubSub__Secret", Secret ?? "" }
-            },
+            Environment = GetWebApiEnvVariables(url),
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
             AllowPublicSubnet = true,
@@ -190,11 +182,43 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             
             if (CurrentVpcApiSecurityGroup != null)
             {
-                ProxySg.AddIngressRule(CurrentVpcApiSecurityGroup.First(), Port.Tcp(3306), "PubSub API MySql");
+                var port = GetPort();
+                
+                if (port.HasValue)
+                    ProxySg.AddIngressRule(CurrentVpcApiSecurityGroup.First(), Port.Tcp(port.Value), "PubSub API MySql");
             }
         }
         
         return func;
+    }
+
+    private Dictionary<string, string> GetWebApiEnvVariables(string url)
+    {
+        var variables = new Dictionary<string, string>
+        {
+            { "Nuages__PubSub__Uri", url },
+            { "Nuages__PubSub__Region", Aws.REGION },
+            { "Nuages__PubSub__StackName", StackName }
+        };
+
+        if (!string.IsNullOrEmpty(Issuer))
+            variables.Add("Nuages__PubSub__Issuer", Issuer);
+        
+        if (!string.IsNullOrEmpty(Audience))
+            variables.Add("Nuages__PubSub__Audience", Audience);
+        
+        if (!string.IsNullOrEmpty(Secret))
+            variables.Add("Nuages__PubSub__Secret", Secret);
+
+        if (!string.IsNullOrEmpty(DataStorage))
+        {
+            variables.Add("Nuages__Data__Storage", DataStorage);
+        
+            if (!string.IsNullOrEmpty(DataConnectionString))
+                variables.Add($"Nuages__Data__{DataStorage}__ConnectionString", DataConnectionString);
+        }
+        
+        return variables;
     }
 
     protected virtual Role CreateWebApiRole()

@@ -28,7 +28,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
-        <PackageReference Include="NLog" Version="4.7.13" />
+        <PackageReference Include="NLog" Version="4.7.14" />
         <PackageReference Include="AWS.Logger.NLog" Version="3.0.0" />
 
     </ItemGroup>

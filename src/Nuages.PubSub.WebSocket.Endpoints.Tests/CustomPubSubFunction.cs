@@ -32,6 +32,7 @@ public class CustomPubSubFunction : PubSubFunction
         serviceCollection.AddSingleton(pubSubService);
 
         serviceCollection.Configure<PubSubOptions>(configuration.GetSection("Nuages:PubSub"));
+        serviceCollection.Configure<PubSubExternalAuthOption>(configuration.GetSection("Nuages:ExternalAuth"));
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 

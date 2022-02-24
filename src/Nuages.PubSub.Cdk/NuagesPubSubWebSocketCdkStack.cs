@@ -166,7 +166,11 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public const string ContextProxyEndpoint = "ProxyEndpoint";
     public const string ContextProxyUser = "ProxyUser";
     
-    public const string ContextCreateDynamoDbTables = "CreateDynamoDbTables";
+    public const string ContextStorage = "Data_Storage";
+    public const string ContextPort = "Data_Port";
+    public const string ContextConnectionString = "Data_ConnectionString";
+    
+    public const string ContextCreateDynamoDbTables = "Data_CreateDynamoDbTables";
     
     public string? Issuer { get; set; }
     public string? Audience { get; set; }
@@ -180,6 +184,9 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public string? ProxyUser { get; set; }
     
     public bool CreateDynamoDbTables { get; set; }
+    public string? DataStorage { get; set; }
+    public string? DataConnectionString { get; set; }
+    public int? DataPort { get; set; }
     
     public List<CfnRoute> Routes { get; set; } = new();
 
@@ -424,15 +431,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             MemorySize = 512,
             Role = role,
             Timeout = Duration.Seconds(30),
-            Environment = new Dictionary<string, string>
-            {
-                { "Nuages__PubSub__Region", Aws.REGION },
-                { "Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}" },
-                { "Nuages__PubSub__StackName", StackName },
-                { "Nuages__PubSub__Issuer", Issuer ?? "" },
-                { "Nuages__PubSub__Audience", Audience ?? "" },
-                { "Nuages__PubSub__Secret", Secret ?? "" }
-            },
+            Environment = GetEnvVariables(api),
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
             SecurityGroups = CurrentVpcSecurityGroup,
@@ -447,11 +446,57 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
             if (CurrentVpcSecurityGroup != null)
             {
-                ProxySg.AddIngressRule(CurrentVpcSecurityGroup.First(), Port.Tcp(3306), "PubSub WSS MySql");
+                var port = GetPort();
+                
+                if (port.HasValue)
+                    ProxySg.AddIngressRule(CurrentVpcSecurityGroup.First(), Port.Tcp(port.Value), "PubSub WSS MySql");
             }
         }
         
         return func;
+    }
+
+    private Dictionary<string, string> GetEnvVariables(CfnApi api)
+    {
+        var variables =  new Dictionary<string, string>
+        {
+            { "Nuages__PubSub__Region", Aws.REGION },
+            { "Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}" },
+            { "Nuages__PubSub__StackName", StackName }
+        };
+
+        if (!string.IsNullOrEmpty(Issuer))
+            variables.Add("Nuages__PubSub__Issuer", Issuer);
+        
+        if (!string.IsNullOrEmpty(Audience))
+            variables.Add("Nuages__PubSub__Audience", Audience);
+        
+        if (!string.IsNullOrEmpty(Secret))
+            variables.Add("Nuages__PubSub__Secret", Secret);
+
+        if (!string.IsNullOrEmpty(DataStorage))
+        {
+            variables.Add("Nuages__Data__Storage", DataStorage);
+        
+            if (!string.IsNullOrEmpty(DataConnectionString))
+                variables.Add($"Nuages__Data__{DataStorage}__ConnectionString", DataConnectionString);
+        }
+            
+        
+        return variables;
+    }
+
+    private double? GetPort()
+    {
+        switch (DataStorage)
+        {
+            case "MySql":
+            {
+                return 3306;
+            }
+            default:
+                return null;
+        }
     }
 
     protected virtual Role CreateWebSocketRole()
@@ -652,23 +697,32 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         if (!string.IsNullOrEmpty( options.VpcId))
             Node.SetContext(ContextVpcId, options.VpcId);
         
-        if (!string.IsNullOrEmpty( options.Proxy.Arn))
-            Node.SetContext(ContextProxyArn, options.Proxy.Arn);
+        if (!string.IsNullOrEmpty( options.DatabaseProxy.Arn))
+            Node.SetContext(ContextProxyArn, options.DatabaseProxy.Arn);
         
-        if (!string.IsNullOrEmpty( options.Proxy.Endpoint))
-            Node.SetContext(ContextProxyEndpoint, options.Proxy.Endpoint);
+        if (!string.IsNullOrEmpty( options.DatabaseProxy.Endpoint))
+            Node.SetContext(ContextProxyEndpoint, options.DatabaseProxy.Endpoint);
         
-        if (!string.IsNullOrEmpty( options.Proxy.SecurityGroup))
-            Node.SetContext(ContextProxySecurityGroup, options.Proxy.SecurityGroup);
+        if (!string.IsNullOrEmpty( options.DatabaseProxy.SecurityGroup))
+            Node.SetContext(ContextProxySecurityGroup, options.DatabaseProxy.SecurityGroup);
         
-        if (!string.IsNullOrEmpty( options.Proxy.Name))
-            Node.SetContext(ContextProxyName, options.Proxy.Name ?? "");
+        if (!string.IsNullOrEmpty( options.DatabaseProxy.Name))
+            Node.SetContext(ContextProxyName, options.DatabaseProxy.Name);
         
-        if (!string.IsNullOrEmpty( options.Proxy.UserName))
-            Node.SetContext(ContextProxyUser, options.Proxy.UserName ?? "");
+        if (!string.IsNullOrEmpty( options.DatabaseProxy.UserName))
+            Node.SetContext(ContextProxyUser, options.DatabaseProxy.UserName);
         
-        if ( options.Env.Data.CreateDynamoDbTables.HasValue)
-            Node.SetContext(ContextCreateDynamoDbTables, options.Env.Data.CreateDynamoDbTables.Value.ToString());
+        if ( options.Data.CreateDynamoDbTables.HasValue)
+            Node.SetContext(ContextCreateDynamoDbTables, options.Data.CreateDynamoDbTables.Value.ToString());
+        
+        if (!string.IsNullOrEmpty( options.Data.Storage))
+            Node.SetContext(ContextStorage, options.Data.Storage);
+        
+        if (options.Data.Port.HasValue)
+            Node.SetContext(ContextPort, options.Data.Port.Value.ToString());
+        
+        if (!string.IsNullOrEmpty( options.Data.ConnectionString))
+            Node.SetContext(ContextConnectionString, options.Data.ConnectionString);
         
         Issuer = Node.TryGetContext(ContextIssuer) != null!
             ? Node.TryGetContext(ContextIssuer).ToString()
@@ -708,6 +762,18 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         
         CreateDynamoDbTables = Node.TryGetContext(ContextCreateDynamoDbTables) == null! || 
                                Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbTables).ToString());
+        
+        DataStorage = Node.TryGetContext(ContextStorage) != null!
+            ? Node.TryGetContext(ContextStorage).ToString()
+            : null;
+        
+        DataConnectionString = Node.TryGetContext(ContextConnectionString) != null!
+            ? Node.TryGetContext(ContextConnectionString).ToString()
+            : null;
+        
+        DataPort = Node.TryGetContext(ContextPort) != null!
+            ? Convert.ToInt32(Node.TryGetContext(ContextPort).ToString())
+            : null;
 
     }
 }
