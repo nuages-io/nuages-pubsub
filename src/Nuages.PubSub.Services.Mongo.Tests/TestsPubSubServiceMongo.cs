@@ -35,7 +35,6 @@ public class TestsPubSubServiceMongo : TestsPubSubServiceBase
             .AddPubSubMongoStorage(config =>
             {
                 config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
-                config.DatabaseName = configuration["Nuages:Mongo:DatabaseName"];
             });
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
@@ -45,11 +44,11 @@ public class TestsPubSubServiceMongo : TestsPubSubServiceBase
         var options = ServiceProvider.GetRequiredService<IOptions<PubSubMongoOptions>>().Value;
         
         var connectionString = options.ConnectionString;
-        var dbName = options.DatabaseName;
-        
+    
         var client = new MongoClient(connectionString);
-        
-        client.DropDatabase(dbName);
+
+        var url = new MongoUrl(connectionString);
+        client.DropDatabase(url.DatabaseName);
         
         PubSubService = ServiceProvider.GetRequiredService<IPubSubService>();
         

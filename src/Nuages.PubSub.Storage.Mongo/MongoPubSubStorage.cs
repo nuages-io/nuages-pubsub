@@ -86,10 +86,12 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
     public void Initialize()
     {
         var connectionString =  _mongoOptions.ConnectionString;
-        var dbName = _mongoOptions.DatabaseName;
-        
+           
         var mongoCLient = new MongoClient(connectionString);
-        var database = mongoCLient.GetDatabase(dbName);
+        
+        var mongoUrl = new MongoUrl(connectionString);
+        
+        var database = mongoCLient.GetDatabase(mongoUrl.DatabaseName);
 
         var prefix = _pubSubOptions.StackName + "_";
         _pubSubConnectionCollection = database.GetCollection<PubSubConnection>(prefix + "pub_sub_connection");

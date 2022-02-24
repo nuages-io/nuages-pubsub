@@ -41,13 +41,6 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
                 configureSource.Optional = true;
             });
-            
-            builder.AddSystemsManager(configureSource =>
-            {
-                configureSource.Path = $"/{name}/WebSocket";
-                configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
-                configureSource.Optional = true;
-            });
         }
         
         IConfiguration configuration = builder.Build();
@@ -77,7 +70,6 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 pubSubBuilder.AddPubSubMongoStorage(config =>
                 {
                     config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
-                    config.DatabaseName = configuration["Nuages:Mongo:DatabaseName"];
                 });
                 break;
             }

@@ -29,7 +29,6 @@ public class TestMongoPubSubStorage : TestPubSubStorageBase
             .AddPubSubMongoStorage(config =>
             {
                 config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
-                config.DatabaseName = configuration["Nuages:Mongo:DatabaseName"];
             });
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -40,10 +39,11 @@ public class TestMongoPubSubStorage : TestPubSubStorageBase
         Sub = "sub-test";
 
         var connectionString = options.ConnectionString;
-        var dbName = options.DatabaseName;
+
+        var url = new MongoUrl(options.ConnectionString);
         
         var mongoCLient = new MongoClient(connectionString);
-        mongoCLient.DropDatabase(dbName);
+        mongoCLient.DropDatabase(url.DatabaseName);
         
         PubSubStorage = serviceProvider.GetRequiredService<IPubSubStorage>();
         PubSubStorage.Initialize();

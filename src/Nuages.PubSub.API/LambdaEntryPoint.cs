@@ -28,13 +28,6 @@ public class LambdaEntryPoint :
                     configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
                     configureSource.Optional = true;
                 });
-                
-                configBuilder.AddSystemsManager(configureSource =>
-                {
-                    configureSource.Path = $"/{name}/API";
-                    configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
-                    configureSource.Optional = true;
-                });
             }
         }).UseNLog();
 
