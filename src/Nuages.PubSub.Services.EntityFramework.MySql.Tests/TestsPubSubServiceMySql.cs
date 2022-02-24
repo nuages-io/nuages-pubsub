@@ -40,10 +40,8 @@ public class TestsPubSubServiceMySql : TestsPubSubServiceBase
         {
             var connectionString =  configuration["ConnectionStrings:MySql"];
 
-            var serverVersion = ServerVersion.AutoDetect(connectionString);
-
             builder
-                .UseMySql(connectionString, serverVersion);
+                .UseMySQL(connectionString);
 
         });
         

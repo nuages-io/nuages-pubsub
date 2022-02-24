@@ -97,8 +97,10 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 {
                     var connectionString = configuration["Nuages:MySql:ConnectionString"];
                     Console.WriteLine("ConnectionString=" + connectionString);
-                    var serverVersion = ServerVersion.AutoDetect(connectionString);
-                    config.UseMySql(connectionString, serverVersion);
+                    // var serverVersion = ServerVersion.AutoDetect(connectionString);
+                    // Console.WriteLine("serverVersion=" + serverVersion);
+                    // config.UseMySql(connectionString, serverVersion);
+                    config.UseMySQL(connectionString);
                 });
 
                 break;

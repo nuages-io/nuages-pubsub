@@ -31,8 +31,10 @@ public class Startup
         var pubSubBuilder = services
             .AddPubSubService(_configuration);
 
-        var storage = _configuration.GetSection("Nuages:Data:Storage").Value;
-
+        var storage = _configuration["Nuages:Data:Storage"];
+        
+        Console.WriteLine("storage=" + storage);
+        
         Console.WriteLine("Nuages:Mongo:ConnectionString=" + _configuration["Nuages:Mongo:ConnectionString"]);
         Console.WriteLine("Nuages:MySql:ConnectionString=" + _configuration["Nuages:MySql:ConnectionString"]);
         
@@ -66,9 +68,9 @@ public class Startup
                 pubSubBuilder.AddPubSubMySqlStorage(config =>
                 {
                     var connectionString = _configuration["Nuages:MySql:ConnectionString"];
-                   
-                    var serverVersion = ServerVersion.AutoDetect(connectionString);
-                    config.UseMySql(connectionString, serverVersion);
+                    Console.WriteLine("connectionString=" + connectionString);
+
+                    config.UseMySQL(connectionString);
                 });
 
                 break;

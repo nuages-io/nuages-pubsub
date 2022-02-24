@@ -20,6 +20,7 @@ public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSub
 {
     public MySqlPubSubDbContext CreateDbContext(string[] args)
     {
+        Console.WriteLine("Shoud not be called");
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
             .AddJsonFile("appsettings.local.json", true)
@@ -29,10 +30,8 @@ public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSub
 
         var connectionString =  configuration["ConnectionStrings:MySql"];
 
-        var serverVersion = ServerVersion.AutoDetect(connectionString);
-
         optionsBuilder
-            .UseMySql(connectionString, serverVersion);
+            .UseMySQL(connectionString);
 
         return new MySqlPubSubDbContext(optionsBuilder.Options);
     }

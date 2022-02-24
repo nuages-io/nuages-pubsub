@@ -19,11 +19,9 @@ public class TestsPubSubStorageMySql : TestPubSubStorageBase
             .Build();
 
         var connectionString = configuration["ConnectionStrings:MySql"];
-
-        var serverVersion = ServerVersion.AutoDetect(connectionString);
-
+        
         var contextOptions = new DbContextOptionsBuilder<PubSubDbContext>()
-            .UseMySql(connectionString, serverVersion)
+            .UseMySQL(connectionString)
             .Options;
 
         var context = new MySqlPubSubDbContext(contextOptions);
