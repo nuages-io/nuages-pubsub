@@ -29,12 +29,10 @@
 <ItemGroup>
   <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework\Nuages.PubSub.Storage.EntityFramework.csproj" />
 </ItemGroup>
-<ItemGroup>
-    <None Remove="appsettings.local.json" />
-  <Content Include="appsettings.local.json">
-    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
+    <ItemGroup>
+        <None Remove="appsettings.local.json" />
+        <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.local.json')" />
+    </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
 
