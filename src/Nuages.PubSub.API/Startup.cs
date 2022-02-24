@@ -85,12 +85,12 @@ public class Startup
             config.PostProcess = document =>
             {
                 document.Info.Version = "v1";
-                document.Info.Title = "Nuages WebSocket Service";
-
+                document.Info.Title = "Nuages PubSub";
+                
                 document.Info.Contact = new NSwag.OpenApiContact
                 {
                     Name = "Nuages.io",
-                    Email = string.Empty,
+                    Email = "martin@nuages.io",
                     Url = "https://github.com/nuages-io/nuages-pubsub"
                 };
                 document.Info.License = new NSwag.OpenApiLicense
