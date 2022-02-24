@@ -48,5 +48,6 @@ jobs:
         dotnet pack Nuages.PubSub.WebSocket.Endpoints/Nuages.PubSub.WebSocket.Endpoints.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Cdk/Nuages.PubSub.Cdk.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.API.Endpoints/Nuages.PubSub.API.Endpoints.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
+        dotnet pack Nuages.PubSub.API.Sdk/Nuages.PubSub.API.Sdk.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
     - name: Push
       run: dotnet nuget push ./nupkgs/*.nupkg -k ${{ secrets.NUGETKEY }} -s nuget.org
