@@ -167,7 +167,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     public string? DatabaseProxyEndpoint { get; set; }
     public string? DatabaseProxyUser { get; set; }
     
-    public bool DataCreateDynamoDbTables { get; set; }
     public string? DataStorage { get; set; }
     public string? DataConnectionString { get; set; }
     public int? DataPort { get; set; }
@@ -231,8 +230,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
 
-        if (DataCreateDynamoDbTables)
-            CreateTables();
+        CreateTables();
 
         var webSocketUrl = $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{stage.Ref}";
 
@@ -421,7 +419,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         if (Proxy != null )
         {
             Proxy.GrantConnect(func, DatabaseProxyUser);
-
+            
             if (CurrentVpcSecurityGroup != null)
             {
                 var port = GetPort();
@@ -460,7 +458,6 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                 variables.Add($"Nuages__Data__{DataStorage}__ConnectionString", DataConnectionString);
         }
             
-        
         return variables;
     }
 
@@ -648,16 +645,16 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     private void ReadContextVariables()
     {
-        WebSocketDomainName = Node.TryGetContext(ContextValues.WebSocketDomainName) != null!
-            ? Node.TryGetContext(ContextValues.WebSocketDomainName).ToString()
+        WebSocketDomainName = Node.TryGetContext(ContextValues.WebSocketDomain) != null!
+            ? Node.TryGetContext(ContextValues.WebSocketDomain).ToString()
             : null;
         
         WebSocketCertificateArn = Node.TryGetContext(ContextValues.WebSocketCertificateArn) != null!
             ? Node.TryGetContext(ContextValues.WebSocketCertificateArn).ToString()
             : null;
         
-        ApiDomainName = Node.TryGetContext(ContextValues.ApiDomainName) != null!
-            ? Node.TryGetContext(ContextValues.ApiDomainName).ToString()
+        ApiDomainName = Node.TryGetContext(ContextValues.ApiDomain) != null!
+            ? Node.TryGetContext(ContextValues.ApiDomain).ToString()
             : null;
         
         ApiCertificateArn = Node.TryGetContext(ContextValues.ApiCertificateArn) != null!
@@ -704,12 +701,9 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             ? Node.TryGetContext(ContextValues.DatabaseProxyUser).ToString()
             : null;
 
-        DatabaseProxySecurityGroup = Node.TryGetContext(ContextValues.DatabaseProxySecurityGroup) != null!
-            ? Node.TryGetContext(ContextValues.DatabaseProxySecurityGroup).ToString()
+        DatabaseProxySecurityGroup = Node.TryGetContext(ContextValues.DatabaseProxySecurityGroupId) != null!
+            ? Node.TryGetContext(ContextValues.DatabaseProxySecurityGroupId).ToString()
             : null;
-
-        DataCreateDynamoDbTables = Node.TryGetContext(ContextValues.DataCreateDynamoDbTables) == null! ||
-                               Convert.ToBoolean(Node.TryGetContext(ContextValues.DataCreateDynamoDbTables).ToString());
 
         DataStorage = Node.TryGetContext(ContextValues.DataStorage) != null!
             ? Node.TryGetContext(ContextValues.DataStorage).ToString()

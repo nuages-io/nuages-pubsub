@@ -63,7 +63,6 @@ public class Data
     public string? Storage { get; set; }
     public int? Port { get; set; }
     
-    public bool? CreateDynamoDbTables { get; set; }
     public string? ConnectionString { get; set; }
 }
 

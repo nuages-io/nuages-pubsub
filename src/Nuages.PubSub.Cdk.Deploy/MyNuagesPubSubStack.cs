@@ -19,13 +19,13 @@ public class MyNuagesPubSubStack : NuagesPubSubWebSocketCdkStack<PubSubFunction>
     public void InitializeContextFromOptions(ConfigOptions options)
     {
         if (!string.IsNullOrEmpty(options.WebSocket.Domain))
-            Node.SetContext(ContextValues.WebSocketDomainName,  options.WebSocket.Domain);
+            Node.SetContext(ContextValues.WebSocketDomain,  options.WebSocket.Domain);
         
         if (!string.IsNullOrEmpty(options.WebSocket.CertificateArn))
             Node.SetContext(ContextValues.WebSocketCertificateArn,options.WebSocket.CertificateArn);
         
         if (!string.IsNullOrEmpty(options.Api.Domain))
-            Node.SetContext(ContextValues.ApiDomainName,  options.Api.Domain);
+            Node.SetContext(ContextValues.ApiDomain,  options.Api.Domain);
         
         if (!string.IsNullOrEmpty(options.Api.CertificateArn))
             Node.SetContext(ContextValues.ApiCertificateArn, options.Api.CertificateArn);
@@ -52,16 +52,13 @@ public class MyNuagesPubSubStack : NuagesPubSubWebSocketCdkStack<PubSubFunction>
             Node.SetContext(ContextValues.DatabaseProxyEndpoint, options.DatabaseDbProxy.Endpoint);
         
         if (!string.IsNullOrEmpty( options.DatabaseDbProxy.SecurityGroup))
-            Node.SetContext(ContextValues.DatabaseProxySecurityGroup, options.DatabaseDbProxy.SecurityGroup);
+            Node.SetContext(ContextValues.DatabaseProxySecurityGroupId, options.DatabaseDbProxy.SecurityGroup);
         
         if (!string.IsNullOrEmpty( options.DatabaseDbProxy.Name))
             Node.SetContext(ContextValues.DatabaseProxyName, options.DatabaseDbProxy.Name);
         
         if (!string.IsNullOrEmpty( options.DatabaseDbProxy.UserName))
             Node.SetContext(ContextValues.DatabaseProxyUser, options.DatabaseDbProxy.UserName);
-        
-        if ( options.Data.CreateDynamoDbTables.HasValue)
-            Node.SetContext(ContextValues.DataCreateDynamoDbTables, options.Data.CreateDynamoDbTables.Value.ToString());
         
         if (!string.IsNullOrEmpty( options.Data.Storage))
             Node.SetContext(ContextValues.DataStorage, options.Data.Storage);
