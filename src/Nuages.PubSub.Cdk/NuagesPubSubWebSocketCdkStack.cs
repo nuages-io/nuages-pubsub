@@ -11,6 +11,7 @@ using CfnRoute = Amazon.CDK.AWS.Apigatewayv2.CfnRoute;
 using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable MemberCanBeProtected.Global
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable SuggestBaseTypeForParameter
@@ -66,22 +67,22 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
     {
         get
         {
-            if (!string.IsNullOrEmpty(ProxyArn))
+            if (!string.IsNullOrEmpty(DatabaseProxyArn))
             {
-                if (string.IsNullOrEmpty(ProxyName))
+                if (string.IsNullOrEmpty(DatabaseProxyName))
                     throw new Exception("ProxyName is required");
 
-                if (string.IsNullOrEmpty(ProxyEndpoint))
+                if (string.IsNullOrEmpty(DatabaseProxyEndpoint))
                     throw new Exception("ProxyEndpoint is required");
                 
-                if (string.IsNullOrEmpty(ProxySecurityGroup))
+                if (string.IsNullOrEmpty(DatabaseProxySecurityGroup))
                     throw new Exception("ProxySecurityGroup is required");
 
                 _proxy ??= DatabaseProxy.FromDatabaseProxyAttributes(this, MakeId("Proxy"), new DatabaseProxyAttributes
                 {
-                    DbProxyArn = ProxyArn,
-                    DbProxyName = ProxyName,
-                    Endpoint = ProxyEndpoint,
+                    DbProxyArn = DatabaseProxyArn,
+                    DbProxyName = DatabaseProxyName,
+                    Endpoint = DatabaseProxyEndpoint,
                     SecurityGroups = new[] { ProxySg }
                 });
             }
@@ -95,7 +96,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         get
         {
             if (_proxySg == null)
-                _proxySg = SecurityGroup.FromLookupById(this, "WebApiSGDefault", ProxySecurityGroup!);
+                _proxySg = SecurityGroup.FromLookupById(this, "WebApiSGDefault", DatabaseProxySecurityGroup!);
 
             return _proxySg;
         }
@@ -147,43 +148,42 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         
     }
 
-    public const string ContextDomainName = "WebSocket_Domain";
-    public const string ContextCertificateArn = "WebSocket_CertificateArn";
+    public const string ContextWebSocketDomainName = "WebSocket_Domain";
+    public const string ContextWebSocketCertificateArn = "WebSocket_CertificateArn";
 
-    public const string ContextDomainNameApi = "API_Domain";
-    public const string ContextCertificateArnApi = "PubSub_API_CertificateArn";
-    public const string ContextApiKeyApi = "API_ApiKey";
+    public const string ContextApiDomainName = "API_Domain";
+    public const string ContextApiCertificateArn = "API_CertificateArn";
+    public const string ContextApiApiKey = "API_ApiKey";
     
-    public const string ContextAudience = "Audience";
-    public const string ContextIssuer = "Issuer";
-    public const string ContextSecret = "Secret";
+    public const string ContextAuthAudience = "Auth_Audience";
+    public const string ContextAuthIssuer = "Auth_Issuer";
+    public const string ContextAuthSecret = "Auth_Secret";
 
-    public const string ContextVpcId = "VpcId";
+    public const string ContextVpcId = "Vpc_Id";
+
+    public const string ContextDatabaseProxyArn = "DatabaseProxy_Arn";
+    public const string ContextDatabaseProxyName = "DatabaseProxy_Name";
+    public const string ContextDatabaseProxyEndpoint = "DatabaseProxy_Endpoint";
+    public const string ContextDatabaseProxyUser = "DatabaseProxy_User";
+    public const string ContextDatabaseProxySecurityGroup = "DatabaseProxy_SecurityGroup_Id";
     
-    public const string ContextProxyArn = "ProxyArn";
-    public const string ContextProxyName = "ProxyName";
-    public const string ContextProxySecurityGroup = "VpcProxySecurityGroupId";
-    public const string ContextProxyEndpoint = "ProxyEndpoint";
-    public const string ContextProxyUser = "ProxyUser";
+    public const string ContextDataStorage = "Data_Storage";
+    public const string ContextDataPort = "Data_Port";
+    public const string ContextDataConnectionString = "Data_ConnectionString";
+    public const string ContextDataCreateDynamoDbTables = "Data_CreateDynamoDbTables";
     
-    public const string ContextStorage = "Data_Storage";
-    public const string ContextPort = "Data_Port";
-    public const string ContextConnectionString = "Data_ConnectionString";
-    
-    public const string ContextCreateDynamoDbTables = "Data_CreateDynamoDbTables";
-    
-    public string? Issuer { get; set; }
-    public string? Audience { get; set; }
-    public string? Secret { get; set; }
-    
+    public string? AuthIssuer { get; set; }
+    public string? AuthAudience { get; set; }
+    public string? AuthSecret { get; set; }
     public string? VpcId { get; set; }
-    public string? ProxyArn { get; set; }
-    public string? ProxyName { get; set; }
-    public string? ProxySecurityGroup { get; set; }
-    public string? ProxyEndpoint { get; set; }
-    public string? ProxyUser { get; set; }
     
-    public bool CreateDynamoDbTables { get; set; }
+    public string? DatabaseProxyArn { get; set; }
+    public string? DatabaseProxyName { get; set; }
+    public string? DatabaseProxySecurityGroup { get; set; }
+    public string? DatabaseProxyEndpoint { get; set; }
+    public string? DatabaseProxyUser { get; set; }
+    
+    public bool DataCreateDynamoDbTables { get; set; }
     public string? DataStorage { get; set; }
     public string? DataConnectionString { get; set; }
     public int? DataPort { get; set; }
@@ -233,15 +233,15 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
         var stage = CreateStage(api, deployment);
 
-        var domainName = (string)Node.TryGetContext(ContextDomainName);
+        var domainName = (string)Node.TryGetContext(ContextWebSocketDomainName);
 
         if (!string.IsNullOrEmpty(domainName))
         {
             Console.WriteLine($"Domain = {domainName}");
 
-            var certficateArn = (string)Node.TryGetContext(ContextCertificateArn);
+            var certficateArn = (string)Node.TryGetContext(ContextWebSocketCertificateArn);
 
-            Console.WriteLine($"ContextCertificateArn = {ContextCertificateArn}");
+            Console.WriteLine($"ContextCertificateArn = {ContextWebSocketCertificateArn}");
 
             var apiGatewayDomainName = CreateApiGatewayDomainName(certficateArn, domainName);
             CreateS3RecordSet(domainName, apiGatewayDomainName);
@@ -255,7 +255,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             });
         }
 
-        if (CreateDynamoDbTables)
+        if (DataCreateDynamoDbTables)
             CreateTables();
 
         var webSocketUrl = $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{stage.Ref}";
@@ -444,7 +444,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         
         if (Proxy != null )
         {
-            Proxy.GrantConnect(func, ProxyUser);
+            Proxy.GrantConnect(func, DatabaseProxyUser);
 
             if (CurrentVpcSecurityGroup != null)
             {
@@ -467,14 +467,14 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
             { "Nuages__PubSub__StackName", StackName }
         };
 
-        if (!string.IsNullOrEmpty(Issuer))
-            variables.Add("Nuages__PubSub__Issuer", Issuer);
+        if (!string.IsNullOrEmpty(AuthIssuer))
+            variables.Add("Nuages__PubSub__Issuer", AuthIssuer);
         
-        if (!string.IsNullOrEmpty(Audience))
-            variables.Add("Nuages__PubSub__Audience", Audience);
+        if (!string.IsNullOrEmpty(AuthAudience))
+            variables.Add("Nuages__PubSub__Audience", AuthAudience);
         
-        if (!string.IsNullOrEmpty(Secret))
-            variables.Add("Nuages__PubSub__Secret", Secret);
+        if (!string.IsNullOrEmpty(AuthSecret))
+            variables.Add("Nuages__PubSub__Secret", AuthSecret);
 
         if (!string.IsNullOrEmpty(DataStorage))
         {
@@ -673,55 +673,55 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
    
     private void ReadContextVariables()
     {
-        Issuer = Node.TryGetContext(ContextIssuer) != null!
-            ? Node.TryGetContext(ContextIssuer).ToString()
+        AuthIssuer = Node.TryGetContext(ContextAuthIssuer) != null!
+            ? Node.TryGetContext(ContextAuthIssuer).ToString()
             : null;
 
-        Audience = Node.TryGetContext(ContextAudience) != null!
-            ? Node.TryGetContext(ContextAudience).ToString()
+        AuthAudience = Node.TryGetContext(ContextAuthAudience) != null!
+            ? Node.TryGetContext(ContextAuthAudience).ToString()
             : null;
 
-        Secret = Node.TryGetContext(ContextSecret) != null!
-            ? Node.TryGetContext(ContextSecret).ToString()
+        AuthSecret = Node.TryGetContext(ContextAuthSecret) != null!
+            ? Node.TryGetContext(ContextAuthSecret).ToString()
             : null;
 
         VpcId = Node.TryGetContext(ContextVpcId) != null!
             ? Node.TryGetContext(ContextVpcId).ToString()
             : null;
 
-        ProxyArn = Node.TryGetContext(ContextProxyArn) != null!
-            ? Node.TryGetContext(ContextProxyArn).ToString()
+        DatabaseProxyArn = Node.TryGetContext(ContextDatabaseProxyArn) != null!
+            ? Node.TryGetContext(ContextDatabaseProxyArn).ToString()
             : null;
 
-        ProxyEndpoint = Node.TryGetContext(ContextProxyEndpoint) != null!
-            ? Node.TryGetContext(ContextProxyEndpoint).ToString()
+        DatabaseProxyEndpoint = Node.TryGetContext(ContextDatabaseProxyEndpoint) != null!
+            ? Node.TryGetContext(ContextDatabaseProxyEndpoint).ToString()
             : null;
 
-        ProxyName = Node.TryGetContext(ContextProxyName) != null!
-            ? Node.TryGetContext(ContextProxyName).ToString()
+        DatabaseProxyName = Node.TryGetContext(ContextDatabaseProxyName) != null!
+            ? Node.TryGetContext(ContextDatabaseProxyName).ToString()
             : null;
 
-        ProxyUser = Node.TryGetContext(ContextProxyUser) != null!
-            ? Node.TryGetContext(ContextProxyUser).ToString()
+        DatabaseProxyUser = Node.TryGetContext(ContextDatabaseProxyUser) != null!
+            ? Node.TryGetContext(ContextDatabaseProxyUser).ToString()
             : null;
 
-        ProxySecurityGroup = Node.TryGetContext(ContextProxySecurityGroup) != null!
-            ? Node.TryGetContext(ContextProxySecurityGroup).ToString()
+        DatabaseProxySecurityGroup = Node.TryGetContext(ContextDatabaseProxySecurityGroup) != null!
+            ? Node.TryGetContext(ContextDatabaseProxySecurityGroup).ToString()
             : null;
 
-        CreateDynamoDbTables = Node.TryGetContext(ContextCreateDynamoDbTables) == null! ||
-                               Convert.ToBoolean(Node.TryGetContext(ContextCreateDynamoDbTables).ToString());
+        DataCreateDynamoDbTables = Node.TryGetContext(ContextDataCreateDynamoDbTables) == null! ||
+                               Convert.ToBoolean(Node.TryGetContext(ContextDataCreateDynamoDbTables).ToString());
 
-        DataStorage = Node.TryGetContext(ContextStorage) != null!
-            ? Node.TryGetContext(ContextStorage).ToString()
+        DataStorage = Node.TryGetContext(ContextDataStorage) != null!
+            ? Node.TryGetContext(ContextDataStorage).ToString()
             : null;
 
-        DataConnectionString = Node.TryGetContext(ContextConnectionString) != null!
-            ? Node.TryGetContext(ContextConnectionString).ToString()
+        DataConnectionString = Node.TryGetContext(ContextDataConnectionString) != null!
+            ? Node.TryGetContext(ContextDataConnectionString).ToString()
             : null;
 
-        DataPort = Node.TryGetContext(ContextPort) != null!
-            ? Convert.ToInt32(Node.TryGetContext(ContextPort).ToString())
+        DataPort = Node.TryGetContext(ContextDataPort) != null!
+            ? Convert.ToInt32(Node.TryGetContext(ContextDataPort).ToString())
             : null;
     }
 }

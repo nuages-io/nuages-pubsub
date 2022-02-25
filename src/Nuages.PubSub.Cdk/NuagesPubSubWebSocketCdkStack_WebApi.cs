@@ -27,13 +27,13 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
 
         var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
         
-        var domainName = (string)Node.TryGetContext(ContextDomainNameApi);
+        var domainName = (string)Node.TryGetContext(ContextApiDomainName);
 
         if (!string.IsNullOrEmpty(domainName))
         {
-            var certficateArn = (string)Node.TryGetContext(ContextCertificateArnApi);
+            var certficateArn = (string)Node.TryGetContext(ContextApiCertificateArn);
 
-            Console.WriteLine($"ContextCertificateArnApi = {ContextCertificateArnApi}");
+            Console.WriteLine($"ContextCertificateArnApi = {ContextApiCertificateArn}");
             var apiGatewayDomainName = new CfnDomainName(this, "NuagesApiDomainName", new CfnDomainNameProps
             {
                 DomainName = domainName,
@@ -94,7 +94,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             }
         });
 
-        var key = (string)Node.TryGetContext(ContextApiKeyApi);
+        var key = (string)Node.TryGetContext(ContextApiApiKey);
         
         // ReSharper disable once UnusedVariable
         var apiKey = new ApiKey(this, MakeId("WebApiKey"), new ApiKeyProps
@@ -178,7 +178,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         
         if (Proxy != null)
         {
-            Proxy.GrantConnect(func, ProxyUser);
+            Proxy.GrantConnect(func, DatabaseProxyUser);
             
             if (CurrentVpcApiSecurityGroup != null)
             {
@@ -201,14 +201,14 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             { "Nuages__PubSub__StackName", StackName }
         };
 
-        if (!string.IsNullOrEmpty(Issuer))
-            variables.Add("Nuages__PubSub__Issuer", Issuer);
+        if (!string.IsNullOrEmpty(AuthIssuer))
+            variables.Add("Nuages__PubSub__Issuer", AuthIssuer);
         
-        if (!string.IsNullOrEmpty(Audience))
-            variables.Add("Nuages__PubSub__Audience", Audience);
+        if (!string.IsNullOrEmpty(AuthAudience))
+            variables.Add("Nuages__PubSub__Audience", AuthAudience);
         
-        if (!string.IsNullOrEmpty(Secret))
-            variables.Add("Nuages__PubSub__Secret", Secret);
+        if (!string.IsNullOrEmpty(AuthSecret))
+            variables.Add("Nuages__PubSub__Secret", AuthSecret);
 
         if (!string.IsNullOrEmpty(DataStorage))
         {
