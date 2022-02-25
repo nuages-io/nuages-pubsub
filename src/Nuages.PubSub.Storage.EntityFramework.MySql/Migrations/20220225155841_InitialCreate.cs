@@ -16,18 +16,16 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 name: "Acks",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Hub = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Hub = table.Column<string>(type: "longtext", nullable: false)
+                    ConnectionId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConnectionId = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    AckId = table.Column<string>(type: "longtext", nullable: false)
+                    AckId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Acks", x => x.Id);
+                    table.PrimaryKey("PK_Acks", x => new { x.Hub, x.ConnectionId, x.AckId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -35,13 +33,11 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 name: "Connections",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Hub = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Hub = table.Column<string>(type: "longtext", nullable: false)
+                    ConnectionId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConnectionId = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<string>(type: "longtext", nullable: false)
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ExpireOn = table.Column<DateTime>(type: "datetime(6)", nullable: true),
@@ -50,30 +46,28 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Connections", x => x.Id);
+                    table.PrimaryKey("PK_Connections", x => new { x.Hub, x.ConnectionId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Groups",
+                name: "GroupConnections",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Group = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Group = table.Column<string>(type: "longtext", nullable: false)
+                    ConnectionId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConnectionId = table.Column<string>(type: "longtext", nullable: false)
+                    Hub = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Hub = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     UserId = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ExpireOn = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Groups", x => x.Id);
+                    table.PrimaryKey("PK_GroupConnections", x => new { x.Hub, x.Group, x.ConnectionId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -81,21 +75,44 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 name: "GroupUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Group = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Group = table.Column<string>(type: "longtext", nullable: false)
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<string>(type: "longtext", nullable: false)
+                    Hub = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Hub = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupUsers", x => x.Id);
+                    table.PrimaryKey("PK_GroupUsers", x => new { x.Hub, x.Group, x.UserId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Connections_Hub",
+                table: "Connections",
+                column: "Hub");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Connections_Hub_UserId",
+                table: "Connections",
+                columns: new[] { "Hub", "UserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupConnections_Hub_Group",
+                table: "GroupConnections",
+                columns: new[] { "Hub", "Group" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupUsers_Hub_Group",
+                table: "GroupUsers",
+                columns: new[] { "Hub", "Group" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupUsers_Hub_UserId",
+                table: "GroupUsers",
+                columns: new[] { "Hub", "UserId" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -107,7 +124,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 name: "Connections");
 
             migrationBuilder.DropTable(
-                name: "Groups");
+                name: "GroupConnections");
 
             migrationBuilder.DropTable(
                 name: "GroupUsers");

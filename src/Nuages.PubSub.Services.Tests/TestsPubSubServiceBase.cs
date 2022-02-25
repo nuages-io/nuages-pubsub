@@ -143,6 +143,8 @@ public abstract class TestsPubSubServiceBase
         await PubSubService.RemoveUserFromGroupAsync(Hub, Group, UserId);
         
         Assert.False(await PubSubService.IsConnectionInGroupAsync(Hub, Group, ConnectionId));
+
+        Group = "Groupe2";
         
         await PubSubService.AddUserToGroupAsync(Hub, Group, UserId);
         

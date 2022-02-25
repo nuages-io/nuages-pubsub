@@ -30,7 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- CDK Construct Library dependencies -->
-    <PackageReference Include="Amazon.CDK.Lib" Version="2.13.0" />
+    <PackageReference Include="Amazon.CDK.Lib" Version="2.14.0" />
     <PackageReference Include="Constructs" Version="10.0.72" />
 
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="1.54.0" PrivateAssets="all" />

@@ -9,6 +9,8 @@ logs/
 *.DotSettings.user
 appsettings.testdata.json
 appsettings.local.json
+appsettings.mysql.json
+appsettings.sqlserver.json
 appsettings.prod.json
 appsettings.deploy.json
 appsettings.prod*

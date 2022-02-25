@@ -3,13 +3,14 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Nuages.PubSub.Storage.EntityFramework.MySql;
 
 #nullable disable
 
 namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
 {
     [DbContext(typeof(MySqlPubSubDbContext))]
-    partial class MySqlPubSubContextModelSnapshot : ModelSnapshot
+    partial class MySqlPubSubDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -20,65 +21,60 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
 
             modelBuilder.Entity("Nuages.PubSub.Storage.EntityFramework.DataModel.PubSubAck", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("Hub")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ConnectionId")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("AckId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<string>("ConnectionId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Hub")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
+                    b.HasKey("Hub", "ConnectionId", "AckId");
 
                     b.ToTable("Acks");
                 });
 
             modelBuilder.Entity("Nuages.PubSub.Storage.EntityFramework.DataModel.PubSubConnection", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("Hub")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("ConnectionId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("ExpireOn")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Hub")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<string>("Permissions")
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Hub", "ConnectionId");
+
+                    b.HasIndex("Hub");
+
+                    b.HasIndex("Hub", "UserId");
 
                     b.ToTable("Connections");
                 });
 
             modelBuilder.Entity("Nuages.PubSub.Storage.EntityFramework.DataModel.PubSubGroupConnection", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("Hub")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Group")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("ConnectionId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
@@ -86,44 +82,36 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                     b.Property<DateTime?>("ExpireOn")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Group")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Hub")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.HasKey("Hub", "Group", "ConnectionId");
 
-                    b.ToTable("Groups");
+                    b.HasIndex("Hub", "Group");
+
+                    b.ToTable("GroupConnections");
                 });
 
             modelBuilder.Entity("Nuages.PubSub.Storage.EntityFramework.DataModel.PubSubGroupUser", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("Hub")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Group")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("UserId")
                         .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Group")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.HasKey("Hub", "Group", "UserId");
 
-                    b.Property<string>("Hub")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.HasIndex("Hub", "Group");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
+                    b.HasIndex("Hub", "UserId");
 
                     b.ToTable("GroupUsers");
                 });

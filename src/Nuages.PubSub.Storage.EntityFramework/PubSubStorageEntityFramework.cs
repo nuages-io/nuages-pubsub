@@ -29,34 +29,15 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         await _context.SaveChangesAsync();
     }
 
-    private async Task DeleteConnectionFromAllGroupsAsync(string hub, string connectionId)
-    {
-        _context.Groups.RemoveRange(_context.Groups
-            .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
-        
-        await _context.SaveChangesAsync();
-    }
-
     public async  Task DeleteConnectionAsync(string hub, string connectionId)
     {
-        _context.Connections.RemoveRange(_context.Connections
-            .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
+        await _context.DeleteConnectionAsync(hub, connectionId);
         
-        await _context.SaveChangesAsync();
-        
-        await DeleteConnectionFromAllGroupsAsync(hub, connectionId);
+        await _context.DeleteConnectionFromAllGroupConnectionAsync(hub, connectionId);
 
-        await DeleteAckForConnectionAsync(hub, connectionId);
+        await _context.DeleteAckForConnectionAsync(hub, connectionId);
     }
     
-    private async Task DeleteAckForConnectionAsync(string hub, string connectionId)
-    {
-        _context.Acks.RemoveRange(_context.Acks
-            .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
-        
-        await _context.SaveChangesAsync();
-    }
-
     public async IAsyncEnumerable<IPubSubConnection> GetAllConnectionAsync(string hub)
     {
         var list = _context.Connections.Where(c => c.Hub == hub).ToAsyncEnumerable();
@@ -74,7 +55,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
-        var list =  _context.Groups.Where(g => g.Hub == hub &&  g.Group == group).ToAsyncEnumerable();
+        var list =  _context.GroupConnections.Where(g => g.Hub == hub &&  g.Group == group).ToAsyncEnumerable();
 
         await foreach (var item in list)
         {
@@ -85,7 +66,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
     {
-        return await Task.FromResult(_context.Groups.Any(c => c.Hub == hub && c.Group == group));
+        return await Task.FromResult(_context.GroupConnections.Any(c => c.Hub == hub && c.Group == group));
     }
 
     public override async IAsyncEnumerable<IPubSubConnection> GetConnectionsForUserAsync(string hub, string userId)
@@ -122,7 +103,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
                 ExpireOn = conn.ExpireOn
             };
             
-            _context.Groups.Add(connection);
+            _context.GroupConnections.Add(connection);
             
             await _context.SaveChangesAsync();
         }
@@ -130,14 +111,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async Task RemoveConnectionFromGroupAsync(string hub, string group, string connectionId)
     {
-        var exising = _context.Groups
-            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
-
-        if (exising != null)
-        {
-            _context.Groups.Remove(exising);
-            await _context.SaveChangesAsync();
-        }
+        await _context.DeleteConnectionFromGroupConnectionAsync(hub, group, connectionId);
     }
 
     public async Task<bool> IsUserInGroupAsync(string hub, string group, string userId)
@@ -168,22 +142,19 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         await AddConnectionToGroupFromUserGroups(hub, group, userId);
     }
     
+    
     public async Task RemoveUserFromGroupAsync(string hub, string group, string userId)
     {
-        _context.GroupUsers.RemoveRange(_context.GroupUsers.Where( c => c.Hub == hub && c.Group == group && c.UserId == userId));
+        await _context.DeleteUserFromGroupConnectionAsync(hub, group, userId);
         
-        _context.Groups.RemoveRange(_context.Groups.Where( c => c.Hub == hub && c.Group == group && c.UserId == userId));
-
-        await _context.SaveChangesAsync();
+        await _context.DeleteUserFromGroupUserAsync(hub, group, userId);
     }
 
     public async Task RemoveUserFromAllGroupsAsync(string hub, string userId)
     {
-        _context.GroupUsers.RemoveRange(_context.GroupUsers.Where( c => c.Hub == hub  && c.UserId == userId));
+        await _context.DeleteUserFromAllGroupConnectionsAsync(hub, userId);
 
-        _context.Groups.RemoveRange(_context.Groups.Where( c => c.Hub == hub  && c.UserId == userId));
-
-        await _context.SaveChangesAsync();
+        await _context.DeleteUserFromAllGroupUsersAsync(hub, userId);
     }
 
     protected override async Task InsertAsync(IPubSubConnection connection)
@@ -231,7 +202,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async Task<bool> IsConnectionInGroup(string hub, string group, string connectionId)
     {
-        return await Task.FromResult(_context.Groups.Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
+        return await Task.FromResult(_context.GroupConnections.Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
     }
 
     [ExcludeFromCodeCoverage]

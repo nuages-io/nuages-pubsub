@@ -10,7 +10,7 @@ public abstract class PubSubDbContext : DbContext
 {
     public DbSet<PubSubAck> Acks { get; set; }
     public DbSet<PubSubConnection> Connections { get; set; }
-    public DbSet<PubSubGroupConnection> Groups { get; set; }
+    public DbSet<PubSubGroupConnection> GroupConnections { get; set; }
     public DbSet<PubSubGroupUser> GroupUsers { get; set; }
 
     protected PubSubDbContext(DbContextOptions context) : base(context)
@@ -64,7 +64,67 @@ public abstract class PubSubDbContext : DbContext
         
     }
 
-    //public abstract Task DeleteAllConnectionsAsync();
+    public virtual  async Task DeleteConnectionFromAllGroupConnectionAsync(string hub, string connectionId)
+    {
+        GroupConnections.RemoveRange(GroupConnections
+            .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
+        
+        await SaveChangesAsync();
+    }
+    
+    public virtual async Task DeleteAckForConnectionAsync(string hub, string connectionId)
+    {
+        Acks.RemoveRange(Acks
+            .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
+        
+        await SaveChangesAsync();
+    }
+
+    public virtual async Task DeleteConnectionAsync(string hub, string connectionId)
+    {
+        Connections.RemoveRange(Connections
+            .Where(c => c.Hub == hub && c.ConnectionId == connectionId));
+        
+        await SaveChangesAsync();
+    }
+
+    public virtual async Task DeleteConnectionFromGroupConnectionAsync(string hub, string group, string connectionId)
+    {
+        var exising = GroupConnections
+            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
+
+        if (exising != null)
+        {
+            GroupConnections.Remove(exising);
+            await SaveChangesAsync();
+        }
+    }
+
+    public virtual async Task DeleteUserFromGroupConnectionAsync(string hub, string group, string userId)
+    {
+        GroupConnections.RemoveRange(GroupConnections.Where( c => c.Hub == hub && c.Group == group && c.UserId == userId));
+        
+        await SaveChangesAsync();
+    }
+    
+    public virtual async Task DeleteUserFromGroupUserAsync(string hub, string group, string userId)
+    {
+        GroupUsers.RemoveRange(GroupUsers.Where( c => c.Hub == hub && c.Group == group && c.UserId == userId));
+        
+        await SaveChangesAsync();
+    }
+
+    public virtual async Task DeleteUserFromAllGroupConnectionsAsync(string hub, string userId)
+    {
+        GroupConnections.RemoveRange(GroupConnections.Where( c => c.Hub == hub  && c.UserId == userId));
+        await SaveChangesAsync();
+    }
+    
+    public virtual async Task DeleteUserFromAllGroupUsersAsync(string hub, string userId)
+    {
+        GroupUsers.RemoveRange(GroupUsers.Where( c => c.Hub == hub  && c.UserId == userId));
+        await SaveChangesAsync();
+    }
     
     
 }

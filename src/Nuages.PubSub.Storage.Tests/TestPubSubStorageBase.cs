@@ -134,6 +134,8 @@ public abstract class TestPubSubStorageBase
         
         Assert.Empty( PubSubStorage.GetGroupsForUser(Hub, Sub).ToEnumerable());
         
+        group = Guid.NewGuid().ToString();
+        
         await PubSubStorage.AddUserToGroupAsync(Hub, group, Sub);
 
         Assert.True(await PubSubStorage.GroupHasConnectionsAsync(Hub, group));

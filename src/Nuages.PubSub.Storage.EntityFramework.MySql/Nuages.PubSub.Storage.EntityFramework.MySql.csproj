@@ -24,6 +24,8 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+      
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework\Nuages.PubSub.Storage.EntityFramework.csproj" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.2" />
       <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
@@ -32,8 +34,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="appsettings.local.json" />
-        <Content Include="appsettings.local.json" CopyToOutputDirectory="Never" Condition="Exists('appsettings.local.json')" />
+        <None Remove="appsettings.mysql.json" />
+        <Content Include="appsettings.mysql.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.mysql.json')" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />

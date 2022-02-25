@@ -1,7 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
 
 namespace Nuages.PubSub.Storage.EntityFramework.MySql;
 
@@ -12,27 +9,43 @@ public class MySqlPubSubDbContext : PubSubDbContext
       
     }
 
-}
-
-// ReSharper disable once UnusedType.Global
-[ExcludeFromCodeCoverage]
-public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSubDbContext>
-{
-    public MySqlPubSubDbContext CreateDbContext(string[] args)
+    public override  async Task DeleteConnectionFromAllGroupConnectionAsync(string hub, string connectionId)
     {
-        Console.WriteLine("Shoud not be called");
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
-            .AddJsonFile("appsettings.local.json", true)
-            .Build();
-        
-        var optionsBuilder = new DbContextOptionsBuilder<PubSubDbContext>();
-
-        var connectionString =  configuration["ConnectionStrings:MySql"];
-
-        optionsBuilder
-            .UseMySQL(connectionString);
-
-        return new MySqlPubSubDbContext(optionsBuilder.Options);
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and ConnectionId = {connectionId}");
+    }
+ 
+    public override async Task DeleteAckForConnectionAsync(string hub, string connectionId)
+    {
+        await Database.ExecuteSqlInterpolatedAsync($"delete from Acks where hub = {hub} and ConnectionId = {connectionId}");
+    }
+    
+    public override async Task DeleteConnectionAsync(string hub, string connectionId)
+    {
+        await Database.ExecuteSqlInterpolatedAsync($"delete from Connections where hub = {hub} and ConnectionId = {connectionId}");
+    }
+    
+    public override async Task DeleteConnectionFromGroupConnectionAsync(string hub, string group, string connectionId)
+    {
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and `Group` = {group} and ConnectionId = {connectionId}");
+    }
+    
+    public override async Task DeleteUserFromGroupConnectionAsync(string hub, string group, string userId)
+    {
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and `Group` = {group} and UserId = {userId}");
+    }
+    
+    public override async Task DeleteUserFromGroupUserAsync(string hub, string group, string userId)
+    {
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupUsers where hub = {hub} and `Group` = {group} and UserId = {userId}");
+    }
+    
+    public override async Task DeleteUserFromAllGroupConnectionsAsync(string hub, string userId)
+    {
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and UserId = {userId}");
+    }
+    
+    public override async Task DeleteUserFromAllGroupUsersAsync(string hub, string userId)
+    {
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupUsers where hub = {hub} and UserId = {userId}");
     }
 }
