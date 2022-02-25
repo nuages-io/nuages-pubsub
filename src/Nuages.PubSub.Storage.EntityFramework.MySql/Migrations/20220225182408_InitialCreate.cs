@@ -54,7 +54,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 name: "GroupConnections",
                 columns: table => new
                 {
-                    Group = table.Column<string>(type: "varchar(255)", nullable: false)
+                    GroupName = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ConnectionId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -67,7 +67,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupConnections", x => new { x.Hub, x.Group, x.ConnectionId });
+                    table.PrimaryKey("PK_GroupConnections", x => new { x.Hub, x.GroupName, x.ConnectionId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -75,7 +75,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 name: "GroupUsers",
                 columns: table => new
                 {
-                    Group = table.Column<string>(type: "varchar(255)", nullable: false)
+                    GroupName = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -85,7 +85,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupUsers", x => new { x.Hub, x.Group, x.UserId });
+                    table.PrimaryKey("PK_GroupUsers", x => new { x.Hub, x.GroupName, x.UserId });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -100,14 +100,14 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                 columns: new[] { "Hub", "UserId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupConnections_Hub_Group",
+                name: "IX_GroupConnections_Hub_GroupName",
                 table: "GroupConnections",
-                columns: new[] { "Hub", "Group" });
+                columns: new[] { "Hub", "GroupName" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupUsers_Hub_Group",
+                name: "IX_GroupUsers_Hub_GroupName",
                 table: "GroupUsers",
-                columns: new[] { "Hub", "Group" });
+                columns: new[] { "Hub", "GroupName" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupUsers_Hub_UserId",

@@ -18,7 +18,18 @@ public class AllController
         _environment = environment;
     }
     
+    /// <summary>
+    /// Send a message to all connections
+    /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
+    /// <param name="hub">Hub name</param>
+    /// <param name="message"></param>
+    /// <exception cref="ArgumentException"></exception>
     [HttpPost("send")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task SendAsync(string hub, [FromBody] Message message)
     {
         try
@@ -55,6 +66,12 @@ public class AllController
         }
     }
     
+    /// <summary>
+    /// Close all connections
+    /// </summary>
+    /// <param name="hub">Hub name</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     [HttpDelete("close")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> CloseAsync(string hub)

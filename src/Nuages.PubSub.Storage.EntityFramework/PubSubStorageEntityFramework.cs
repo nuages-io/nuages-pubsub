@@ -55,7 +55,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async IAsyncEnumerable<string> GetConnectionsIdsForGroupAsync(string hub, string group)
     {
-        var list =  _context.GroupConnections.Where(g => g.Hub == hub &&  g.Group == group).ToAsyncEnumerable();
+        var list =  _context.GroupConnections.Where(g => g.Hub == hub &&  g.GroupName == group).ToAsyncEnumerable();
 
         await foreach (var item in list)
         {
@@ -66,7 +66,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async Task<bool> GroupHasConnectionsAsync(string hub, string group)
     {
-        return await Task.FromResult(_context.GroupConnections.Any(c => c.Hub == hub && c.Group == group));
+        return await Task.FromResult(_context.GroupConnections.Any(c => c.Hub == hub && c.GroupName == group));
     }
 
     public override async IAsyncEnumerable<IPubSubConnection> GetConnectionsForUserAsync(string hub, string userId)
@@ -95,7 +95,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         {
             var connection = new PubSubGroupConnection
             {
-                Group = group,
+                GroupName = group,
                 Hub = hub,
                 ConnectionId = connectionId,
                 CreatedOn = DateTime.UtcNow,
@@ -116,20 +116,20 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async Task<bool> IsUserInGroupAsync(string hub, string group, string userId)
     {
-        return await Task.FromResult(_context.GroupUsers.Any(u => u.Hub == hub && u.Group == group && u.UserId == userId));
+        return await Task.FromResult(_context.GroupUsers.Any(u => u.Hub == hub && u.GroupName == group && u.UserId == userId));
     }
 
     public async Task AddUserToGroupAsync(string hub, string group, string userId)
     {
         var existing = _context.GroupUsers
-            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.UserId == userId);
+            .SingleOrDefault(c => c.Hub == hub && c.GroupName == group && c.UserId == userId);
 
         if (existing == null)
         {
             var userConnection = new PubSubGroupUser
             {
                 UserId = userId,
-                Group = group,
+                GroupName = group,
                 Hub = hub,
                 CreatedOn = DateTime.Now
             };
@@ -173,7 +173,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
         var ids = _context.GroupUsers.Where(c => c.Hub == hub && c.UserId == userId).ToAsyncEnumerable();
 
         await foreach (var item in ids)
-            yield return item.Group;
+            yield return item.GroupName;
     }
 
     public async Task<bool> ExistAckAsync(string hub, string connectionId, string ackId)
@@ -202,7 +202,7 @@ public class PubSubStorageEntityFramework<T> : PubSubStorgeBase<PubSubConnection
 
     public async Task<bool> IsConnectionInGroup(string hub, string group, string connectionId)
     {
-        return await Task.FromResult(_context.GroupConnections.Any(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId));
+        return await Task.FromResult(_context.GroupConnections.Any(c => c.Hub == hub && c.GroupName == group && c.ConnectionId == connectionId));
     }
 
     [ExcludeFromCodeCoverage]

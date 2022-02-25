@@ -26,17 +26,17 @@ public class MySqlPubSubDbContext : PubSubDbContext
     
     public override async Task DeleteConnectionFromGroupConnectionAsync(string hub, string group, string connectionId)
     {
-        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and `Group` = {group} and ConnectionId = {connectionId}");
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and GroupName = {group} and ConnectionId = {connectionId}");
     }
     
     public override async Task DeleteUserFromGroupConnectionAsync(string hub, string group, string userId)
     {
-        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and `Group` = {group} and UserId = {userId}");
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupConnections where hub = {hub} and GroupName = {group} and UserId = {userId}");
     }
     
     public override async Task DeleteUserFromGroupUserAsync(string hub, string group, string userId)
     {
-        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupUsers where hub = {hub} and `Group` = {group} and UserId = {userId}");
+        await Database.ExecuteSqlInterpolatedAsync($"delete from GroupUsers where hub = {hub} and GroupName = {group} and UserId = {userId}");
     }
     
     public override async Task DeleteUserFromAllGroupConnectionsAsync(string hub, string userId)

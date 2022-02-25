@@ -47,17 +47,17 @@ public abstract class PubSubDbContext : DbContext
             .HasIndex(c => new { c.Hub, c.UserId });
         
         modelBuilder.Entity<PubSubGroupConnection>()
-            .HasKey(c => new { c.Hub, c.Group, c.ConnectionId });
+            .HasKey(c => new { c.Hub, Group = c.GroupName, c.ConnectionId });
         
         modelBuilder.Entity<PubSubGroupConnection>()
-            .HasIndex(c => new { c.Hub, c.Group });
+            .HasIndex(c => new { c.Hub, Group = c.GroupName });
 
         
         modelBuilder.Entity<PubSubGroupUser>()
-            .HasKey(c => new { c.Hub, c.Group, c.UserId });
+            .HasKey(c => new { c.Hub, Group = c.GroupName, c.UserId });
         
         modelBuilder.Entity<PubSubGroupUser>()
-            .HasIndex(c => new { c.Hub, c.Group });
+            .HasIndex(c => new { c.Hub, Group = c.GroupName });
         
         modelBuilder.Entity<PubSubGroupUser>()
             .HasIndex(c => new { c.Hub, c.UserId });
@@ -91,7 +91,7 @@ public abstract class PubSubDbContext : DbContext
     public virtual async Task DeleteConnectionFromGroupConnectionAsync(string hub, string group, string connectionId)
     {
         var exising = GroupConnections
-            .SingleOrDefault(c => c.Hub == hub && c.Group == group && c.ConnectionId == connectionId);
+            .SingleOrDefault(c => c.Hub == hub && c.GroupName == group && c.ConnectionId == connectionId);
 
         if (exising != null)
         {
@@ -102,14 +102,14 @@ public abstract class PubSubDbContext : DbContext
 
     public virtual async Task DeleteUserFromGroupConnectionAsync(string hub, string group, string userId)
     {
-        GroupConnections.RemoveRange(GroupConnections.Where( c => c.Hub == hub && c.Group == group && c.UserId == userId));
+        GroupConnections.RemoveRange(GroupConnections.Where( c => c.Hub == hub && c.GroupName == group && c.UserId == userId));
         
         await SaveChangesAsync();
     }
     
     public virtual async Task DeleteUserFromGroupUserAsync(string hub, string group, string userId)
     {
-        GroupUsers.RemoveRange(GroupUsers.Where( c => c.Hub == hub && c.Group == group && c.UserId == userId));
+        GroupUsers.RemoveRange(GroupUsers.Where( c => c.Hub == hub && c.GroupName == group && c.UserId == userId));
         
         await SaveChangesAsync();
     }

@@ -70,7 +70,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                     b.Property<string>("Hub")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Group")
+                    b.Property<string>("GroupName")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("ConnectionId")
@@ -86,9 +86,9 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("Hub", "Group", "ConnectionId");
+                    b.HasKey("Hub", "GroupName", "ConnectionId");
 
-                    b.HasIndex("Hub", "Group");
+                    b.HasIndex("Hub", "GroupName");
 
                     b.ToTable("GroupConnections");
                 });
@@ -98,7 +98,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                     b.Property<string>("Hub")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Group")
+                    b.Property<string>("GroupName")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("UserId")
@@ -107,9 +107,9 @@ namespace Nuages.PubSub.Storage.EntityFramework.MySql.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("Hub", "Group", "UserId");
+                    b.HasKey("Hub", "GroupName", "UserId");
 
-                    b.HasIndex("Hub", "Group");
+                    b.HasIndex("Hub", "GroupName");
 
                     b.HasIndex("Hub", "UserId");
 

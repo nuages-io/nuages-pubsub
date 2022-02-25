@@ -15,6 +15,8 @@
         <RepositoryUrl>https://github.com/nuages-io/nuages-pubsub</RepositoryUrl>
         <RepositoryType>GitHub</RepositoryType>
         <IsPackable>true</IsPackable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />

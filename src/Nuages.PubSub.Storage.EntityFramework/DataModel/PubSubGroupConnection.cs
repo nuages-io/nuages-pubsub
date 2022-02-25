@@ -5,7 +5,7 @@ namespace Nuages.PubSub.Storage.EntityFramework.DataModel;
 [ExcludeFromCodeCoverage]
 public class PubSubGroupConnection : IPubSubGroupConnection
 {
-    public string Group { get; set; } = "";
+    public string GroupName { get; set; } = "";
     public string ConnectionId { get; set; } = "";
     public DateTime CreatedOn { get; set; }
     public string Hub { get; set; } = "";
