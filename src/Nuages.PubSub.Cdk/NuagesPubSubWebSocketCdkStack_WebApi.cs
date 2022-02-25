@@ -158,7 +158,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             FunctionName = MakeId("API"),
             Code = Code.FromAsset(ApiAsset),
             Handler = WebApiHandler,
-            Runtime = Runtime.DOTNET_CORE_3_1,
+            Runtime = new Runtime("dotnet6"),
             Role = role,
             Timeout = Duration.Seconds(30),
             MemorySize = 512,

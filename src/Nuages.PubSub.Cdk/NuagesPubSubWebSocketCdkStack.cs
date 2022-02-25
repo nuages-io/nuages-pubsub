@@ -405,7 +405,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         {
             Code = Code.FromAsset(WebSocketAsset),
             Handler = handler,
-            Runtime = Runtime.DOTNET_CORE_3_1,
+            Runtime = new Runtime("dotnet6"),
             MemorySize = 512,
             Role = role,
             Timeout = Duration.Seconds(30),
