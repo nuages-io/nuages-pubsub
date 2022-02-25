@@ -463,15 +463,11 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
     private double? GetPort()
     {
-        switch (DataStorage)
+        return DataStorage switch
         {
-            case "MySql":
-            {
-                return 3306;
-            }
-            default:
-                return null;
-        }
+            "MySql" => 3306,
+            _ => null
+        };
     }
 
     protected virtual Role CreateWebSocketRole()

@@ -120,7 +120,7 @@ public partial class PubSubService : IPubSubService
 
         Console.WriteLine($"_pubSubOptions.Uri {_pubSubOptions.Uri}");
         
-        using var apiGateway = CreateApiGateway(_pubSubOptions.Uri!);
+        using var apiGateway = CreateApiGateway(_pubSubOptions.Uri);
 
         await foreach (var connectionId in connectionIds)
         {
@@ -158,7 +158,7 @@ public partial class PubSubService : IPubSubService
 
     private async Task CloseConnectionsAsync(string hub, IAsyncEnumerable<string> connectionIds)
     {
-        var api = CreateApiGateway(_pubSubOptions.Uri!);
+        var api = CreateApiGateway(_pubSubOptions.Uri);
 
         var ids = await connectionIds.ToListAsync();
         

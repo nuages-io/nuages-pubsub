@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 namespace Nuages.PubSub.Storage.EntityFramework.MySql;
 
 [ExcludeFromCodeCoverage]
+// ReSharper disable once UnusedType.Global
 public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSubDbContext>
 {
     public MySqlPubSubDbContext CreateDbContext(string[] args)
