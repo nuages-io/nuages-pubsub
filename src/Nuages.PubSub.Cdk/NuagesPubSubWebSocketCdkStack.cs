@@ -148,29 +148,13 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         
     }
 
-    public const string ContextWebSocketDomainName = "WebSocket_Domain";
-    public const string ContextWebSocketCertificateArn = "WebSocket_CertificateArn";
-
-    public const string ContextApiDomainName = "API_Domain";
-    public const string ContextApiCertificateArn = "API_CertificateArn";
-    public const string ContextApiApiKey = "API_ApiKey";
     
-    public const string ContextAuthAudience = "Auth_Audience";
-    public const string ContextAuthIssuer = "Auth_Issuer";
-    public const string ContextAuthSecret = "Auth_Secret";
+    public string? WebSocketDomainName { get; set; }
+    public string? WebSocketCertificateArn { get; set; }
 
-    public const string ContextVpcId = "Vpc_Id";
-
-    public const string ContextDatabaseProxyArn = "DatabaseProxy_Arn";
-    public const string ContextDatabaseProxyName = "DatabaseProxy_Name";
-    public const string ContextDatabaseProxyEndpoint = "DatabaseProxy_Endpoint";
-    public const string ContextDatabaseProxyUser = "DatabaseProxy_User";
-    public const string ContextDatabaseProxySecurityGroup = "DatabaseProxy_SecurityGroup_Id";
-    
-    public const string ContextDataStorage = "Data_Storage";
-    public const string ContextDataPort = "Data_Port";
-    public const string ContextDataConnectionString = "Data_ConnectionString";
-    public const string ContextDataCreateDynamoDbTables = "Data_CreateDynamoDbTables";
+    public string? ApiDomainName { get; set; }
+    public string? ApiCertificateArn { get; set; }
+    public string? ApiApiKey { get; set; }
     
     public string? AuthIssuer { get; set; }
     public string? AuthAudience { get; set; }
@@ -233,24 +217,16 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
 
         var stage = CreateStage(api, deployment);
 
-        var domainName = (string)Node.TryGetContext(ContextWebSocketDomainName);
-
-        if (!string.IsNullOrEmpty(domainName))
+        if (!string.IsNullOrEmpty(WebSocketDomainName))
         {
-            Console.WriteLine($"Domain = {domainName}");
-
-            var certficateArn = (string)Node.TryGetContext(ContextWebSocketCertificateArn);
-
-            Console.WriteLine($"ContextCertificateArn = {ContextWebSocketCertificateArn}");
-
-            var apiGatewayDomainName = CreateApiGatewayDomainName(certficateArn, domainName);
-            CreateS3RecordSet(domainName, apiGatewayDomainName);
+            var apiGatewayDomainName = CreateApiGatewayDomainName(WebSocketCertificateArn!, WebSocketDomainName);
+            CreateS3RecordSet(WebSocketDomainName, apiGatewayDomainName);
             CreateApiMapping(apiGatewayDomainName, api, stage);
 
             // ReSharper disable once UnusedVariable
             var output2 = new CfnOutput(this, "NuagesPubSubCustomURI", new CfnOutputProps
             {
-                Value = $"wss://{domainName}",
+                Value = $"wss://{WebSocketDomainName}",
                 Description = "The Custom WSS Protocol URI to connect to"
             });
         }
@@ -669,59 +645,84 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         });
         return apiGatewayDomainName;
     }
-    
-   
+
     private void ReadContextVariables()
     {
-        AuthIssuer = Node.TryGetContext(ContextAuthIssuer) != null!
-            ? Node.TryGetContext(ContextAuthIssuer).ToString()
+        WebSocketDomainName = Node.TryGetContext(ContextValues.WebSocketDomainName) != null!
+            ? Node.TryGetContext(ContextValues.WebSocketDomainName).ToString()
+            : null;
+        
+        WebSocketCertificateArn = Node.TryGetContext(ContextValues.WebSocketCertificateArn) != null!
+            ? Node.TryGetContext(ContextValues.WebSocketCertificateArn).ToString()
+            : null;
+        
+        ApiDomainName = Node.TryGetContext(ContextValues.ApiDomainName) != null!
+            ? Node.TryGetContext(ContextValues.ApiDomainName).ToString()
+            : null;
+        
+        ApiCertificateArn = Node.TryGetContext(ContextValues.ApiCertificateArn) != null!
+            ? Node.TryGetContext(ContextValues.ApiCertificateArn).ToString()
+            : null;
+        
+        ApiApiKey = Node.TryGetContext(ContextValues.ApiApiKey) != null!
+            ? Node.TryGetContext(ContextValues.ApiApiKey).ToString()
+            : null;
+        
+        AuthIssuer = Node.TryGetContext(ContextValues.AuthIssuer) != null!
+            ? Node.TryGetContext(ContextValues.AuthIssuer).ToString()
+            : null;
+        
+        AuthIssuer = Node.TryGetContext(ContextValues.AuthIssuer) != null!
+            ? Node.TryGetContext(ContextValues.AuthIssuer).ToString()
             : null;
 
-        AuthAudience = Node.TryGetContext(ContextAuthAudience) != null!
-            ? Node.TryGetContext(ContextAuthAudience).ToString()
+        AuthAudience = Node.TryGetContext(ContextValues.AuthAudience) != null!
+            ? Node.TryGetContext(ContextValues.AuthAudience).ToString()
             : null;
 
-        AuthSecret = Node.TryGetContext(ContextAuthSecret) != null!
-            ? Node.TryGetContext(ContextAuthSecret).ToString()
+        AuthSecret = Node.TryGetContext(ContextValues.AuthSecret) != null!
+            ? Node.TryGetContext(ContextValues.AuthSecret).ToString()
             : null;
 
-        VpcId = Node.TryGetContext(ContextVpcId) != null!
-            ? Node.TryGetContext(ContextVpcId).ToString()
+        VpcId = Node.TryGetContext(ContextValues.VpcId) != null!
+            ? Node.TryGetContext(ContextValues.VpcId).ToString()
             : null;
 
-        DatabaseProxyArn = Node.TryGetContext(ContextDatabaseProxyArn) != null!
-            ? Node.TryGetContext(ContextDatabaseProxyArn).ToString()
+        DatabaseProxyArn = Node.TryGetContext(ContextValues.DatabaseProxyArn) != null!
+            ? Node.TryGetContext(ContextValues.DatabaseProxyArn).ToString()
             : null;
 
-        DatabaseProxyEndpoint = Node.TryGetContext(ContextDatabaseProxyEndpoint) != null!
-            ? Node.TryGetContext(ContextDatabaseProxyEndpoint).ToString()
+        DatabaseProxyEndpoint = Node.TryGetContext(ContextValues.DatabaseProxyEndpoint) != null!
+            ? Node.TryGetContext(ContextValues.DatabaseProxyEndpoint).ToString()
             : null;
 
-        DatabaseProxyName = Node.TryGetContext(ContextDatabaseProxyName) != null!
-            ? Node.TryGetContext(ContextDatabaseProxyName).ToString()
+        DatabaseProxyName = Node.TryGetContext(ContextValues.DatabaseProxyName) != null!
+            ? Node.TryGetContext(ContextValues.DatabaseProxyName).ToString()
             : null;
 
-        DatabaseProxyUser = Node.TryGetContext(ContextDatabaseProxyUser) != null!
-            ? Node.TryGetContext(ContextDatabaseProxyUser).ToString()
+        DatabaseProxyUser = Node.TryGetContext(ContextValues.DatabaseProxyUser) != null!
+            ? Node.TryGetContext(ContextValues.DatabaseProxyUser).ToString()
             : null;
 
-        DatabaseProxySecurityGroup = Node.TryGetContext(ContextDatabaseProxySecurityGroup) != null!
-            ? Node.TryGetContext(ContextDatabaseProxySecurityGroup).ToString()
+        DatabaseProxySecurityGroup = Node.TryGetContext(ContextValues.DatabaseProxySecurityGroup) != null!
+            ? Node.TryGetContext(ContextValues.DatabaseProxySecurityGroup).ToString()
             : null;
 
-        DataCreateDynamoDbTables = Node.TryGetContext(ContextDataCreateDynamoDbTables) == null! ||
-                               Convert.ToBoolean(Node.TryGetContext(ContextDataCreateDynamoDbTables).ToString());
+        DataCreateDynamoDbTables = Node.TryGetContext(ContextValues.DataCreateDynamoDbTables) == null! ||
+                               Convert.ToBoolean(Node.TryGetContext(ContextValues.DataCreateDynamoDbTables).ToString());
 
-        DataStorage = Node.TryGetContext(ContextDataStorage) != null!
-            ? Node.TryGetContext(ContextDataStorage).ToString()
+        DataStorage = Node.TryGetContext(ContextValues.DataStorage) != null!
+            ? Node.TryGetContext(ContextValues.DataStorage).ToString()
             : null;
 
-        DataConnectionString = Node.TryGetContext(ContextDataConnectionString) != null!
-            ? Node.TryGetContext(ContextDataConnectionString).ToString()
+        DataConnectionString = Node.TryGetContext(ContextValues.DataConnectionString) != null!
+            ? Node.TryGetContext(ContextValues.DataConnectionString).ToString()
             : null;
 
-        DataPort = Node.TryGetContext(ContextDataPort) != null!
-            ? Convert.ToInt32(Node.TryGetContext(ContextDataPort).ToString())
+        DataPort = Node.TryGetContext(ContextValues.DataPort) != null!
+            ? Convert.ToInt32(Node.TryGetContext(ContextValues.DataPort).ToString())
             : null;
     }
+
+ 
 }

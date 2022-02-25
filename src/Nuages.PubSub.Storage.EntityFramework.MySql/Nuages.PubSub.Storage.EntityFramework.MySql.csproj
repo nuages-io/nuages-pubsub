@@ -33,7 +33,7 @@
 
     <ItemGroup>
         <None Remove="appsettings.local.json" />
-        <Content Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.local.json')" />
+        <Content Include="appsettings.local.json" CopyToOutputDirectory="Never" Condition="Exists('appsettings.local.json')" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
@@ -48,11 +48,6 @@
         </None>
 
     </ItemGroup>
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Configuration, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
-        <HintPath>..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.1\Microsoft.Extensions.Configuration.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-    
+  
 
 </Project>

@@ -27,29 +27,24 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
 
         var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
         
-        var domainName = (string)Node.TryGetContext(ContextApiDomainName);
-
-        if (!string.IsNullOrEmpty(domainName))
+        if (!string.IsNullOrEmpty(ApiDomainName))
         {
-            var certficateArn = (string)Node.TryGetContext(ContextApiCertificateArn);
-
-            Console.WriteLine($"ContextCertificateArnApi = {ContextApiCertificateArn}");
             var apiGatewayDomainName = new CfnDomainName(this, "NuagesApiDomainName", new CfnDomainNameProps
             {
-                DomainName = domainName,
+                DomainName = ApiDomainName,
                 DomainNameConfigurations = new[]
                 {
                     new CfnDomainName.DomainNameConfigurationProperty
                     {
                         EndpointType = "REGIONAL",
-                        CertificateArn = certficateArn
+                        CertificateArn = ApiCertificateArn
                     }
                 }
             });
 
             var hostedZone = HostedZone.FromLookup(this, "LookupApi", new HostedZoneProviderProps
             {
-                DomainName = GetBaseDomain(domainName)
+                DomainName = GetBaseDomain(ApiDomainName)
             });
 
             // ReSharper disable once UnusedVariable
@@ -61,7 +56,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
                     HostedZoneId = apiGatewayDomainName.AttrRegionalHostedZoneId
                 },
                 HostedZoneId = hostedZone.HostedZoneId,
-                Name = domainName,
+                Name = ApiDomainName,
                 Type = "A"
             });
 
@@ -94,12 +89,10 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
             }
         });
 
-        var key = (string)Node.TryGetContext(ContextApiApiKey);
-        
         // ReSharper disable once UnusedVariable
         var apiKey = new ApiKey(this, MakeId("WebApiKey"), new ApiKeyProps
         {
-            Value = key
+            Value = ApiApiKey
         });
 
         usagePlan.AddApiKey(apiKey);
