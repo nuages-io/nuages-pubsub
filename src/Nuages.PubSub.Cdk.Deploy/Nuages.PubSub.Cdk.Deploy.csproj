@@ -12,15 +12,13 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
+        <PackageReference Include="Nuages.Web" Version="1.3.13" />
     </ItemGroup>
 
 
     <ItemGroup>
         <None Remove="appsettings.json" />
         <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="appsettings.deploy.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.deploy.json')" />
     </ItemGroup>
     
     <ItemGroup>

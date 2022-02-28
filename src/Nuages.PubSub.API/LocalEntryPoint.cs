@@ -17,10 +17,7 @@ public class LocalEntryPoint
         Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
-                config.AddJsonFile(
-                    hostingContext.HostingEnvironment.IsDevelopment()
-                        ? "appsettings.local.json"
-                        : "appsettings.prod.json", false, true);
+                config.AddJsonFile("appsettings.local.json", false, true);
             })
             .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
 }

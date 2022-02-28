@@ -1,4 +1,5 @@
 using NLog.Web;
+using Nuages.Web;
 
 namespace Nuages.PubSub.API;
 // ReSharper disable once UnusedType.Global
@@ -15,19 +16,27 @@ public class LambdaEntryPoint :
         // ReSharper disable once UnusedParameter.Local
         builder.ConfigureAppConfiguration((context, configBuilder) =>
         {
-            configBuilder.AddJsonFile("appsettings.prod.json", true, true);
+            configBuilder.AddJsonFile("appsettings.json", false, true);
             configBuilder.AddEnvironmentVariables();
-            
-            var name = Environment.GetEnvironmentVariable("Nuages__PubSub__StackName");
 
-            if (name != null)
+            var configuration = configBuilder.Build();
+           
+            var config = configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>();
+        
+            if (config.ParameterStore.Enabled)
             {
                 configBuilder.AddSystemsManager(configureSource =>
                 {
-                    configureSource.Path = $"/{name}";
-                    configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
+                    configureSource.Path = config.ParameterStore.Path;
                     configureSource.Optional = true;
                 });
+            }
+
+            if (config.AppConfig.Enabled)
+            {
+                configBuilder.AddAppConfig(config.AppConfig.ApplicationId,  
+                    config.AppConfig.EnvironmentId, 
+                    config.AppConfig.ConfigProfileId,true);
             }
         }).UseNLog();
 

@@ -12,6 +12,7 @@ using Nuages.PubSub.Storage.EntityFramework.MySql;
 using Nuages.PubSub.Storage.EntityFramework.SqlServer;
 using Nuages.PubSub.Storage.Mongo;
 using Nuages.PubSub.WebSocket.Endpoints;
+using Nuages.Web;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
@@ -28,23 +29,28 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
         var builder = configManager
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json",  false, true)
-            .AddJsonFile("appsettings.prod.json",  true, true)
             .AddEnvironmentVariables();
      
-        var name = Environment.GetEnvironmentVariable("Nuages__PubSub__StackName");
-
-        if (name != null)
+        IConfiguration configuration = builder.Build();
+        
+        var config = configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>();
+        
+        if (config.ParameterStore.Enabled)
         {
             builder.AddSystemsManager(configureSource =>
             {
-                configureSource.Path = $"/{name}";
-                configureSource.ReloadAfter = TimeSpan.FromMinutes(15);
+                configureSource.Path = config.ParameterStore.Path;
                 configureSource.Optional = true;
             });
         }
+
+        if (config.AppConfig.Enabled)
+        {
+            builder.AddAppConfig(config.AppConfig.ApplicationId,  
+                config.AppConfig.EnvironmentId, 
+                config.AppConfig.ConfigProfileId,true);
+        }
         
-        IConfiguration configuration = builder.Build();
-            
         AWSSDKHandler.RegisterXRayForAllServices();
         AWSXRayRecorder.InitializeInstance(configuration);
         

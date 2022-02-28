@@ -103,5 +103,8 @@
   "security-group:account=817771063649:region=ca-central-1:securityGroupId=sg-08b2353c03c6f3e01": {
     "securityGroupId": "sg-08b2353c03c6f3e01",
     "allowAllOutbound": false
-  }
+  },
+  "acknowledged-issue-numbers": [
+    19179
+  ]
 }

@@ -20,7 +20,7 @@ using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
 namespace Nuages.PubSub.Cdk;
 
 [ExcludeFromCodeCoverage]
-public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
+public partial class PubSubWebSocketCdkStack<T> : Stack
 {
     protected string? WebSocketAsset { get; set; }
 
@@ -143,7 +143,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         });
     }
 
-    protected NuagesPubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
+    protected PubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
     {
         
     }
@@ -480,7 +480,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy());
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy());
         role.AddManagedPolicy(CreateDynamoDbRolePolicy());
-        role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy());
+        role.AddManagedPolicy(CreateSystemsManagerPolicy());
 
         return role;
     }
@@ -523,7 +523,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
         });
     }
 
-    protected virtual ManagedPolicy CreateSystemsManagerParametersRolePolicy(string suffix = "")
+    protected virtual ManagedPolicy CreateSystemsManagerPolicy(string suffix = "")
     {
         return new ManagedPolicy(this, MakeId("SystemsManagerParametersRole" + suffix), new ManagedPolicyProps
         {
@@ -534,7 +534,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T> : Stack
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] { "ssm:GetParametersByPath" },
+                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
                         Resources = new[] { "*" }
                     })
                 }

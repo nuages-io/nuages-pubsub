@@ -13,7 +13,7 @@ using CfnDomainNameProps = Amazon.CDK.AWS.Apigatewayv2.CfnDomainNameProps;
 
 namespace Nuages.PubSub.Cdk;
 
-public partial class NuagesPubSubWebSocketCdkStack<T>
+public partial class PubSubWebSocketCdkStack<T>
 {
     protected string? ApiAsset { get; set; }
 
@@ -224,7 +224,7 @@ public partial class NuagesPubSubWebSocketCdkStack<T>
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy("API"));
         role.AddManagedPolicy(CreateLambdaFullAccessRolePolicy());
         role.AddManagedPolicy(CreateDynamoDbRolePolicy("API"));
-        role.AddManagedPolicy(CreateSystemsManagerParametersRolePolicy("API"));
+        role.AddManagedPolicy(CreateSystemsManagerPolicy("API"));
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy("API"));
 
         return role;
