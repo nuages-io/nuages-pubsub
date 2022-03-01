@@ -50,6 +50,6 @@ public class PubSubExternalAuthOption
 {
     public string ValidIssuers { get; set; } = "";
     public string? ValidAudiences { get; set; }
-    public string JsonWebKeySetUrlPath { get; set; } = ".well-known/openid-configuration";
+    public string JsonWebKeySetUrlPath { get; set; } = ".well-known/jwks";
     public bool DisableSslCheck { get; set; }
 }
