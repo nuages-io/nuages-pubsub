@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
@@ -45,6 +46,8 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
 
         claimDict.Add("nuageshub", hub);
 
+        context.Logger.LogInformation("PubSubOptions=" + JsonSerializer.Serialize(_pubSubOptions));
+        
         var validIssuers = _pubSubOptions.ValidIssuers.Split(",");
         var validAudiences = _pubSubOptions.ValidAudiences?.Split(",").ToList();
 
@@ -77,6 +80,7 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
     protected virtual void ValidateToken(string token, IEnumerable<SecurityKey> keys, IEnumerable<string> validIssuers,
         IEnumerable<string>? validAudiences)
     {
+        
         new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
