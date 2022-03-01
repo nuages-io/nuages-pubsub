@@ -3,6 +3,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.CodeBuild;
 using Amazon.CDK.AWS.CodePipeline;
 using Amazon.CDK.AWS.CodePipeline.Actions;
+using Amazon.CDK.AWS.CodeStarNotifications;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.Pipelines;
 using Constructs;
@@ -34,6 +35,7 @@ public class PubSubStackWithPipeline : Stack
         var pipeline = new CodePipeline(this, "pipeline", new CodePipelineProps
         {
             PipelineName = $"{configuration["StackName"]}-Pipeline",
+            
             SynthCodeBuildDefaults = new CodeBuildOptions
             {
                 RolePolicy = new PolicyStatement[]
@@ -118,6 +120,23 @@ public class PubSubStackWithPipeline : Stack
             }
         }));
 
+        pipeline.BuildPipeline();
+        
+        // var rule = new NotificationRule(this, "Notification", new NotificationRuleProps
+        // {
+        //     Events = new string[]
+        //     {
+        //     },
+        //     Source = null,
+        //     Targets = new INotificationRuleTarget[]
+        //     {
+        //     },
+        //     DetailType = DetailType.BASIC,
+        //     Enabled = null,
+        //     NotificationRuleName = pipeline.Pipeline.PipelineName,
+        //
+        // })
+        
         // new CfnWebhook(this, "gitHubWebHook", new CfnWebhookProps
         // {
         //     Authentication = "GITHUB_HMAC",

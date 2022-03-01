@@ -14,7 +14,7 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
     {
         var options = configuration.Get<ConfigOptions>();
         
-        var stack = new PubSubStack(scope, "Stack", new StackProps
+        var stack = new PubSubStack(scope, options.StackName, new StackProps
         {
             StackName = options.StackName,
             Env = new Amazon.CDK.Environment

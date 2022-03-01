@@ -85,6 +85,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     Endpoint = DatabaseProxyEndpoint,
                     SecurityGroups = new[] { ProxySg }
                 });
+
             }
            
             return _proxy;
@@ -120,7 +121,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     private ISecurityGroup? _vpcSecurityGroup;
     
-    private ISecurityGroup[]? CurrentVpcSecurityGroup
+    private ISecurityGroup[]? VpcSecurityGroups
     {
         get
         {
@@ -129,7 +130,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                 _vpcSecurityGroup ??= CreateVpcSecurityGroup();
             }
 
-            return _vpcSecurityGroup != null ? new[] { _vpcSecurityGroup } : null;
+            return _vpcSecurityGroup != null ? new[] { _vpcSecurityGroup, ProxySg } : null;
         }
     }
 
@@ -410,7 +411,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             Environment = GetEnvVariables(api),
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
-            SecurityGroups = CurrentVpcSecurityGroup,
+            SecurityGroups = VpcSecurityGroups,
             AllowPublicSubnet = true
         });
 
@@ -420,12 +421,12 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         {
             Proxy.GrantConnect(func, DatabaseProxyUser);
             
-            if (CurrentVpcSecurityGroup != null)
+            if (VpcSecurityGroups != null)
             {
                 var port = GetPort();
                 
-                if (port.HasValue)
-                    ProxySg.AddIngressRule(CurrentVpcSecurityGroup.First(), Port.Tcp(port.Value), "PubSub WSS MySql");
+                // if (port.HasValue)
+                //     ProxySg.AddIngressRule(VpcSecurityGroups.First(), Port.Tcp(port.Value), "PubSub WSS MySql");
             }
         }
         
