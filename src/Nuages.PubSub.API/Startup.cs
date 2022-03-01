@@ -31,8 +31,6 @@ public class Startup
 
         var storage = _configuration["Nuages:Data:Storage"];
         
-        Console.WriteLine("storage=" + storage);
-        
         switch (storage)
         {
             case "DynamoDb":
@@ -133,6 +131,7 @@ public class Startup
                 {
                     await context.Response.WriteAsync("PubSub");
                 });
+            endpoints.MapHealthChecks("health");
         });
 
         app.UseOpenApi();
