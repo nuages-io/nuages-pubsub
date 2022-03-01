@@ -35,7 +35,6 @@ public class PubSubStackWithPipeline : Stack
         var pipeline = new CodePipeline(this, "pipeline", new CodePipelineProps
         {
             PipelineName = $"{configuration["StackName"]}-Pipeline",
-            
             SynthCodeBuildDefaults = new CodeBuildOptions
             {
                 RolePolicy = new PolicyStatement[]

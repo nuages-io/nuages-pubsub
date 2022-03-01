@@ -119,6 +119,16 @@ public partial class PubSubWebSocketCdkStack<T>
         {
             ApiKeyRequired = false
         }));
+        
+        func.AddEventSource(new ApiEventSource("ANY", "/health/{proxy+}", new MethodOptions
+        {
+            ApiKeyRequired = false
+        }));
+
+        func.AddEventSource(new ApiEventSource("ANY", "/health", new MethodOptions
+        {
+            ApiKeyRequired = false
+        }));
     }
 
     private ISecurityGroup? _vpcApiSecurityGroup;
