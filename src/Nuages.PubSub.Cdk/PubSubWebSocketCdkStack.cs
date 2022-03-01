@@ -83,6 +83,11 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string? DataStorage { get; set; }
     public string? DataConnectionString { get; set; }
     
+    public string? ExternalAuthValidIssuers { get; set; }
+    public string? ExternalAuthJsonWebKeySetUrlPath { get; set; }
+    public string? ExternalAuthValidAudiences { get; set; }
+    public bool ExternalAuthDisableSslCheck { get; set; }
+    
     public List<CfnRoute> Routes { get; set; } = new();
 
     protected virtual string MakeId(string id)
@@ -450,6 +455,17 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         if (!string.IsNullOrEmpty(AuthSecret))
             variables.Add("Nuages__PubSub__Secret", AuthSecret);
 
+        if (!string.IsNullOrEmpty(ExternalAuthValidAudiences))
+            variables.Add("Nuages__ExternalAuth__ValidAudiences", ExternalAuthValidAudiences);
+        
+        if (!string.IsNullOrEmpty(ExternalAuthValidIssuers))
+            variables.Add("Nuages__ExternalAuth__ValidIssuers", ExternalAuthValidIssuers);
+        
+        if (!string.IsNullOrEmpty(ExternalAuthJsonWebKeySetUrlPath))
+            variables.Add("Nuages__ExternalAuth__JsonWebKeySetUrlPath", ExternalAuthJsonWebKeySetUrlPath);
+        
+        variables.Add("Nuages__ExternalAuth__ExternalAuthDisableSslCheck", ExternalAuthDisableSslCheck.ToString());
+        
         if (!string.IsNullOrEmpty(DataStorage))
         {
             variables.Add("Nuages__Data__Storage", DataStorage);
@@ -667,7 +683,22 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         AuthSecret = Node.TryGetContext(ContextValues.AuthSecret) != null!
             ? Node.TryGetContext(ContextValues.AuthSecret).ToString()
             : null;
-
+        
+        ExternalAuthValidAudiences = Node.TryGetContext(ContextValues.ExternalAuthValidAudiences) != null!
+            ? Node.TryGetContext(ContextValues.ExternalAuthValidAudiences).ToString()
+            : null;
+        
+        ExternalAuthValidIssuers = Node.TryGetContext(ContextValues.ExternalAuthValidIssuers) != null!
+            ? Node.TryGetContext(ContextValues.ExternalAuthValidIssuers).ToString()
+            : null;
+        
+        ExternalAuthJsonWebKeySetUrlPath = Node.TryGetContext(ContextValues.ExternalAuthJsonWebKeySetUrlPath) != null!
+            ? Node.TryGetContext(ContextValues.ExternalAuthJsonWebKeySetUrlPath).ToString()
+            : null;
+        
+        ExternalAuthDisableSslCheck = Node.TryGetContext(ContextValues.ExternalAuthDisableSslCheck) != null! && 
+                                      Convert.ToBoolean(Node.TryGetContext(ContextValues.ExternalAuthDisableSslCheck));
+        
         VpcId = Node.TryGetContext(ContextValues.VpcId) != null!
             ? Node.TryGetContext(ContextValues.VpcId).ToString()
             : null;
@@ -702,4 +733,5 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         
     }
 
+ 
 }

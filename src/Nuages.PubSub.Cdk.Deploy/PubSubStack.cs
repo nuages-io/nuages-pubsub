@@ -63,6 +63,15 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
         if (!string.IsNullOrEmpty( options.Env.Auth.Secret))
             Node.SetContext(ContextValues.AuthSecret, options.Env.Auth.Secret);
         
+        if (!string.IsNullOrEmpty( options.Env.ExternalAuth.ValidAudiences))
+            Node.SetContext(ContextValues.ExternalAuthValidAudiences, options.Env.ExternalAuth.ValidAudiences);
+        
+        if (!string.IsNullOrEmpty( options.Env.ExternalAuth.ValidIssuers))
+            Node.SetContext(ContextValues.ExternalAuthValidIssuers, options.Env.ExternalAuth.ValidIssuers);
+        
+        Node.SetContext(ContextValues.ExternalAuthJsonWebKeySetUrlPath,options.Env.ExternalAuth.JsonWebKeySetUrlPath);
+        Node.SetContext(ContextValues.ExternalAuthDisableSslCheck,options.Env.ExternalAuth.DisableSslCheck);
+        
         if (!string.IsNullOrEmpty( options.VpcId))
             Node.SetContext(ContextValues.VpcId, options.VpcId);
         

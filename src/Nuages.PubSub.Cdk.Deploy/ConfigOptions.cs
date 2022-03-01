@@ -37,6 +37,7 @@ public class Api
 [ExcludeFromCodeCoverage]
 public class Env
 {
+    public bool UseExternlAuth { get; set; }
     public Auth Auth { get; set; } = new();
     public ExternalAuth ExternalAuth { get; set; } = new();
 }

@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Nuages.PubSub.Services;
 
 [ExcludeFromCodeCoverage]
-public class PubSubBuilder : IPubSubBuilder
+public class PubSubRouteBuilder : IPubSubRouteBuilder
 {
-    public PubSubBuilder(IServiceCollection services, IConfiguration? configuration = null)
+    public PubSubRouteBuilder(IServiceCollection services, IConfiguration? configuration = null)
     {
         Services = services;
         Configuration = configuration;
@@ -20,7 +20,7 @@ public class PubSubBuilder : IPubSubBuilder
 
 }
 
-public interface IPubSubBuilder
+public interface IPubSubRouteBuilder
 {
     IServiceCollection Services { get; }
     IConfiguration? Configuration { get; }

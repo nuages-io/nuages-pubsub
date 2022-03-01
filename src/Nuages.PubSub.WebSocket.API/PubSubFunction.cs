@@ -58,11 +58,13 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
 
         serviceCollection
             .AddSingleton(configuration);
-            
-        var pubSubBuilder = 
+
+        var pubSubRouteBuilder =
             serviceCollection
-                .AddPubSubLambdaRoutes(configuration)
-                .AddPubSubService();
+                .AddPubSubLambdaRoutes(configuration);
+                //.UseExternalAuthRoute();
+
+        var pubSubBuilder = serviceCollection.AddPubSubService(configuration);
 
         var storage = configuration.GetSection("Nuages:Data:Storage").Value;
         switch (storage)
