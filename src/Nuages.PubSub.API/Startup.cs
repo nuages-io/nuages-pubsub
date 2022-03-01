@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
 using Nuages.PubSub.Storage.EntityFramework.MySql;
@@ -133,18 +131,7 @@ public class Startup
             endpoints.MapGet("/",
                 async context =>
                 {
-                    var option = app.ApplicationServices.GetService<IOptions<PubSubOptions>>();
-
-                    var config = new
-                    {
-                        PubSubOptions = option,
-                        Storage = _configuration.GetSection("Nuages:Data:Storage").Value
-                    };
-
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(config, new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    }));
+                    await context.Response.WriteAsync("PubSub");
                 });
         });
 

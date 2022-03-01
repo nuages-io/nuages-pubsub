@@ -74,17 +74,17 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             }
             case "MongoDb":
             {
-                pubSubBuilder.AddPubSubMongoStorage(config =>
+                pubSubBuilder.AddPubSubMongoStorage(dbConfig =>
                 {
-                    config.ConnectionString = configuration["Nuages:Data:Mongo:ConnectionString"];
+                    dbConfig.ConnectionString = configuration["Nuages:Data:Mongo:ConnectionString"];
                 });
                 break;
             }
             case "SqlServer":
             {
-                pubSubBuilder.AddPubSubSqlServerStorage(config =>
+                pubSubBuilder.AddPubSubSqlServerStorage(dbConfig =>
                 {
-                    config.UseSqlServer(configuration["Nuages:Data:SqlServer:ConnectionString"]);
+                    dbConfig.UseSqlServer(configuration["Nuages:Data:SqlServer:ConnectionString"]);
                 });
 
                 break;
@@ -92,14 +92,11 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             case "MySql":
             {
                 
-                pubSubBuilder.AddPubSubMySqlStorage(config =>
+                pubSubBuilder.AddPubSubMySqlStorage(dbConfig =>
                 {
                     var connectionString = configuration["Nuages:Data:MySql:ConnectionString"];
                     Console.WriteLine("ConnectionString=" + connectionString);
-                    // var serverVersion = ServerVersion.AutoDetect(connectionString);
-                    // Console.WriteLine("serverVersion=" + serverVersion);
-                    // config.UseMySql(connectionString, serverVersion);
-                    config.UseMySQL(connectionString);
+                    dbConfig.UseMySQL(connectionString);
                 });
 
                 break;

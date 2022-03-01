@@ -15,7 +15,7 @@ public class LocalEntryPoint
 
     private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            .ConfigureAppConfiguration((_, config) =>
             {
                 config.AddJsonFile("appsettings.local.json", false, true);
             })

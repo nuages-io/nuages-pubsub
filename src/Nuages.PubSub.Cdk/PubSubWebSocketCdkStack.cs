@@ -699,5 +699,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         DataConnectionString = Node.TryGetContext(ContextValues.DataConnectionString) != null!
             ? Node.TryGetContext(ContextValues.DataConnectionString).ToString()
             : null;
+        
     }
+
 }

@@ -1,10 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
+using Amazon.CDK.AWS.Chatbot;
 using Amazon.CDK.AWS.CodeBuild;
-using Amazon.CDK.AWS.CodePipeline;
 using Amazon.CDK.AWS.CodePipeline.Actions;
 using Amazon.CDK.AWS.CodeStarNotifications;
 using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.Pipelines;
 using Constructs;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +32,6 @@ public class PubSubStackWithPipeline : Stack
 
     private PubSubStackWithPipeline(Construct scope, string id, IConfiguration configuration, IStackProps props) : base(scope, id, props)
     {
-
         var pipeline = new CodePipeline(this, "pipeline", new CodePipelineProps
         {
             PipelineName = $"{configuration["StackName"]}-Pipeline",
@@ -111,7 +111,7 @@ public class PubSubStackWithPipeline : Stack
             }
         });
             
-        pipeline.AddStage(new PipelineAppStage(this, "Deploy", configuration, new Amazon.CDK.StageProps
+        pipeline.AddStage(new PipelineAppStage(this, "Deploy", configuration, new StageProps
         {
             Env = new Amazon.CDK.Environment
             {
@@ -122,21 +122,41 @@ public class PubSubStackWithPipeline : Stack
 
         pipeline.BuildPipeline();
         
-        // var rule = new NotificationRule(this, "Notification", new NotificationRuleProps
-        // {
-        //     Events = new string[]
-        //     {
-        //     },
-        //     Source = null,
-        //     Targets = new INotificationRuleTarget[]
-        //     {
-        //     },
-        //     DetailType = DetailType.BASIC,
-        //     Enabled = null,
-        //     NotificationRuleName = pipeline.Pipeline.PipelineName,
-        //
-        // })
-        
+        var arn = configuration["NotificationTargetArn"];
+
+        if (!string.IsNullOrEmpty(arn))
+        {
+            INotificationRuleTarget? target;
+            
+            if (arn.StartsWith("arn:aws:chatbot"))
+                target = SlackChannelConfiguration.FromSlackChannelConfigurationArn(this, "SlackChannel", arn);
+            else
+            {
+                target = Topic.FromTopicArn(this, "SNSTopic", arn);
+            }
+            
+            new NotificationRule(this, "Notification", new NotificationRuleProps
+            {
+                Events = new []
+                {
+                    "codepipeline-pipeline-pipeline-execution-failed",
+                    "codepipeline-pipeline-pipeline-execution-canceled",
+                    "codepipeline-pipeline-pipeline-execution-started",
+                    "codepipeline-pipeline-pipeline-execution-resumed",
+                    "codepipeline-pipeline-pipeline-execution-succeeded",
+                    "codepipeline-pipeline-pipeline-execution-superseded"
+                },
+                Source = pipeline.Pipeline,
+                Targets = new []
+                {
+                    target
+                },
+                DetailType = DetailType.BASIC,
+                NotificationRuleName = pipeline.Pipeline.PipelineName
+            });
+        }
+
+
         // new CfnWebhook(this, "gitHubWebHook", new CfnWebhookProps
         // {
         //     Authentication = "GITHUB_HMAC",
@@ -163,7 +183,7 @@ public class PubSubStackWithPipeline : Stack
 
     private class PipelineAppStage : Stage
     {
-        public PipelineAppStage(Construct scope, string id, IConfiguration configuration, Amazon.CDK.IStageProps props) : base(scope, id, props)
+        public PipelineAppStage(Construct scope, string id, IConfiguration configuration, IStageProps props) : base(scope, id, props)
         {
             PubSubStack.CreateStack(this, configuration);
         }

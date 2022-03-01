@@ -50,7 +50,6 @@ sealed class Program
             PubSubStack.CreateStack(app, configuration);
         }
         
-
         app.Synth();
     }
 }
