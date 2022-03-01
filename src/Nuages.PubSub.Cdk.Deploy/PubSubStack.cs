@@ -66,14 +66,14 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
         if (!string.IsNullOrEmpty( options.VpcId))
             Node.SetContext(ContextValues.VpcId, options.VpcId);
         
+        if (!string.IsNullOrEmpty( options.SecurityGroup))
+            Node.SetContext(ContextValues.SecurityGroupId, options.SecurityGroup);
+        
         if (!string.IsNullOrEmpty( options.DatabaseDbProxy.Arn))
             Node.SetContext(ContextValues.DatabaseProxyArn, options.DatabaseDbProxy.Arn);
         
         if (!string.IsNullOrEmpty( options.DatabaseDbProxy.Endpoint))
             Node.SetContext(ContextValues.DatabaseProxyEndpoint, options.DatabaseDbProxy.Endpoint);
-        
-        if (!string.IsNullOrEmpty( options.DatabaseDbProxy.SecurityGroup))
-            Node.SetContext(ContextValues.DatabaseProxySecurityGroupId, options.DatabaseDbProxy.SecurityGroup);
         
         if (!string.IsNullOrEmpty( options.DatabaseDbProxy.Name))
             Node.SetContext(ContextValues.DatabaseProxyName, options.DatabaseDbProxy.Name);
@@ -84,13 +84,7 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
         if (!string.IsNullOrEmpty( options.Data.Storage))
             Node.SetContext(ContextValues.DataStorage, options.Data.Storage);
         
-        if (options.Data.Port.HasValue)
-            Node.SetContext(ContextValues.DataPort, options.Data.Port.Value.ToString());
-        
         if (!string.IsNullOrEmpty( options.Data.ConnectionString))
             Node.SetContext(ContextValues.DataConnectionString, options.Data.ConnectionString);
-        
-       
     }
-
 }

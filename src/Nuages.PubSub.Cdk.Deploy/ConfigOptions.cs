@@ -16,6 +16,7 @@ public class ConfigOptions
     public Data Data { get; set; } = new();
     
     public string? VpcId { get; set; }
+    public string? SecurityGroup { get; set; }
 }
 
 [ExcludeFromCodeCoverage]
@@ -61,7 +62,6 @@ public class ExternalAuth
 public class Data
 {
     public string? Storage { get; set; }
-    public int? Port { get; set; }
     
     public string? ConnectionString { get; set; }
 }
@@ -71,7 +71,6 @@ public class DbProxy
 {
     public string? Arn { get; set; }
     public string? Name { get; set; }
-    public string? SecurityGroup { get; set; }
     public string? Endpoint { get; set; }
     public  string? UserName { get; set; }
 }

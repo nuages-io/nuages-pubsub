@@ -123,16 +123,24 @@ public partial class PubSubWebSocketCdkStack<T>
 
     private ISecurityGroup? _vpcApiSecurityGroup;
     
-    private ISecurityGroup[]? VpcApiSecurityGroup
+    private ISecurityGroup[] VpcApiSecurityGroup
     {
         get
         {
-            if (!string.IsNullOrEmpty(VpcId))
+            if (_vpcApiSecurityGroup == null && !string.IsNullOrEmpty(VpcId))
             {
                 _vpcApiSecurityGroup ??= CreateVpcApiSecurityGroup();
             }
+            
+            var list = new List<ISecurityGroup>();
+            
+            if (_vpcApiSecurityGroup != null)
+                list.Add(_vpcApiSecurityGroup);
 
-            return _vpcApiSecurityGroup != null ? new[] { _vpcApiSecurityGroup, ProxySg } : null;
+            if (SecurityGroup != null)
+                list.Add(SecurityGroup);
+
+            return list.ToArray();
         }
     }
 
@@ -168,19 +176,8 @@ public partial class PubSubWebSocketCdkStack<T>
             AllowPublicSubnet = true,
             SecurityGroups = VpcApiSecurityGroup
         });
-        
-        if (Proxy != null)
-        {
-            Proxy.GrantConnect(func, DatabaseProxyUser);
-            
-            if (VpcApiSecurityGroup != null)
-            {
-                var port = GetPort();
-                
-                // if (port.HasValue)
-                //     ProxySg.AddIngressRule(VpcApiSecurityGroup.First(), Port.Tcp(port.Value), "PubSub API MySql");
-            }
-        }
+
+        Proxy?.GrantConnect(func, DatabaseProxyUser);
         
         return func;
     }

@@ -58,11 +58,49 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync";
     
     public string NuagesPubSubRole { get; set; } = "Role";
+    
+    public string? WebSocketDomainName { get; set; }
+    public string? WebSocketCertificateArn { get; set; }
 
+    public string? ApiDomainName { get; set; }
+    public string? ApiCertificateArn { get; set; }
+    public string? ApiApiKey { get; set; }
+    
+    public string? AuthIssuer { get; set; }
+    public string? AuthAudience { get; set; }
+    public string? AuthSecret { get; set; }
+    
+    public string? SecurityGroupId { get; set; }
+
+    public string? VpcId { get; set; }
+    
+    public string? DatabaseProxyArn { get; set; }
+    public string? DatabaseProxyName { get; set; }
+    
+    public string? DatabaseProxyEndpoint { get; set; }
+    public string? DatabaseProxyUser { get; set; }
+    
+    public string? DataStorage { get; set; }
+    public string? DataConnectionString { get; set; }
+    
+    public List<CfnRoute> Routes { get; set; } = new();
+
+    protected virtual string MakeId(string id)
+    {
+        return $"{StackName}-{id}";
+    }
+    
     protected IVpc? _vpc;
-    private ISecurityGroup? _proxySg;
+   
     private IDatabaseProxy? _proxy;
     
+    private ISecurityGroup? _securityGroup;
+    private ISecurityGroup? _vpcSecurityGroup;
+    
+    protected PubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
+    {
+        
+    }
     private IDatabaseProxy? Proxy
     {
         get
@@ -75,31 +113,20 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                 if (string.IsNullOrEmpty(DatabaseProxyEndpoint))
                     throw new Exception("ProxyEndpoint is required");
                 
-                if (string.IsNullOrEmpty(DatabaseProxySecurityGroup))
-                    throw new Exception("ProxySecurityGroup is required");
+                if (string.IsNullOrEmpty(SecurityGroupId))
+                    throw new Exception("SecurityGroup is required");
 
                 _proxy ??= DatabaseProxy.FromDatabaseProxyAttributes(this, MakeId("Proxy"), new DatabaseProxyAttributes
                 {
                     DbProxyArn = DatabaseProxyArn,
                     DbProxyName = DatabaseProxyName,
                     Endpoint = DatabaseProxyEndpoint,
-                    SecurityGroups = new[] { ProxySg }
+                    SecurityGroups = new[] { SecurityGroup! }
                 });
 
             }
            
             return _proxy;
-        }
-    }
-
-    private ISecurityGroup ProxySg
-    {
-        get
-        {
-            if (_proxySg == null)
-                _proxySg = SecurityGroup.FromLookupById(this, "WebApiSGDefault", DatabaseProxySecurityGroup!);
-
-            return _proxySg;
         }
     }
 
@@ -118,19 +145,36 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             return _vpc;
         }
     }
-
-    private ISecurityGroup? _vpcSecurityGroup;
     
-    private ISecurityGroup[]? VpcSecurityGroups
+    private ISecurityGroup? SecurityGroup
     {
         get
         {
-            if (!string.IsNullOrEmpty(VpcId))
+            if (_securityGroup == null && !string.IsNullOrEmpty(SecurityGroupId))
+                _securityGroup = Amazon.CDK.AWS.EC2.SecurityGroup.FromLookupById(this, "WebApiSGDefault", SecurityGroupId!);
+
+            return _securityGroup;
+        }
+    }
+    
+    private ISecurityGroup[] SecurityGroups
+    {
+        get
+        {
+            if (_vpcSecurityGroup == null && !string.IsNullOrEmpty(VpcId))
             {
                 _vpcSecurityGroup ??= CreateVpcSecurityGroup();
             }
 
-            return _vpcSecurityGroup != null ? new[] { _vpcSecurityGroup, ProxySg } : null;
+            var list = new List<ISecurityGroup>();
+            
+            if (_vpcSecurityGroup != null)
+                list.Add(_vpcSecurityGroup);
+
+            if (SecurityGroup != null)
+                list.Add(SecurityGroup);
+
+            return list.ToArray();
         }
     }
 
@@ -144,41 +188,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         });
     }
 
-    protected PubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
-    {
-        
-    }
-
     
-    public string? WebSocketDomainName { get; set; }
-    public string? WebSocketCertificateArn { get; set; }
-
-    public string? ApiDomainName { get; set; }
-    public string? ApiCertificateArn { get; set; }
-    public string? ApiApiKey { get; set; }
-    
-    public string? AuthIssuer { get; set; }
-    public string? AuthAudience { get; set; }
-    public string? AuthSecret { get; set; }
-    public string? VpcId { get; set; }
-    
-    public string? DatabaseProxyArn { get; set; }
-    public string? DatabaseProxyName { get; set; }
-    public string? DatabaseProxySecurityGroup { get; set; }
-    public string? DatabaseProxyEndpoint { get; set; }
-    public string? DatabaseProxyUser { get; set; }
-    
-    public string? DataStorage { get; set; }
-    public string? DataConnectionString { get; set; }
-    public int? DataPort { get; set; }
-    
-    public List<CfnRoute> Routes { get; set; } = new();
-
-    protected virtual string MakeId(string id)
-    {
-        return $"{StackName}-{id}";
-    }
-
     // ReSharper disable once UnusedMember.Global
     public virtual void CreateTemplate()
     {
@@ -411,25 +421,14 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             Environment = GetEnvVariables(api),
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
-            SecurityGroups = VpcSecurityGroups,
+            SecurityGroups = SecurityGroups,
             AllowPublicSubnet = true
         });
 
         GrantPermissions(func);
-        
-        if (Proxy != null )
-        {
-            Proxy.GrantConnect(func, DatabaseProxyUser);
-            
-            if (VpcSecurityGroups != null)
-            {
-                var port = GetPort();
-                
-                // if (port.HasValue)
-                //     ProxySg.AddIngressRule(VpcSecurityGroups.First(), Port.Tcp(port.Value), "PubSub WSS MySql");
-            }
-        }
-        
+
+        Proxy?.GrantConnect(func, DatabaseProxyUser);
+
         return func;
     }
 
@@ -460,15 +459,6 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         }
             
         return variables;
-    }
-
-    private double? GetPort()
-    {
-        return DataStorage switch
-        {
-            "MySql" => 3306,
-            _ => null
-        };
     }
 
     protected virtual Role CreateWebSocketRole()
@@ -698,8 +688,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             ? Node.TryGetContext(ContextValues.DatabaseProxyUser).ToString()
             : null;
 
-        DatabaseProxySecurityGroup = Node.TryGetContext(ContextValues.DatabaseProxySecurityGroupId) != null!
-            ? Node.TryGetContext(ContextValues.DatabaseProxySecurityGroupId).ToString()
+        SecurityGroupId = Node.TryGetContext(ContextValues.SecurityGroupId) != null!
+            ? Node.TryGetContext(ContextValues.SecurityGroupId).ToString()
             : null;
 
         DataStorage = Node.TryGetContext(ContextValues.DataStorage) != null!
@@ -709,11 +699,5 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         DataConnectionString = Node.TryGetContext(ContextValues.DataConnectionString) != null!
             ? Node.TryGetContext(ContextValues.DataConnectionString).ToString()
             : null;
-
-        DataPort = Node.TryGetContext(ContextValues.DataPort) != null!
-            ? Convert.ToInt32(Node.TryGetContext(ContextValues.DataPort).ToString())
-            : null;
     }
-
- 
 }
