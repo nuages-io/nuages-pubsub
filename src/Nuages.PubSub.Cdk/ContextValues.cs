@@ -26,7 +26,7 @@ public static class ContextValues
     public const string DataConnectionString = "DataConnectionString";
     
     public const string ExternalAuthValidAudiences = "ExternalAuthValidAudiences";
-    public const string ExternalAuthValidIssuers = "ExternalAuthValidAudiences";
-    public const string ExternalAuthJsonWebKeySetUrlPath = "ExternalAuthValidAudiences";
-    public const string ExternalAuthDisableSslCheck = "ExternalAuthValidAudiences";
+    public const string ExternalAuthValidIssuers = "ExternalAuthValidIssuers";
+    public const string ExternalAuthJsonWebKeySetUrlPath = "ExternalAuthJsonWebKeySetUrlPath";
+    public const string ExternalAuthDisableSslCheck = "ExternalAuthDisableSslCheck";
 }
