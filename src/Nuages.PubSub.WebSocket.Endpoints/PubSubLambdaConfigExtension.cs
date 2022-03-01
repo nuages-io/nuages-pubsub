@@ -33,7 +33,7 @@ public static class PubSubLambdaConfigExtension
     {
         if (builder.Configuration != null)
         {
-            builder.Services.Configure<PubSubOptions>(builder.Configuration.GetSection("Nuages:ExternalAuth"));
+            builder.Services.Configure<PubSubExternalAuthOption>(builder.Configuration.GetSection("Nuages:ExternalAuth"));
         }
         
         if (configureOptions != null)
