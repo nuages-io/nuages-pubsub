@@ -214,6 +214,7 @@ public class DynamoDbStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorag
         var config = GetOperationConfig();
         config.IndexName = "GroupConnection_UserId";
         
+        
         var search = _context.QueryAsync<PubSubGroupConnection>(hub, QueryOperator.Equal, new List<object> { userId },
            config);
 

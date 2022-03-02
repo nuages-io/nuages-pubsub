@@ -70,7 +70,7 @@ public partial class PubSubWebSocketCdkStack<T>
                 Name = "UserId",
                 Type = AttributeType.STRING
             },
-            IndexName = "Group_UserId",
+            IndexName = "GroupConnection_UserId",
             ProjectionType = ProjectionType.ALL
         };
     }
@@ -84,7 +84,7 @@ public partial class PubSubWebSocketCdkStack<T>
                 Name = "GroupAndUserId",
                 Type = AttributeType.STRING
             },
-            IndexName = "Group_GroupAndUserId",
+            IndexName = "GroupConnection_GroupAndUserId",
             ProjectionType = ProjectionType.ALL
         };
     }
@@ -98,7 +98,7 @@ public partial class PubSubWebSocketCdkStack<T>
                 Name = "ConnectionId",
                 Type = AttributeType.STRING
             },
-            IndexName = "Group_ConnectionId",
+            IndexName = "GroupConnection_ConnectionId",
             ProjectionType = ProjectionType.ALL
         };
     }
