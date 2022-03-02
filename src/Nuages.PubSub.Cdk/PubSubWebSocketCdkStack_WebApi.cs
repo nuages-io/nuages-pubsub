@@ -201,21 +201,9 @@ public partial class PubSubWebSocketCdkStack<T>
             { "Nuages__PubSub__StackName", StackName }
         };
 
-        if (!string.IsNullOrEmpty(AuthIssuer))
-            variables.Add("Nuages__PubSub__Issuer", AuthIssuer);
-        
-        if (!string.IsNullOrEmpty(AuthAudience))
-            variables.Add("Nuages__PubSub__Audience", AuthAudience);
-        
-        if (!string.IsNullOrEmpty(AuthSecret))
-            variables.Add("Nuages__PubSub__Secret", AuthSecret);
-
         if (!string.IsNullOrEmpty(DataStorage))
         {
             variables.Add("Nuages__Data__Storage", DataStorage);
-        
-            if (!string.IsNullOrEmpty(DataConnectionString))
-                variables.Add($"Nuages__Data__{DataStorage}__ConnectionString", DataConnectionString);
         }
         
         return variables;

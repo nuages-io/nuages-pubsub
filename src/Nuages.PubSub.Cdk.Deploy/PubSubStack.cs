@@ -53,24 +53,6 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
         
         if (!string.IsNullOrEmpty(options.Api.ApiKey))
             Node.SetContext(ContextValues.ApiApiKey, options.Api.ApiKey);
-
-        if (!string.IsNullOrEmpty( options.Env.Auth.Audience))
-            Node.SetContext(ContextValues.AuthAudience, options.Env.Auth.Audience);
-        
-        if (!string.IsNullOrEmpty( options.Env.Auth.Issuer))
-            Node.SetContext(ContextValues.AuthIssuer, options.Env.Auth.Issuer);
-        
-        if (!string.IsNullOrEmpty( options.Env.Auth.Secret))
-            Node.SetContext(ContextValues.AuthSecret, options.Env.Auth.Secret);
-        
-        if (!string.IsNullOrEmpty( options.Env.ExternalAuth.ValidAudiences))
-            Node.SetContext(ContextValues.ExternalAuthValidAudiences, options.Env.ExternalAuth.ValidAudiences);
-        
-        if (!string.IsNullOrEmpty( options.Env.ExternalAuth.ValidIssuers))
-            Node.SetContext(ContextValues.ExternalAuthValidIssuers, options.Env.ExternalAuth.ValidIssuers);
-        
-        Node.SetContext(ContextValues.ExternalAuthJsonWebKeySetUrlPath,options.Env.ExternalAuth.JsonWebKeySetUrlPath);
-        Node.SetContext(ContextValues.ExternalAuthDisableSslCheck,options.Env.ExternalAuth.DisableSslCheck);
         
         if (!string.IsNullOrEmpty( options.VpcId))
             Node.SetContext(ContextValues.VpcId, options.VpcId);
@@ -92,8 +74,5 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
         
         if (!string.IsNullOrEmpty( options.Data.Storage))
             Node.SetContext(ContextValues.DataStorage, options.Data.Storage);
-        
-        if (!string.IsNullOrEmpty( options.Data.ConnectionString))
-            Node.SetContext(ContextValues.DataConnectionString, options.Data.ConnectionString);
     }
 }

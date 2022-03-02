@@ -10,8 +10,6 @@ public class ConfigOptions
     public WebSocket WebSocket { get; set; } = new ();
     public Api Api { get; set; } = new();
     
-    public Env Env { get; set; } = new ();
-
     public DbProxy DatabaseDbProxy { get; set; } = new();
     public Data Data { get; set; } = new();
     
@@ -35,36 +33,9 @@ public class Api
 }
 
 [ExcludeFromCodeCoverage]
-public class Env
-{
-    public bool UseExternlAuth { get; set; }
-    public Auth Auth { get; set; } = new();
-    public ExternalAuth ExternalAuth { get; set; } = new();
-}
-
-[ExcludeFromCodeCoverage]
-public class Auth
-{
-    public string? Audience { get; set; }
-    public string? Issuer { get; set; }
-    public string? Secret { get; set; }
-}
-
-[ExcludeFromCodeCoverage]
-public class ExternalAuth
-{
-    public string? ValidIssuers { get; set; } 
-    public string? ValidAudiences { get; set; }
-    public string JsonWebKeySetUrlPath { get; set; } = ".well-known/jwks";
-    public bool DisableSslCheck { get; set; }
-}
-
-[ExcludeFromCodeCoverage]
 public class Data
 {
     public string? Storage { get; set; }
-    
-    public string? ConnectionString { get; set; }
 }
 
 [ExcludeFromCodeCoverage]
