@@ -187,7 +187,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     {
         NormalizeHandlerName();
         
-        ReadContextVariables();
+        //ReadContextVariables();
         
         var role = CreateWebSocketRole();
 
@@ -612,53 +612,53 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         return apiGatewayDomainName;
     }
 
-    private void ReadContextVariables()
-    {
-        WebSocketDomainName = Node.TryGetContext(ContextValues.WebSocketDomain) != null!
-            ? Node.TryGetContext(ContextValues.WebSocketDomain).ToString()
-            : null;
-        
-        WebSocketCertificateArn = Node.TryGetContext(ContextValues.WebSocketCertificateArn) != null!
-            ? Node.TryGetContext(ContextValues.WebSocketCertificateArn).ToString()
-            : null;
-        
-        ApiDomainName = Node.TryGetContext(ContextValues.ApiDomain) != null!
-            ? Node.TryGetContext(ContextValues.ApiDomain).ToString()
-            : null;
-        
-        ApiCertificateArn = Node.TryGetContext(ContextValues.ApiCertificateArn) != null!
-            ? Node.TryGetContext(ContextValues.ApiCertificateArn).ToString()
-            : null;
-        
-        ApiApiKey = Node.TryGetContext(ContextValues.ApiApiKey) != null!
-            ? Node.TryGetContext(ContextValues.ApiApiKey).ToString()
-            : null;
-        
-        VpcId = Node.TryGetContext(ContextValues.VpcId) != null!
-            ? Node.TryGetContext(ContextValues.VpcId).ToString()
-            : null;
-
-        DatabaseProxyArn = Node.TryGetContext(ContextValues.DatabaseProxyArn) != null!
-            ? Node.TryGetContext(ContextValues.DatabaseProxyArn).ToString()
-            : null;
-
-        DatabaseProxyEndpoint = Node.TryGetContext(ContextValues.DatabaseProxyEndpoint) != null!
-            ? Node.TryGetContext(ContextValues.DatabaseProxyEndpoint).ToString()
-            : null;
-
-        DatabaseProxyName = Node.TryGetContext(ContextValues.DatabaseProxyName) != null!
-            ? Node.TryGetContext(ContextValues.DatabaseProxyName).ToString()
-            : null;
-
-        DatabaseProxyUser = Node.TryGetContext(ContextValues.DatabaseProxyUser) != null!
-            ? Node.TryGetContext(ContextValues.DatabaseProxyUser).ToString()
-            : null;
-
-        SecurityGroupId = Node.TryGetContext(ContextValues.SecurityGroupId) != null!
-            ? Node.TryGetContext(ContextValues.SecurityGroupId).ToString()
-            : null;
-
-    }
+    // private void ReadContextVariables()
+    // {
+    //     WebSocketDomainName = Node.TryGetContext(ContextValues.WebSocketDomain) != null!
+    //         ? Node.TryGetContext(ContextValues.WebSocketDomain).ToString()
+    //         : null;
+    //     
+    //     WebSocketCertificateArn = Node.TryGetContext(ContextValues.WebSocketCertificateArn) != null!
+    //         ? Node.TryGetContext(ContextValues.WebSocketCertificateArn).ToString()
+    //         : null;
+    //     
+    //     ApiDomainName = Node.TryGetContext(ContextValues.ApiDomain) != null!
+    //         ? Node.TryGetContext(ContextValues.ApiDomain).ToString()
+    //         : null;
+    //     
+    //     ApiCertificateArn = Node.TryGetContext(ContextValues.ApiCertificateArn) != null!
+    //         ? Node.TryGetContext(ContextValues.ApiCertificateArn).ToString()
+    //         : null;
+    //     
+    //     ApiApiKey = Node.TryGetContext(ContextValues.ApiApiKey) != null!
+    //         ? Node.TryGetContext(ContextValues.ApiApiKey).ToString()
+    //         : null;
+    //     
+    //     VpcId = Node.TryGetContext(ContextValues.VpcId) != null!
+    //         ? Node.TryGetContext(ContextValues.VpcId).ToString()
+    //         : null;
+    //
+    //     DatabaseProxyArn = Node.TryGetContext(ContextValues.DatabaseProxyArn) != null!
+    //         ? Node.TryGetContext(ContextValues.DatabaseProxyArn).ToString()
+    //         : null;
+    //
+    //     DatabaseProxyEndpoint = Node.TryGetContext(ContextValues.DatabaseProxyEndpoint) != null!
+    //         ? Node.TryGetContext(ContextValues.DatabaseProxyEndpoint).ToString()
+    //         : null;
+    //
+    //     DatabaseProxyName = Node.TryGetContext(ContextValues.DatabaseProxyName) != null!
+    //         ? Node.TryGetContext(ContextValues.DatabaseProxyName).ToString()
+    //         : null;
+    //
+    //     DatabaseProxyUser = Node.TryGetContext(ContextValues.DatabaseProxyUser) != null!
+    //         ? Node.TryGetContext(ContextValues.DatabaseProxyUser).ToString()
+    //         : null;
+    //
+    //     SecurityGroupId = Node.TryGetContext(ContextValues.SecurityGroupId) != null!
+    //         ? Node.TryGetContext(ContextValues.SecurityGroupId).ToString()
+    //         : null;
+    //
+    // }
 
  
 }

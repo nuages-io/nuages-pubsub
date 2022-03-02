@@ -14,7 +14,7 @@ public class ConfigOptions
     public Data Data { get; set; } = new();
     
     public string? VpcId { get; set; }
-    public string? SecurityGroup { get; set; }
+    public string? SecurityGroupId { get; set; }
 
     // ReSharper disable once InconsistentNaming
     public CDKPipeline? CDKPipeline { get; set; }
@@ -52,6 +52,7 @@ public class DbProxy
 
 [ExcludeFromCodeCoverage]
 // ReSharper disable once InconsistentNaming
+// ReSharper disable once ClassNeverInstantiated.Global
 public class CDKPipeline
 {
     public string? GitHubRepository { get; set; }
