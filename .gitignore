@@ -21,3 +21,4 @@ tailwind-output.css
 .DS_Store
 cdk.out
 nlog.config
+cdk.context.json
