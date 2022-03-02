@@ -39,15 +39,17 @@ sealed class Program
                 config.AppConfig.ConfigProfileId,true);
         }
 
+        var options = configuration.Get<ConfigOptions>();
+        
         var app = new App();
 
         if (args.Contains("--pipeline"))
         {
-            PubSubStackWithPipeline.Create(app, configuration);
+            PubSubStackWithPipeline.Create(app, options);
         }
         else
         {
-            PubSubStack.CreateStack(app, configuration);
+            PubSubStack.CreateStack(app, options);
         }
         
         app.Synth();

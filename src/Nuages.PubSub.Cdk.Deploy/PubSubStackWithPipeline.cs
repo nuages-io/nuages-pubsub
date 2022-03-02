@@ -17,10 +17,10 @@ namespace Nuages.PubSub.Cdk.Deploy;
 [SuppressMessage("Performance", "CA1806:Do not ignore method results")]
 public class PubSubStackWithPipeline : Stack
 {
-    public static void Create(Construct scope, IConfiguration configuration)
+    public static void Create(Construct scope, ConfigOptions options)
     {
         // ReSharper disable once ObjectCreationAsStatement
-        new PubSubStackWithPipeline(scope, $"{configuration["StackName"]}-PipelineStack", configuration, new StackProps
+        new PubSubStackWithPipeline(scope, $"{options.StackName}-PipelineStack", options, new StackProps
         {
             Env = new Amazon.CDK.Environment
             {
@@ -30,11 +30,11 @@ public class PubSubStackWithPipeline : Stack
         });
     }
 
-    private PubSubStackWithPipeline(Construct scope, string id, IConfiguration configuration, IStackProps props) : base(scope, id, props)
+    private PubSubStackWithPipeline(Construct scope, string id, ConfigOptions options, IStackProps props) : base(scope, id, props)
     {
         var pipeline = new CodePipeline(this, "pipeline", new CodePipelineProps
         {
-            PipelineName = $"{configuration["StackName"]}-Pipeline",
+            PipelineName = $"{options.StackName}-Pipeline",
             SynthCodeBuildDefaults = new CodeBuildOptions
             {
                 RolePolicy = new PolicyStatement[]
@@ -59,11 +59,11 @@ public class PubSubStackWithPipeline : Stack
             Synth = new ShellStep("Synth",
                 new ShellStepProps
                 {
-                    Input = CodePipelineSource.GitHub(configuration["GithubRepository"],
+                    Input = CodePipelineSource.GitHub(options.CDKPipeline!.GitHubRepository!,
                         "main",
                         new GitHubSourceOptions
                         {
-                            Authentication = SecretValue.PlainText(configuration["GithubToken"]),
+                            Authentication = SecretValue.PlainText(options.CDKPipeline!.GithubToken!),
                             Trigger = GitHubTrigger.WEBHOOK
                         }),
                     Commands = new []
@@ -110,7 +110,7 @@ public class PubSubStackWithPipeline : Stack
             }
         });
             
-        pipeline.AddStage(new PipelineAppStage(this, "Deploy", configuration, new StageProps
+        pipeline.AddStage(new PipelineAppStage(this, "Deploy", options, new StageProps
         {
             Env = new Amazon.CDK.Environment
             {
@@ -121,7 +121,7 @@ public class PubSubStackWithPipeline : Stack
 
         pipeline.BuildPipeline();
         
-        var arn = configuration["NotificationTargetArn"];
+        var arn = options.CDKPipeline!.NotificationTargetArn;
 
         if (!string.IsNullOrEmpty(arn))
         {
@@ -182,9 +182,9 @@ public class PubSubStackWithPipeline : Stack
 
     private class PipelineAppStage : Stage
     {
-        public PipelineAppStage(Construct scope, string id, IConfiguration configuration, IStageProps props) : base(scope, id, props)
+        public PipelineAppStage(Construct scope, string id, ConfigOptions options, IStageProps props) : base(scope, id, props)
         {
-            PubSubStack.CreateStack(this, configuration);
+            PubSubStack.CreateStack(this, options);
         }
     }
 }

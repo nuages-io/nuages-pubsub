@@ -15,6 +15,9 @@ public class ConfigOptions
     
     public string? VpcId { get; set; }
     public string? SecurityGroup { get; set; }
+
+    // ReSharper disable once InconsistentNaming
+    public CDKPipeline? CDKPipeline { get; set; }
 }
 
 [ExcludeFromCodeCoverage]
@@ -45,4 +48,13 @@ public class DbProxy
     public string? Name { get; set; }
     public string? Endpoint { get; set; }
     public  string? UserName { get; set; }
+}
+
+[ExcludeFromCodeCoverage]
+// ReSharper disable once InconsistentNaming
+public class CDKPipeline
+{
+    public string? GitHubRepository { get; set; }
+    public string? GithubToken { get; set; }
+    public string? NotificationTargetArn { get; set; }
 }

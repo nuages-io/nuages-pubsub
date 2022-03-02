@@ -10,9 +10,9 @@ namespace Nuages.PubSub.Cdk.Deploy;
 public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
 {
     
-    public static void CreateStack(Construct scope, IConfiguration configuration)
+    public static void CreateStack(Construct scope, ConfigOptions options)
     {
-        var options = configuration.Get<ConfigOptions>();
+        
         
         var stack = new PubSubStack(scope, options.StackName, new StackProps
         {
