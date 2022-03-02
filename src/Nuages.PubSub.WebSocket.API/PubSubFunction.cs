@@ -62,7 +62,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
         var pubSubBuilder = serviceCollection.AddPubSubService(configuration);
         
         var pubSubRouteBuilder =
-            serviceCollection
+            pubSubBuilder
                 .AddPubSubLambdaRoutes(configuration);
             
         var enableExternalAUth = configuration.GetValue<bool>("Nuages:ExternalAuth:Enabled");

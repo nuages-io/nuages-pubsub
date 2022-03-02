@@ -15,17 +15,17 @@ public static class PubSubLambdaConfigExtension
 {
    
     // ReSharper disable once UnusedMethodReturnValue.Global
-    public static IPubSubRouteBuilder AddPubSubLambdaRoutes(this IServiceCollection serviceCollection, IConfiguration? configuration = null)
+    public static IPubSubRouteBuilder AddPubSubLambdaRoutes(this IPubSubBuilder builder, IConfiguration? configuration = null)
     {
-        serviceCollection.AddScoped<IAuthorizeRoute, AuthorizeRoute>();
-        serviceCollection.AddScoped<IConnectRoute, ConnectRoute>();
-        serviceCollection.AddScoped<IDisconnectRoute, DisconnectRoute>();
-        serviceCollection.AddScoped<IEchoRoute, EchoRoute>();
-        serviceCollection.AddScoped<ISendRoute, SendRoute>();
-        serviceCollection.AddScoped<IJoinRoute, JoinRoute>();
-        serviceCollection.AddScoped<ILeaveRoute, LeaveRoute>();
+        builder.Services.AddScoped<IAuthorizeRoute, AuthorizeRoute>();
+        builder.Services.AddScoped<IConnectRoute, ConnectRoute>();
+        builder.Services.AddScoped<IDisconnectRoute, DisconnectRoute>();
+        builder.Services.AddScoped<IEchoRoute, EchoRoute>();
+        builder.Services.AddScoped<ISendRoute, SendRoute>();
+        builder.Services.AddScoped<IJoinRoute, JoinRoute>();
+        builder.Services.AddScoped<ILeaveRoute, LeaveRoute>();
         
-        return new PubSubRouteBuilder(serviceCollection, configuration);
+        return new PubSubRouteBuilder(builder.Services, configuration);
     }
 
     // ReSharper disable once UnusedMember.Global

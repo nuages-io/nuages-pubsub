@@ -26,7 +26,8 @@ public class CustomPubSubFunction : PubSubFunction
 
         serviceCollection.AddSingleton(configuration);
 
-        serviceCollection
+        var pubSubBuilder = new PubSubBuilder(serviceCollection, configuration);
+        pubSubBuilder
             .AddPubSubLambdaRoutes(configuration);
 
         serviceCollection.AddSingleton(pubSubService);
