@@ -30,15 +30,15 @@ public class AuthController : Controller
             if (!_environment.IsDevelopment())
                 AWSXRayRecorder.Instance.BeginSubsegment("AuthController.GetClientAccessTokenAsync");
             
-            var secret = _options.Secret;
+            var secret = _options.Auth.Secret;
             if (string.IsNullOrEmpty(secret))
                 throw new ArgumentException("secret must be provided");
 
-            var issuer = _options.Issuer;
+            var issuer = _options.Auth.Issuer;
             if (string.IsNullOrEmpty(issuer))
                 throw new ArgumentException("issuer must be provided");
 
-            var audience = _options.Audience;
+            var audience = _options.Auth.Audience;
             if (string.IsNullOrEmpty(issuer))
                 throw new ArgumentException("audience must be provided");
             
@@ -76,15 +76,15 @@ public class AuthController : Controller
 
             if (string.IsNullOrEmpty(token))
             {
-                var secret = _options.Secret;
+                var secret = _options.Auth.Secret;
                 if (string.IsNullOrEmpty(secret))
                     throw new ArgumentException("secret must be provided");
 
-                var issuer = _options.Issuer;
+                var issuer = _options.Auth.Issuer;
                 if (string.IsNullOrEmpty(issuer))
                     throw new ArgumentException("issuer must be provided");
             
-                var audience = _options.Audience;
+                var audience = _options.Auth.Audience;
                 if (string.IsNullOrEmpty(issuer))
                     throw new ArgumentException("audience must be provided");
 

@@ -29,16 +29,8 @@ public static class PubSubLambdaConfigExtension
     }
 
     // ReSharper disable once UnusedMember.Global
-    public static IPubSubRouteBuilder UseExternalAuthRoute(this IPubSubRouteBuilder builder,  Action<PubSubExternalAuthOption>? configureOptions = null)
-    {
-        if (builder.Configuration != null)
-        {
-            builder.Services.Configure<PubSubExternalAuthOption>(builder.Configuration.GetSection("Nuages:ExternalAuth"));
-        }
-        
-        if (configureOptions != null)
-            builder.Services.Configure(configureOptions);
-        
+    public static IPubSubRouteBuilder UseExternalAuthRoute(this IPubSubRouteBuilder builder)
+    { 
         builder.Services.AddScoped<IAuthorizeRoute, AuthorizeRouteExternal>();
 
         return builder;

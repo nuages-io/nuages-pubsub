@@ -47,8 +47,8 @@ public class AuthorizeRoute : IAuthorizeRoute
 
         claimDict.Add("nuageshub", hub);
 
-        var validIssuer = _pubSubOptions.Issuer;
-        var validAudience = _pubSubOptions.Audience;
+        var validIssuer = _pubSubOptions.Auth.Issuer;
+        var validAudience = _pubSubOptions.Auth.Audience;
 
         var keys = await LoadKeys(context);
 
@@ -68,7 +68,7 @@ public class AuthorizeRoute : IAuthorizeRoute
     [ExcludeFromCodeCoverage]
     private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context)
     {
-        var secret = _pubSubOptions.Secret;
+        var secret = _pubSubOptions.Auth.Secret;
         if (string.IsNullOrEmpty(secret))
             throw new NullReferenceException("secret was not provided");
 

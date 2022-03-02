@@ -14,11 +14,11 @@ namespace Nuages.PubSub.WebSocket.Endpoints.Routes.Authorize;
 [ExcludeFromCodeCoverage]
 public class AuthorizeRouteExternal : IAuthorizeRoute
 {
-    private readonly PubSubExternalAuthOption _pubSubOptions;
+    private readonly PubSubOptions _pubSubOptions;
 
-    public AuthorizeRouteExternal(IOptions<PubSubExternalAuthOption> pubSubAuthOptions)
+    public AuthorizeRouteExternal(IOptions<PubSubOptions> pubSubOptions)
     {
-        _pubSubOptions = pubSubAuthOptions.Value;
+        _pubSubOptions = pubSubOptions.Value;
     }
 
     public async Task<APIGatewayCustomAuthorizerResponse> AuthorizeAsync(APIGatewayCustomAuthorizerRequest input,
@@ -48,8 +48,8 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
 
         context.Logger.LogInformation("PubSubOptions=" + JsonSerializer.Serialize(_pubSubOptions));
         
-        var validIssuers = _pubSubOptions.ValidIssuers.Split(",");
-        var validAudiences = _pubSubOptions.ValidAudiences?.Split(",").ToList();
+        var validIssuers = _pubSubOptions.ExternalAuth.ValidIssuers.Split(",");
+        var validAudiences = _pubSubOptions.ExternalAuth.ValidAudiences?.Split(",").ToList();
 
         var keys = await LoadKeys(context, jwtToken);
 
@@ -106,13 +106,13 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
     [ExcludeFromCodeCoverage]
     protected virtual async Task<IList<JsonWebKey>> GetSigningKeys(string issuer, ILambdaContext context)
     {
-        var jsonWebKeySetUrl = $"{GetEndpoint(issuer)}{_pubSubOptions.JsonWebKeySetUrlPath}";
+        var jsonWebKeySetUrl = $"{GetEndpoint(issuer)}{_pubSubOptions.ExternalAuth.JsonWebKeySetUrlPath}";
 
         context.Logger.LogLine(jsonWebKeySetUrl);
 
         using var handler = new HttpClientHandler();
 
-        if (_pubSubOptions.DisableSslCheck)
+        if (_pubSubOptions.ExternalAuth.DisableSslCheck)
             handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
         using var httpClient = new HttpClient(handler);
