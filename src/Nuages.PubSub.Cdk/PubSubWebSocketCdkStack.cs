@@ -183,7 +183,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     
     // ReSharper disable once UnusedMember.Global
-    public virtual void CreateTemplate()
+    public virtual void BuildStack()
     {
         NormalizeHandlerName();
         
@@ -425,6 +425,10 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         return func;
     }
 
+    protected virtual void AddWebSocketEnvironmentVariables(Dictionary<string, string> environmentVariables)
+    {
+    }
+    
     private Dictionary<string, string> GetEnvVariables(CfnApi api)
     {
         var variables =  new Dictionary<string, string>
@@ -433,6 +437,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             { "Nuages__PubSub__Uri", $"wss://{api.Ref}.execute-api.{Aws.REGION}.amazonaws.com/{StageName}" },
             { "Nuages__PubSub__StackName", StackName }
         };
+
+        AddWebSocketEnvironmentVariables(variables);
         
         return variables;
     }

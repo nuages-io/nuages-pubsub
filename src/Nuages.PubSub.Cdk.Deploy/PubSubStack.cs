@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Constructs;
-using Microsoft.Extensions.Configuration;
 using Nuages.PubSub.WebSocket.API;
 
 namespace Nuages.PubSub.Cdk.Deploy;
@@ -23,7 +22,7 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
 
         stack.InitializeContextFromOptions(options);
         
-        stack.CreateTemplate();
+        stack.BuildStack();
     }
     
     // ReSharper disable once UnusedParameter.Local

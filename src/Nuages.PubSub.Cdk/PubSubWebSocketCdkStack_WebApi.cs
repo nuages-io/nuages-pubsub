@@ -192,6 +192,10 @@ public partial class PubSubWebSocketCdkStack<T>
         return func;
     }
 
+    protected virtual void AddWebApiEnvironmentVariables(Dictionary<string, string> environmentVariables)
+    {
+    }
+    
     private Dictionary<string, string> GetWebApiEnvVariables(string url)
     {
         var variables = new Dictionary<string, string>
@@ -201,6 +205,8 @@ public partial class PubSubWebSocketCdkStack<T>
             { "Nuages__PubSub__StackName", StackName }
         };
 
+        AddWebApiEnvironmentVariables(variables);
+        
         return variables;
     }
 
