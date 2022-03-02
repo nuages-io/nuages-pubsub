@@ -18,6 +18,5 @@ public static class ContextValues
     public const string DatabaseProxyEndpoint = "DatabaseProxyEndpoint";
     public const string DatabaseProxyUser = "DatabaseProxyUser";
 
-    public const string DataStorage = "DataStorage";
     
 }

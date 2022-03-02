@@ -76,8 +76,6 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string? DatabaseProxyEndpoint { get; set; }
     public string? DatabaseProxyUser { get; set; }
     
-    public string? DataStorage { get; set; }
-
     public List<CfnRoute> Routes { get; set; } = new();
 
     protected virtual string MakeId(string id)
@@ -436,11 +434,6 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             { "Nuages__PubSub__StackName", StackName }
         };
         
-        if (!string.IsNullOrEmpty(DataStorage))
-        {
-            variables.Add("Nuages__Data__Storage", DataStorage);
-        }
-            
         return variables;
     }
 
@@ -659,9 +652,6 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             ? Node.TryGetContext(ContextValues.SecurityGroupId).ToString()
             : null;
 
-        DataStorage = Node.TryGetContext(ContextValues.DataStorage) != null!
-            ? Node.TryGetContext(ContextValues.DataStorage).ToString()
-            : null;
     }
 
  

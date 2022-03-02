@@ -201,11 +201,6 @@ public partial class PubSubWebSocketCdkStack<T>
             { "Nuages__PubSub__StackName", StackName }
         };
 
-        if (!string.IsNullOrEmpty(DataStorage))
-        {
-            variables.Add("Nuages__Data__Storage", DataStorage);
-        }
-        
         return variables;
     }
 

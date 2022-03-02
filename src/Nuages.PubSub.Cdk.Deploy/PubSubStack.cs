@@ -9,11 +9,8 @@ namespace Nuages.PubSub.Cdk.Deploy;
 [ExcludeFromCodeCoverage]
 public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
 {
-    
     public static void CreateStack(Construct scope, ConfigOptions options)
     {
-        
-        
         var stack = new PubSubStack(scope, options.StackName, new StackProps
         {
             StackName = options.StackName,
@@ -72,7 +69,5 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
         if (!string.IsNullOrEmpty( options.DatabaseDbProxy.UserName))
             Node.SetContext(ContextValues.DatabaseProxyUser, options.DatabaseDbProxy.UserName);
         
-        if (!string.IsNullOrEmpty( options.Data.Storage))
-            Node.SetContext(ContextValues.DataStorage, options.Data.Storage);
     }
 }
