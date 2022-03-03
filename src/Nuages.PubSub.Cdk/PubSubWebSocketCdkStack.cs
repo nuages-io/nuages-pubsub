@@ -69,10 +69,12 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string? SecurityGroupId { get; set; }
 
     public string? VpcId { get; set; }
+
+    public string? DataStorage { get; set; }
+    public string? DataConnectionString { get; set; }
     
     public string? DatabaseProxyArn { get; set; }
     public string? DatabaseProxyName { get; set; }
-    
     public string? DatabaseProxyEndpoint { get; set; }
     public string? DatabaseProxyUser { get; set; }
     
@@ -456,6 +458,12 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         
         if (!string.IsNullOrEmpty(Auth_Secret))
             variables.Add("Nuages__PubSub__Auth__Secret",Auth_Secret);
+        
+        if (!string.IsNullOrEmpty(DataStorage))
+            variables.Add("Nuages__PubSub__Data__Storage",DataStorage);
+        
+        if (!string.IsNullOrEmpty(DataConnectionString))
+            variables.Add("Nuages__PubSub__Data__ConnectionString",DataConnectionString);
         
         variables.Add("Nuages__PubSub__ExternalAuth__Enabled",ExternalAuth_Enabled.ToString());
         
