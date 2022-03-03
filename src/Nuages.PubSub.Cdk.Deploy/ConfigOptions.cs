@@ -11,7 +11,6 @@ public class ConfigOptions
     public Api Api { get; set; } = new();
     
     public DbProxy DatabaseDbProxy { get; set; } = new();
-    public Data Data { get; set; } = new();
     
     public string? VpcId { get; set; }
     public string? SecurityGroupId { get; set; }
@@ -33,12 +32,6 @@ public class Api
     public string? Domain { get; set; } 
     public string? CertificateArn { get; set; } 
     public string? ApiKey { get; set; } 
-}
-
-[ExcludeFromCodeCoverage]
-public class Data
-{
-    public string? Storage { get; set; }
 }
 
 [ExcludeFromCodeCoverage]

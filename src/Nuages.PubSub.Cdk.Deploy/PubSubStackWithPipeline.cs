@@ -155,7 +155,6 @@ public class PubSubStackWithPipeline : Stack
             });
         }
 
-
         // new CfnWebhook(this, "gitHubWebHook", new CfnWebhookProps
         // {
         //     Authentication = "GITHUB_HMAC",

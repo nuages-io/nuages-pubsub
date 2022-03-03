@@ -205,6 +205,27 @@ public partial class PubSubWebSocketCdkStack<T>
             { "Nuages__PubSub__StackName", StackName }
         };
 
+        if (!string.IsNullOrEmpty(Auth_Audience))
+            variables.Add("Nuages__PubSub__Auth__Audience",Auth_Audience);
+        
+        if (!string.IsNullOrEmpty(Auth_Issuer))
+            variables.Add("Nuages__PubSub__Auth__Issuer", Auth_Issuer);
+        
+        if (!string.IsNullOrEmpty(Auth_Secret))
+            variables.Add("Nuages__PubSub__Auth__Secret",Auth_Secret);
+        
+        if (!string.IsNullOrEmpty(ExternalAuth_ValidAudiences))
+            variables.Add("Nuages__PubSub__ExternalAuth__ValidAudiences",ExternalAuth_ValidAudiences);
+        
+        if (!string.IsNullOrEmpty(ExternalAuth_ValidIssuers))
+            variables.Add("Nuages__PubSub__ExternalAuth__ValidIssuers",ExternalAuth_ValidIssuers);
+        
+        if (!string.IsNullOrEmpty(ExternalAuth_JsonWebKeySetUrlPath))
+            variables.Add("Nuages__PubSub__ExternalAuth__JsonWebKeySetUrlPath",ExternalAuth_JsonWebKeySetUrlPath);
+        
+        if (ExternalAuth_DisableSslCheck.HasValue)
+            variables.Add("Nuages__PubSub__ExternalAuth__DisableSslCheck",ExternalAuth_DisableSslCheck.Value.ToString());
+        
         AddWebApiEnvironmentVariables(variables);
         
         return variables;

@@ -76,6 +76,15 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string? DatabaseProxyEndpoint { get; set; }
     public string? DatabaseProxyUser { get; set; }
     
+    public string? Auth_Issuer { get; set; }
+    public string? Auth_Audience { get; set; }
+    public string? Auth_Secret { get; set; }
+    
+    public string? ExternalAuth_ValidIssuers { get; set; } 
+    public string? ExternalAuth_ValidAudiences { get; set; }
+    public string? ExternalAuth_JsonWebKeySetUrlPath { get; set; } 
+    public bool? ExternalAuth_DisableSslCheck { get; set; }
+    
     public List<CfnRoute> Routes { get; set; } = new();
 
     protected virtual string MakeId(string id)
@@ -438,6 +447,15 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             { "Nuages__PubSub__StackName", StackName }
         };
 
+        if (!string.IsNullOrEmpty(Auth_Audience))
+            variables.Add("Nuages__PubSub__Auth__Audience",Auth_Audience);
+        
+        if (!string.IsNullOrEmpty(Auth_Issuer))
+            variables.Add("Nuages__PubSub__Auth__Issuer", Auth_Issuer);
+        
+        if (!string.IsNullOrEmpty(Auth_Secret))
+            variables.Add("Nuages__PubSub__Auth__Secret",Auth_Secret);
+        
         AddWebSocketEnvironmentVariables(variables);
         
         return variables;
