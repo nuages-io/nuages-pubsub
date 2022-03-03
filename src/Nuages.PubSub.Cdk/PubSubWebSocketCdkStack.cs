@@ -79,7 +79,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string? Auth_Issuer { get; set; }
     public string? Auth_Audience { get; set; }
     public string? Auth_Secret { get; set; }
-    
+
+    public bool ExternalAuth_Enabled { get; set; }
     public string? ExternalAuth_ValidIssuers { get; set; } 
     public string? ExternalAuth_ValidAudiences { get; set; }
     public string? ExternalAuth_JsonWebKeySetUrlPath { get; set; } 
@@ -456,6 +457,20 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         if (!string.IsNullOrEmpty(Auth_Secret))
             variables.Add("Nuages__PubSub__Auth__Secret",Auth_Secret);
         
+        variables.Add("Nuages__PubSub__ExternalAuth__Enabled",ExternalAuth_Enabled.ToString());
+        
+        if (!string.IsNullOrEmpty(ExternalAuth_ValidAudiences))
+            variables.Add("Nuages__PubSub__ExternalAuth__ValidAudiences",ExternalAuth_ValidAudiences);
+        
+        if (!string.IsNullOrEmpty(ExternalAuth_ValidIssuers))
+            variables.Add("Nuages__PubSub__ExternalAuth__ValidIssuers",ExternalAuth_ValidIssuers);
+        
+        if (!string.IsNullOrEmpty(ExternalAuth_JsonWebKeySetUrlPath))
+            variables.Add("Nuages__PubSub__ExternalAuth__JsonWebKeySetUrlPath",ExternalAuth_JsonWebKeySetUrlPath);
+        
+        if (ExternalAuth_DisableSslCheck.HasValue)
+            variables.Add("Nuages__PubSub__ExternalAuth__DisableSslCheck",ExternalAuth_DisableSslCheck.Value.ToString());
+        
         AddWebSocketEnvironmentVariables(variables);
         
         return variables;
@@ -630,53 +645,4 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         return apiGatewayDomainName;
     }
 
-    // private void ReadContextVariables()
-    // {
-    //     WebSocketDomainName = Node.TryGetContext(ContextValues.WebSocketDomain) != null!
-    //         ? Node.TryGetContext(ContextValues.WebSocketDomain).ToString()
-    //         : null;
-    //     
-    //     WebSocketCertificateArn = Node.TryGetContext(ContextValues.WebSocketCertificateArn) != null!
-    //         ? Node.TryGetContext(ContextValues.WebSocketCertificateArn).ToString()
-    //         : null;
-    //     
-    //     ApiDomainName = Node.TryGetContext(ContextValues.ApiDomain) != null!
-    //         ? Node.TryGetContext(ContextValues.ApiDomain).ToString()
-    //         : null;
-    //     
-    //     ApiCertificateArn = Node.TryGetContext(ContextValues.ApiCertificateArn) != null!
-    //         ? Node.TryGetContext(ContextValues.ApiCertificateArn).ToString()
-    //         : null;
-    //     
-    //     ApiApiKey = Node.TryGetContext(ContextValues.ApiApiKey) != null!
-    //         ? Node.TryGetContext(ContextValues.ApiApiKey).ToString()
-    //         : null;
-    //     
-    //     VpcId = Node.TryGetContext(ContextValues.VpcId) != null!
-    //         ? Node.TryGetContext(ContextValues.VpcId).ToString()
-    //         : null;
-    //
-    //     DatabaseProxyArn = Node.TryGetContext(ContextValues.DatabaseProxyArn) != null!
-    //         ? Node.TryGetContext(ContextValues.DatabaseProxyArn).ToString()
-    //         : null;
-    //
-    //     DatabaseProxyEndpoint = Node.TryGetContext(ContextValues.DatabaseProxyEndpoint) != null!
-    //         ? Node.TryGetContext(ContextValues.DatabaseProxyEndpoint).ToString()
-    //         : null;
-    //
-    //     DatabaseProxyName = Node.TryGetContext(ContextValues.DatabaseProxyName) != null!
-    //         ? Node.TryGetContext(ContextValues.DatabaseProxyName).ToString()
-    //         : null;
-    //
-    //     DatabaseProxyUser = Node.TryGetContext(ContextValues.DatabaseProxyUser) != null!
-    //         ? Node.TryGetContext(ContextValues.DatabaseProxyUser).ToString()
-    //         : null;
-    //
-    //     SecurityGroupId = Node.TryGetContext(ContextValues.SecurityGroupId) != null!
-    //         ? Node.TryGetContext(ContextValues.SecurityGroupId).ToString()
-    //         : null;
-    //
-    // }
-
- 
 }

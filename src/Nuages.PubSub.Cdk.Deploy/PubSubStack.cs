@@ -32,8 +32,6 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
             DatabaseProxyName = options.DatabaseDbProxy.Name,
             DatabaseProxyUser = options.DatabaseDbProxy.UserName
         };
-
-        //stack.InitializeFromOptions(options);
         
         stack.BuildStack();
     }

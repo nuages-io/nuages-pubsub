@@ -65,11 +65,11 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             pubSubBuilder
                 .AddPubSubLambdaRoutes();
             
-        var enableExternalAUth = configuration.GetValue<bool>("Nuages:ExternalAuth:Enabled");
+        var enableExternalAUth = configuration.GetValue<bool>("Nuages:PubSub:ExternalAuth:Enabled");
         if (enableExternalAUth)
             pubSubRouteBuilder.UseExternalAuthRoute();
 
-        var storage = configuration.GetSection("Nuages:Data:Storage").Value;
+        var storage = configuration.GetSection("Nuages:PubSub:Data:Storage").Value;
         switch (storage)
         {
             case "DynamoDb":
@@ -81,7 +81,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubMongoStorage(dbConfig =>
                 {
-                    dbConfig.ConnectionString = configuration["Nuages:Data:Mongo:ConnectionString"];
+                    dbConfig.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"];
                 });
                 break;
             }
@@ -89,7 +89,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubSqlServerStorage(dbConfig =>
                 {
-                    dbConfig.UseSqlServer(configuration["Nuages:Data:SqlServer:ConnectionString"]);
+                    dbConfig.UseSqlServer(configuration["Nuages:PubSub:Data:ConnectionString"]);
                 });
 
                 break;
@@ -99,8 +99,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 
                 pubSubBuilder.AddPubSubMySqlStorage(dbConfig =>
                 {
-                    var connectionString = configuration["Nuages:Data:MySql:ConnectionString"];
-                    Console.WriteLine("ConnectionString=" + connectionString);
+                    var connectionString = configuration["Nuages:PubSub:Data:ConnectionString"];
                     dbConfig.UseMySQL(connectionString);
                 });
 
