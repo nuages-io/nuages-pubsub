@@ -68,10 +68,12 @@ public class AuthorizeRoute : IAuthorizeRoute
         }
     }
 
-    class SecretValue
+    // ReSharper disable once ClassNeverInstantiated.Local
+    private class SecretValue
     {
-        public string Value { get; set; }
+        public string Value { get; set; } = string.Empty;
     }
+    
     [ExcludeFromCodeCoverage]
     private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context)
     {
