@@ -68,6 +68,10 @@ public class AuthorizeRoute : IAuthorizeRoute
         }
     }
 
+    class SecretValue
+    {
+        public string Value { get; set; }
+    }
     [ExcludeFromCodeCoverage]
     private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context)
     {
@@ -76,7 +80,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         if (string.IsNullOrEmpty(_pubSubOptions.Auth.Secret))
             throw new NullReferenceException("secret was not provided");
 
-        var secret = await _secretProvider.GetSecretAsync<dynamic>(_pubSubOptions.Auth.Secret);
+        var secret = await _secretProvider.GetSecretAsync<SecretValue>(_pubSubOptions.Auth.Secret);
         
         if (secret == null)
             throw new NullReferenceException("secret can't be read");
