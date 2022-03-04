@@ -565,22 +565,19 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             "logs:PutLogEvents"
         };
         
-        if (CurrentVpc != null)
-        {
-            var p = new []
-            {
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface",
-                "ec2:AssignPrivateIpAddresses",
-                "ec2:UnassignPrivateIpAddresses"
-            };
-
-            permissions = permissions.Union(p).ToArray();
-        }
+        // if (CurrentVpc != null)
+        // {
+        //     var p = new []
+        //     {
+        //         "ec2:CreateNetworkInterface",
+        //         "ec2:DescribeNetworkInterfaces",
+        //         "ec2:DeleteNetworkInterface",
+        //         "ec2:AssignPrivateIpAddresses",
+        //         "ec2:UnassignPrivateIpAddresses"
+        //     };
+        //
+        //     permissions = permissions.Union(p).ToArray();
+        // }
         
         return new ManagedPolicy(this, MakeId("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
         {

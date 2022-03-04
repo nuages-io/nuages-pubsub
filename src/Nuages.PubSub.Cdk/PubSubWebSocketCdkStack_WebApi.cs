@@ -235,7 +235,7 @@ public partial class PubSubWebSocketCdkStack<T>
         });
 
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy("API"));
-        role.AddManagedPolicy(CreateLambdaFullAccessRolePolicy());
+        //role.AddManagedPolicy(CreateLambdaFullAccessRolePolicy());
         role.AddManagedPolicy(CreateDynamoDbRolePolicy("API"));
         role.AddManagedPolicy(CreateSystemsManagerPolicy("API"));
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy("API"));
