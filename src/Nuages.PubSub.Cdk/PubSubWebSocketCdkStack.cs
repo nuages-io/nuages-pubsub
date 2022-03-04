@@ -548,7 +548,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
+                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration", "secretsmanager:GetSecretValue" },
                         Resources = new[] { "*" }
                     })
                 }
