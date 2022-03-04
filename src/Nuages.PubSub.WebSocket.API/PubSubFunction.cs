@@ -6,6 +6,7 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nuages.AWS.Secrets;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
 using Nuages.PubSub.Storage.EntityFramework.MySql;
@@ -59,6 +60,8 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
         serviceCollection
             .AddSingleton(configuration);
 
+        serviceCollection.AddSecretsProvider();
+        
         var pubSubBuilder = serviceCollection.AddPubSubService(configuration);
         
         var pubSubRouteBuilder =
