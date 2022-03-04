@@ -72,12 +72,12 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
         var storage = configuration.GetSection("Nuages:PubSub:Data:Storage").Value;
         switch (storage)
         {
-            case "DynamoDb":
+            case "DynamoDB":
             {
                 pubSubBuilder.AddPubSubDynamoDbStorage();
                 break;
             }
-            case "MongoDb":
+            case "MongoDB":
             {
                 pubSubBuilder.AddPubSubMongoStorage(dbConfig =>
                 {
@@ -94,7 +94,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
 
                 break;
             }
-            case "MySql":
+            case "MySQL":
             {
                 
                 pubSubBuilder.AddPubSubMySqlStorage(dbConfig =>

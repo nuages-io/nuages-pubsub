@@ -5,6 +5,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Nuages.AWS.Secrets;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.WebSocket.Endpoints.Routes.Authorize;
@@ -13,10 +14,12 @@ namespace Nuages.PubSub.WebSocket.Endpoints.Routes.Authorize;
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class AuthorizeRoute : IAuthorizeRoute
 {
+    private readonly IAWSSecretProvider _secretProvider;
     private readonly PubSubOptions _pubSubOptions;
 
-    public AuthorizeRoute(IOptions<PubSubOptions> pubSubAuthOptions)
+    public AuthorizeRoute(IOptions<PubSubOptions> pubSubAuthOptions, IAWSSecretProvider secretProvider)
     {
+        _secretProvider = secretProvider;
         _pubSubOptions = pubSubAuthOptions.Value;
     }
 
@@ -68,14 +71,20 @@ public class AuthorizeRoute : IAuthorizeRoute
     [ExcludeFromCodeCoverage]
     private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context)
     {
-        var secret = _pubSubOptions.Auth.Secret;
-        if (string.IsNullOrEmpty(secret))
+        context.Logger.LogLine($"Input Secret : {_pubSubOptions.Auth.Secret}");
+        
+        if (string.IsNullOrEmpty(_pubSubOptions.Auth.Secret))
             throw new NullReferenceException("secret was not provided");
 
+        var secret = await _secretProvider.GetValueAsync(_pubSubOptions.Auth.Secret);
+        
+        if (string.IsNullOrEmpty(secret))
+            throw new NullReferenceException("secret can't be read");
+        
+        context.Logger.LogLine($"Secret : {secret}");
+        
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
         var keys = new List<SecurityKey> { mySecurityKey };
-
-        context.Logger.LogLine($"Secret : {secret}");
 
         return await  Task.FromResult(keys);
     }
