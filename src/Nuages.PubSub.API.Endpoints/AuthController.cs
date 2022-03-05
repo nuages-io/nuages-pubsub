@@ -40,11 +40,18 @@ public class AuthController : Controller
             
             if (string.IsNullOrEmpty(_options.Auth.Secret))
                 throw new ArgumentException("secret must be provided");
-            
-            var secret = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
 
-            if (secret == null)
-                throw new ArgumentException("secret can't be read");
+            var secret = _options.Auth.Secret;
+            if (secret.StartsWith("arn:aws:secretsmanager"))
+            {
+                var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
+
+                if (secretValue == null)
+                    throw new ArgumentException("secret can't be read");
+
+                secret = secretValue.Value;
+            }
+           
 
             var issuer = _options.Auth.Issuer;
             if (string.IsNullOrEmpty(issuer))
@@ -54,7 +61,7 @@ public class AuthController : Controller
             if (string.IsNullOrEmpty(issuer))
                 throw new ArgumentException("audience must be provided");
             
-            var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret.Value,
+            var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
                 expiresAfterSeconds);
 
             return await Task.FromResult(token);
@@ -90,11 +97,18 @@ public class AuthController : Controller
             {
                 if (string.IsNullOrEmpty(_options.Auth.Secret))
                     throw new ArgumentException("secret must be provided");
-            
-                var secret = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
 
-                if (secret == null)
-                    throw new ArgumentException("secret can't be read");
+                var secret = _options.Auth.Secret;
+
+                if (secret.StartsWith("arn:aws:secretsmanager"))
+                {
+                    var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
+
+                    if (secretValue == null)
+                        throw new ArgumentException("secret can't be read");
+                    
+                    secret = secretValue.Value;
+                }
 
                 var issuer = _options.Auth.Issuer;
                 if (string.IsNullOrEmpty(issuer))
@@ -104,7 +118,7 @@ public class AuthController : Controller
                 if (string.IsNullOrEmpty(issuer))
                     throw new ArgumentException("audience must be provided");
 
-                token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret.Value,
+                token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
                     expiresAfterSeconds);
             }
             

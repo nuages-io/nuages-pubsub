@@ -82,14 +82,21 @@ public class AuthorizeRoute : IAuthorizeRoute
         if (string.IsNullOrEmpty(_pubSubOptions.Auth.Secret))
             throw new NullReferenceException("secret was not provided");
 
-        var secret = await _secretProvider.GetSecretAsync<SecretValue>(_pubSubOptions.Auth.Secret);
+        var secret = _pubSubOptions.Auth.Secret;
+        if (secret.StartsWith(""))
+        {
+            var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_pubSubOptions.Auth.Secret);
         
-        if (secret == null)
-            throw new NullReferenceException("secret can't be read");
+            if (secretValue == null)
+                throw new NullReferenceException("secret can't be read");
         
-        context.Logger.LogLine($"Secret : {secret.Value}");
+            context.Logger.LogLine($"Secret : {secretValue.Value}");
+
+            secret = secretValue.Value;
+        }
         
-        var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret.Value));
+        
+        var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
         var keys = new List<SecurityKey> { mySecurityKey };
 
         return await  Task.FromResult(keys);
