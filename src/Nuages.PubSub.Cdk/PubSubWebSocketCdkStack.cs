@@ -495,7 +495,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy());
         role.AddManagedPolicy(CreateDynamoDbRolePolicy());
         role.AddManagedPolicy(CreateSystemsManagerPolicy());
-
+        role.AddManagedPolicy(CreateSecretsManagerPolicy());
+        
         return role;
     }
 
@@ -548,7 +549,26 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration", "secretsmanager:GetSecretValue" },
+                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
+                        Resources = new[] { "*" }
+                    })
+                }
+            })
+        });
+    }
+    
+    protected virtual ManagedPolicy CreateSecretsManagerPolicy(string suffix = "")
+    {
+        return new ManagedPolicy(this, MakeId("SecretsManagerRole" + suffix), new ManagedPolicyProps
+        {
+            Document = new PolicyDocument(new PolicyDocumentProps
+            {
+                Statements = new[]
+                {
+                    new PolicyStatement(new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new[] {  "secretsmanager:GetSecretValue" },
                         Resources = new[] { "*" }
                     })
                 }
