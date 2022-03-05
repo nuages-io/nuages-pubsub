@@ -2,6 +2,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Nuages.AWS.Secrets;
 
 namespace Nuages.PubSub.Services;
 

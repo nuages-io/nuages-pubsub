@@ -53,6 +53,10 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 config.AppConfig.ConfigProfileId,true);
         }
         
+        var secretProvider = new AWSSecretProvider();
+        secretProvider.TransformSecret<SecretValue>(builder, configuration, "Nuages:PubSub:Data:ConnectionString");
+        secretProvider.TransformSecret<SecretValue>(builder, configuration, "Nuages:PubSub:Auth:Secret");
+        
         AWSSDKHandler.RegisterXRayForAllServices();
         AWSXRayRecorder.InitializeInstance(configuration);
         

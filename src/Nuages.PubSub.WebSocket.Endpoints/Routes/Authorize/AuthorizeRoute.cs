@@ -77,18 +77,18 @@ public class AuthorizeRoute : IAuthorizeRoute
             throw new NullReferenceException("secret was not provided");
 
         var secret = _pubSubOptions.Auth.Secret;
-        if (secret.StartsWith("arn:aws:secretsmanager"))
-        {
-            var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_pubSubOptions.Auth.Secret);
-        
-            if (secretValue == null)
-                throw new NullReferenceException("secret can't be read");
-        
-            context.Logger.LogLine($"Secret : {secretValue.Value}");
-
-            secret = secretValue.Value;
-        }
-        
+        // if (SecretValue.IsSecret(secret))
+        // {
+        //     var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_pubSubOptions.Auth.Secret);
+        //
+        //     if (secretValue == null)
+        //         throw new NullReferenceException("secret can't be read");
+        //
+        //     context.Logger.LogLine($"Secret : {secretValue.Value}");
+        //
+        //     secret = secretValue.Value;
+        // }
+        //
         
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
         var keys = new List<SecurityKey> { mySecurityKey };

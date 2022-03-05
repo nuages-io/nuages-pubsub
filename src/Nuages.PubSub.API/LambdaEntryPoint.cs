@@ -1,4 +1,6 @@
 using NLog.Web;
+using Nuages.AWS.Secrets;
+using Nuages.PubSub.Services;
 using Nuages.Web;
 
 namespace Nuages.PubSub.API;
@@ -38,6 +40,10 @@ public class LambdaEntryPoint :
                     config.AppConfig.EnvironmentId, 
                     config.AppConfig.ConfigProfileId,true);
             }
+            
+            var secretProvider = new AWSSecretProvider();
+            secretProvider.TransformSecret<SecretValue>(configBuilder, configuration, "Nuages:PubSub:Data:ConnectionString");
+            secretProvider.TransformSecret<SecretValue>(configBuilder, configuration, "Nuages:PubSub:Auth:Secret");
         }).UseNLog();
 
     }
