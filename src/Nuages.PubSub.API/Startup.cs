@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Amazon.SecretsManager;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.EntityFrameworkCore;
+using Nuages.AWS.Secrets;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.Storage.DynamoDb;
 using Nuages.PubSub.Storage.EntityFramework.MySql;
@@ -26,6 +28,9 @@ public class Startup
     {
         services.AddSingleton(_configuration);
 
+        services.AddAWSService<IAmazonSecretsManager>();
+        services.AddSecretsProvider();
+        
         var pubSubBuilder = services
             .AddPubSubService(_configuration);
 

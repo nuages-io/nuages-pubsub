@@ -367,7 +367,8 @@ public class TestPubSubFunction
         var options = function.PubSubOpt.Value;
 
         request.QueryStringParameters.Add("hub", "Hub");
-        request.QueryStringParameters.Add("access_token", GenerateToken(options.Auth!.Issuer, options.Auth.Audience, "userId", new List<string>(), options.Auth.Secret));
+        request.QueryStringParameters.Add("access_token", GenerateToken(options.Auth!.Issuer, options.Auth.Audience, "userId", 
+                                            new List<string>(), options.Auth.Secret));
         
         var res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
         
@@ -411,7 +412,8 @@ public class TestPubSubFunction
         var authOptions = options.ExternalAuth;
         
         request.QueryStringParameters.Add("hub", "Hub");
-        request.QueryStringParameters.Add("access_token", GenerateToken("bad_issuer", authOptions!.ValidAudiences!, "userId", new List<string>(), options.Auth!.Secret));
+        request.QueryStringParameters.Add("access_token", GenerateToken("bad_issuer", authOptions!.ValidAudiences!, 
+                                        "userId", new List<string>(), options.Auth!.Secret));
         
         var res = await function.OnAuthorizeHandlerAsync(request, lambdaContext);
         

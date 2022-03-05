@@ -1,6 +1,7 @@
 using Amazon.XRay.Recorder.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Nuages.AWS.Secrets;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Endpoints;
@@ -10,15 +11,22 @@ public class AuthController : Controller
 {
     private readonly IPubSubService _pubSubService;
     private readonly IHostEnvironment _environment;
+    private readonly IAWSSecretProvider _secretProvider;
     private readonly PubSubOptions _options;
 
-    public AuthController(IPubSubService pubSubService, IOptions<PubSubOptions> options, IHostEnvironment environment)
+    public AuthController(IPubSubService pubSubService, IOptions<PubSubOptions> options, IHostEnvironment environment, IAWSSecretProvider secretProvider)
     {
         _pubSubService = pubSubService;
         _environment = environment;
+        _secretProvider = secretProvider;
         _options = options.Value;
     }
 
+    class SecretValue
+    {
+        public string Value { get; set; } = string.Empty;
+    }
+    
     // GET
     [HttpGet("getclienttoken")]
     public async Task<ActionResult<string>> GetClientAccessTokenAsync(
@@ -30,9 +38,13 @@ public class AuthController : Controller
             if (!_environment.IsDevelopment())
                 AWSXRayRecorder.Instance.BeginSubsegment("AuthController.GetClientAccessTokenAsync");
             
-            var secret = _options.Auth.Secret;
-            if (string.IsNullOrEmpty(secret))
+            if (string.IsNullOrEmpty(_options.Auth.Secret))
                 throw new ArgumentException("secret must be provided");
+            
+            var secret = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
+
+            if (secret == null)
+                throw new ArgumentException("secret can't be read");
 
             var issuer = _options.Auth.Issuer;
             if (string.IsNullOrEmpty(issuer))
@@ -42,7 +54,7 @@ public class AuthController : Controller
             if (string.IsNullOrEmpty(issuer))
                 throw new ArgumentException("audience must be provided");
             
-            var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
+            var token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret.Value,
                 expiresAfterSeconds);
 
             return await Task.FromResult(token);
@@ -76,9 +88,13 @@ public class AuthController : Controller
 
             if (string.IsNullOrEmpty(token))
             {
-                var secret = _options.Auth.Secret;
-                if (string.IsNullOrEmpty(secret))
+                if (string.IsNullOrEmpty(_options.Auth.Secret))
                     throw new ArgumentException("secret must be provided");
+            
+                var secret = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
+
+                if (secret == null)
+                    throw new ArgumentException("secret can't be read");
 
                 var issuer = _options.Auth.Issuer;
                 if (string.IsNullOrEmpty(issuer))
@@ -88,7 +104,7 @@ public class AuthController : Controller
                 if (string.IsNullOrEmpty(issuer))
                     throw new ArgumentException("audience must be provided");
 
-                token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret,
+                token = _pubSubService.GenerateToken(issuer, audience, userId, roles ?? new List<string>(), secret.Value,
                     expiresAfterSeconds);
             }
             
