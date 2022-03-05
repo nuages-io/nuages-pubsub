@@ -537,7 +537,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     {
                         Effect = Effect.ALLOW,
                         Actions = new[] { "execute-api:ManageConnections" },
-                        Resources = new[] { $"arn:aws:execute-api:*:*:{ApiRef}/@connections/*" }
+                        Resources = new[] { $"arn:aws:execute-api:*:*:{ApiRef}/*/*/@connections/*" }
                     })
                 }
             })
@@ -595,7 +595,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         // {
         //     var p = new []
         //     {
-        //         "ec2:CreateNetworkInterface",
+        //         "ec2:CreateNetworkInterface", 
         //         "ec2:DescribeNetworkInterfaces",
         //         "ec2:DeleteNetworkInterface",
         //         "ec2:AssignPrivateIpAddresses",
