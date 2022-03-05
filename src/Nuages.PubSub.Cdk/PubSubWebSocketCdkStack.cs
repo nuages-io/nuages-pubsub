@@ -24,6 +24,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 {
     protected string? WebSocketAsset { get; set; }
 
+    
     private string? OnConnectHandler { get; set; }
     private string? OnDisconnectHandler { get; set; }
     private string? OnAuthrorizeHandler { get; set; }
@@ -32,6 +33,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     private string? JoinHandler { get; set; }
     private string? LeaveHandler { get; set; }
 
+    public string ApiRef { get; set; }
     public string ApiNameWebSocket { get; set; } = "WebSocket";
 
     public string RouteSelectionExpression { get; set; } = "$request.body.type";
@@ -201,9 +203,11 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         
         //ReadContextVariables();
         
-        var role = CreateWebSocketRole();
-
         var api = CreateWebSocketApi();
+
+        ApiRef = api.Ref;
+        
+        var role = CreateWebSocketRole();
         
         var onAuthorizeFunction = CreateWebSocketFunction(OnAuthorizeFunctionName, OnAuthrorizeHandler, role, api);
         var authorizer = CreateAuthorizer(api, onAuthorizeFunction);
@@ -259,6 +263,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             Description = "The WSS Protocol URI to connect to"
         });
     }
+
+    
 
     private void NormalizeHandlerName()
     {
@@ -512,7 +518,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     {
                         Effect = Effect.ALLOW,
                         Actions = new[] { "dynamodb:*" },
-                        Resources = new[] { "*" }
+                        Resources = new[] { $"arn:aws:dynamodb:*:*:table/{StackName}*" }
                     })
                 }
             })
@@ -531,7 +537,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     {
                         Effect = Effect.ALLOW,
                         Actions = new[] { "execute-api:ManageConnections" },
-                        Resources = new[] { "arn:aws:execute-api:*:*:*/@connections/*" }
+                        Resources = new[] { $"arn:aws:execute-api:*:*:{ApiRef}/@connections/*" }
                     })
                 }
             })

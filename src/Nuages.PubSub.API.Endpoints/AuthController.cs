@@ -21,11 +21,7 @@ public class AuthController : Controller
         _secretProvider = secretProvider;
         _options = options.Value;
     }
-
-    class SecretValue
-    {
-        public string Value { get; set; } = string.Empty;
-    }
+    
     
     // GET
     [HttpGet("getclienttoken")]
