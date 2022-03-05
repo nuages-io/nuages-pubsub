@@ -83,7 +83,7 @@ public class AuthorizeRoute : IAuthorizeRoute
             throw new NullReferenceException("secret was not provided");
 
         var secret = _pubSubOptions.Auth.Secret;
-        if (secret.StartsWith(""))
+        if (secret.StartsWith("arn:aws:secretsmanager"))
         {
             var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_pubSubOptions.Auth.Secret);
         
