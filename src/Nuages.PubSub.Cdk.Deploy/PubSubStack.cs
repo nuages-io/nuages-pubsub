@@ -42,5 +42,6 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
     {
         WebSocketAsset = "./src/Nuages.PubSub.WebSocket.API/bin/Release/net6.0/linux-x64/publish";
         ApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
+        WebApiHandler = "Nuages.PubSub.API";
     }
 }
