@@ -39,6 +39,7 @@ public class AuthController : Controller
 
             var secret = _options.Auth.Secret;
 
+            Console.WriteLine($"Secret is {secret}");
 
             var issuer = _options.Auth.Issuer;
             if (string.IsNullOrEmpty(issuer))
