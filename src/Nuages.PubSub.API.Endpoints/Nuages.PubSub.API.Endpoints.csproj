@@ -36,7 +36,7 @@
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="AWSXRayRecorder.Core" Version="2.10.1" />
-      <PackageReference Include="Nuages.AWS" Version="1.0.6" />
+      <PackageReference Include="Nuages.AWS" Version="1.0.7" />
     </ItemGroup>
 
 </Project>
