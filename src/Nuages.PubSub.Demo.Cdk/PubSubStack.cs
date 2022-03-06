@@ -1,9 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Constructs;
+using Nuages.PubSub.Cdk;
 using Nuages.PubSub.Demo.WebSocket;
 
-namespace Nuages.PubSub.Cdk.Deploy;
+namespace Nuages.PubSub.Demo.Cdk;
 
 [ExcludeFromCodeCoverage]
 public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>

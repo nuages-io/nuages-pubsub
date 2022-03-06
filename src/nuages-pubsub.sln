@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.Dynam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Demo.WebSocket", "Nuages.PubSub.Demo.WebSocket\Nuages.PubSub.Demo.WebSocket.csproj", "{136AA1C6-86A2-4FDC-85A7-DFF07CB3C7E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Cdk.Deploy", "Nuages.PubSub.Cdk.Deploy\Nuages.PubSub.Cdk.Deploy.csproj", "{276C0749-02AC-4FDD-8617-633A8807E1FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Demo.Cdk", "Nuages.PubSub.Demo.Cdk\Nuages.PubSub.Demo.Cdk.csproj", "{276C0749-02AC-4FDD-8617-633A8807E1FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Demo.API", "Nuages.PubSub.Demo.API\Nuages.PubSub.Demo.API.csproj", "{31148DEB-5326-47F2-BFFD-C4E6CC64418E}"
 EndProject

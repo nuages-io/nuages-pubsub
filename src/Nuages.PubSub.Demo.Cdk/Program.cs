@@ -1,10 +1,9 @@
-﻿
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Microsoft.Extensions.Configuration;
 using Nuages.Web;
 
-namespace Nuages.PubSub.Cdk.Deploy;
+namespace Nuages.PubSub.Demo.Cdk;
 
 //ReSharper disable once ClassNeverInstantiated.Global
 //ReSharper disable once ArrangeTypeModifiers
