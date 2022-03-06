@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Constructs;
-using Nuages.PubSub.WebSocket.API;
+using Nuages.PubSub.Demo.WebSocket;
 
 namespace Nuages.PubSub.Cdk.Deploy;
 
@@ -40,8 +40,8 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
     private PubSubStack(Construct scope, string id, IStackProps? props = null) 
         : base(scope, id, props)
     {
-        WebSocketAsset = "./src/Nuages.PubSub.WebSocket.API/bin/Release/net6.0/linux-x64/publish";
-        ApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
-        WebApiHandler = "Nuages.PubSub.API";
+        WebSocketAsset = "./src/Nuages.PubSub.Demo.WebSocket/bin/Release/net6.0/linux-x64/publish";
+        ApiAsset = "./src/Nuages.PubSub.Demo.API/bin/Release/net6.0/linux-x64/publish";
+        WebApiHandler = "Nuages.PubSub.Demo.API";
     }
 }

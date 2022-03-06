@@ -22,7 +22,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\Nuages.PubSub.WebSocket.API\Nuages.PubSub.WebSocket.API.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.Demo.WebSocket\Nuages.PubSub.Demo.WebSocket.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Cdk\Nuages.PubSub.Cdk.csproj" />
     </ItemGroup>
 

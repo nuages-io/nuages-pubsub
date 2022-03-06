@@ -57,7 +57,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string StageName { get; set; } = "prod";
 
     public string WebApiHandler { get; set; } =
-        "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync";
+        "Nuages.PubSub.Demo.API::Nuages.PubSub.Demo.API.LambdaEntryPoint::FunctionHandlerAsync";
     
     public string NuagesPubSubRole { get; set; } = "Role";
     
@@ -592,20 +592,6 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             "logs:CreateLogStream",
             "logs:PutLogEvents"
         };
-        
-        // if (CurrentVpc != null)
-        // {
-        //     var p = new []
-        //     {
-        //         "ec2:CreateNetworkInterface", 
-        //         "ec2:DescribeNetworkInterfaces",
-        //         "ec2:DeleteNetworkInterface",
-        //         "ec2:AssignPrivateIpAddresses",
-        //         "ec2:UnassignPrivateIpAddresses"
-        //     };
-        //
-        //     permissions = permissions.Union(p).ToArray();
-        // }
         
         return new ManagedPolicy(this, MakeId("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
         {
