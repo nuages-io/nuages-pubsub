@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Amazon.XRay.Recorder.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -11,14 +12,12 @@ public class AuthController : Controller
 {
     private readonly IPubSubService _pubSubService;
     private readonly IHostEnvironment _environment;
-    private readonly IAWSSecretProvider _secretProvider;
     private readonly PubSubOptions _options;
 
-    public AuthController(IPubSubService pubSubService, IOptions<PubSubOptions> options, IHostEnvironment environment, IAWSSecretProvider secretProvider)
+    public AuthController(IPubSubService pubSubService, IOptions<PubSubOptions> options, IHostEnvironment environment)
     {
         _pubSubService = pubSubService;
         _environment = environment;
-        _secretProvider = secretProvider;
         _options = options.Value;
     }
     
@@ -37,9 +36,11 @@ public class AuthController : Controller
             if (string.IsNullOrEmpty(_options.Auth.Secret))
                 throw new ArgumentException("secret must be provided");
 
+            Console.WriteLine($"PubSubOptions is {JsonSerializer.Serialize(_options)}");
+            
             var secret = _options.Auth.Secret;
 
-            Console.WriteLine($"Secret is {secret}");
+            
 
             var issuer = _options.Auth.Issuer;
             if (string.IsNullOrEmpty(issuer))

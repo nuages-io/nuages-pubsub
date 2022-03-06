@@ -43,7 +43,9 @@ public class LambdaEntryPoint :
             
             var secretProvider = new AWSSecretProvider();
             secretProvider.TransformSecret<SecretValue>(configBuilder, configuration, "Nuages:PubSub:Data:ConnectionString");
+            Console.WriteLine($"PRE secret = {configuration["Nuages:PubSub:Auth:Secret"]}");
             secretProvider.TransformSecret<SecretValue>(configBuilder, configuration, "Nuages:PubSub:Auth:Secret");
+            Console.WriteLine($"POST secret = {configuration["Nuages:PubSub:Auth:Secret"]}");
         }).UseNLog();
 
     }
