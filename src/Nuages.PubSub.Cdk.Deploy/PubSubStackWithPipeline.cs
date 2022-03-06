@@ -8,7 +8,6 @@ using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.Pipelines;
 using Constructs;
-using Microsoft.Extensions.Configuration;
 
 // ReSharper disable ObjectCreationAsStatement
 

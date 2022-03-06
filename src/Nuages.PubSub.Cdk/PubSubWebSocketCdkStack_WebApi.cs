@@ -192,6 +192,7 @@ public partial class PubSubWebSocketCdkStack<T>
         return func;
     }
 
+    // ReSharper disable once UnusedParameter.Global
     protected virtual void AddWebApiEnvironmentVariables(Dictionary<string, string> environmentVariables)
     {
     }
@@ -235,7 +236,6 @@ public partial class PubSubWebSocketCdkStack<T>
         });
 
         role.AddManagedPolicy(CreateLambdaBasicExecutionRolePolicy("API"));
-        //role.AddManagedPolicy(CreateLambdaFullAccessRolePolicy());
         role.AddManagedPolicy(CreateDynamoDbRolePolicy("API"));
         role.AddManagedPolicy(CreateSystemsManagerPolicy("API"));
         role.AddManagedPolicy(CreateExecuteApiConnectionRolePolicy("API"));
@@ -243,73 +243,4 @@ public partial class PubSubWebSocketCdkStack<T>
 
         return role;
     }
-
-    // private IManagedPolicy CreateLambdaFullAccessRolePolicy()
-    // {
-    //     return new ManagedPolicy(this, MakeId("LambdaFullAccessRole"), new ManagedPolicyProps
-    //     {
-    //         Document = new PolicyDocument(new PolicyDocumentProps
-    //         {
-    //             Statements = new[]
-    //             {
-    //                 new PolicyStatement(new PolicyStatementProps
-    //                 {
-    //                     Effect = Effect.ALLOW,
-    //                     Actions = new[]
-    //                     {
-    //                         "cloudformation:DescribeStacks",
-    //                         "cloudformation:ListStackResources",
-    //                         "cloudwatch:ListMetrics",
-    //                         "cloudwatch:GetMetricData",
-    //                         "ec2:DescribeSecurityGroups",
-    //                         "ec2:DescribeSubnets",
-    //                         "ec2:DescribeVpcs",
-    //                         "kms:ListAliases",
-    //                         "iam:GetPolicy",
-    //                         "iam:GetPolicyVersion",
-    //                         "iam:GetRole",
-    //                         "iam:GetRolePolicy",
-    //                         "iam:ListAttachedRolePolicies",
-    //                         "iam:ListRolePolicies",
-    //                         "iam:ListRoles",
-    //                         "lambda:*",
-    //                         "logs:DescribeLogGroups",
-    //                         "states:DescribeStateMachine",
-    //                         "states:ListStateMachines",
-    //                         "tag:GetResources",
-    //                         "xray:GetTraceSummaries",
-    //                         "xray:BatchGetTraces"
-    //                     },
-    //                     Resources = new[] { "*" }
-    //                 }),
-    //                 new PolicyStatement(new PolicyStatementProps
-    //                 {
-    //                     Effect = Effect.ALLOW,
-    //                     Actions = new[] { "iam:PassRole" },
-    //                     Resources = new[] { "*" },
-    //                     Conditions = new Dictionary<string, object>
-    //                     {
-    //                         {
-    //                             "StringEquals", new Dictionary<string, string>
-    //                             {
-    //                                 { "iam:PassedToService", "lambda.amazonaws.com" }
-    //                             }
-    //                         }
-    //                     }
-    //                 }),
-    //                 new PolicyStatement(new PolicyStatementProps
-    //                 {
-    //                     Effect = Effect.ALLOW,
-    //                     Actions = new[]
-    //                     {
-    //                         "logs:DescribeLogStreams",
-    //                         "logs:GetLogEvents",
-    //                         "logs:FilterLogEvents"
-    //                     },
-    //                     Resources = new[] { "arn:aws:logs:*:*:log-group:/aws/lambda/*" }
-    //                 })
-    //             }
-    //         })
-    //     });
-    // }
 }

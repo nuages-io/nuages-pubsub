@@ -5,7 +5,6 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Nuages.AWS.Secrets;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.WebSocket.Endpoints.Routes.Authorize;
@@ -14,12 +13,10 @@ namespace Nuages.PubSub.WebSocket.Endpoints.Routes.Authorize;
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class AuthorizeRoute : IAuthorizeRoute
 {
-    private readonly IAWSSecretProvider _secretProvider;
     private readonly PubSubOptions _pubSubOptions;
 
-    public AuthorizeRoute(IOptions<PubSubOptions> pubSubAuthOptions, IAWSSecretProvider secretProvider)
+    public AuthorizeRoute(IOptions<PubSubOptions> pubSubAuthOptions)
     {
-        _secretProvider = secretProvider;
         _pubSubOptions = pubSubAuthOptions.Value;
     }
 

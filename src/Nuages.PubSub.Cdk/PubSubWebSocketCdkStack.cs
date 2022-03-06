@@ -33,7 +33,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     private string? JoinHandler { get; set; }
     private string? LeaveHandler { get; set; }
 
-    public string ApiRef { get; set; }
+    public string? ApiRef { get; set; }
     public string ApiNameWebSocket { get; set; } = "WebSocket";
 
     public string RouteSelectionExpression { get; set; } = "$request.body.type";
@@ -108,6 +108,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     {
         
     }
+    
     private IDatabaseProxy? Proxy
     {
         get
@@ -443,6 +444,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         return func;
     }
 
+    // ReSharper disable once UnusedParameter.Global
     protected virtual void AddWebSocketEnvironmentVariables(Dictionary<string, string> environmentVariables)
     {
     }

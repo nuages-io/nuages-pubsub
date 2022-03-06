@@ -37,9 +37,9 @@ if (config.AppConfig.Enabled)
 }
 
 var secretProvider = new AWSSecretProvider();
-secretProvider.TransformSecret(configurationBuilder, builder.Configuration,
+secretProvider.TransformSecret(builder.Configuration,
     "Nuages:PubSub:Data:ConnectionString");
-secretProvider.TransformSecret(configurationBuilder, builder.Configuration, "Nuages:PubSub:Auth:Secret");
+secretProvider.TransformSecret(builder.Configuration, "Nuages:PubSub:Auth:Secret");
 
 var configuration = configurationBuilder.Build();
 

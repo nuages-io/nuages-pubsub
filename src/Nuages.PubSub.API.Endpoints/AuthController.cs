@@ -2,7 +2,6 @@ using System.Text.Json;
 using Amazon.XRay.Recorder.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Nuages.AWS.Secrets;
 using Nuages.PubSub.Services;
 
 namespace Nuages.PubSub.API.Endpoints;

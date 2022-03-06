@@ -23,5 +23,6 @@ public class PubSubRouteBuilder : IPubSubRouteBuilder
 public interface IPubSubRouteBuilder
 {
     IServiceCollection Services { get; }
+    // ReSharper disable once UnusedMemberInSuper.Global
     IConfiguration? Configuration { get; }
 }

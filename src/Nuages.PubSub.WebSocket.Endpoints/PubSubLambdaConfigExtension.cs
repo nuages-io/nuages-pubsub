@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
 using Nuages.PubSub.WebSocket.Endpoints.Routes.JoinLeave;
@@ -29,6 +28,7 @@ public static class PubSubLambdaConfigExtension
     }
 
     // ReSharper disable once UnusedMember.Global
+    // ReSharper disable once UnusedMethodReturnValue.Global
     public static IPubSubRouteBuilder UseExternalAuthRoute(this IPubSubRouteBuilder builder)
     { 
         builder.Services.AddScoped<IAuthorizeRoute, AuthorizeRouteExternal>();
