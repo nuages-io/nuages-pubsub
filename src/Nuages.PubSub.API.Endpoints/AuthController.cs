@@ -38,16 +38,7 @@ public class AuthController : Controller
                 throw new ArgumentException("secret must be provided");
 
             var secret = _options.Auth.Secret;
-            // if (SecretValue.IsSecret(secret))
-            // {
-            //     var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
-            //
-            //     if (secretValue == null)
-            //         throw new ArgumentException("secret can't be read");
-            //
-            //     secret = secretValue.Value;
-            // }
-           
+
 
             var issuer = _options.Auth.Issuer;
             if (string.IsNullOrEmpty(issuer))
@@ -95,16 +86,6 @@ public class AuthController : Controller
                     throw new ArgumentException("secret must be provided");
 
                 var secret = _options.Auth.Secret;
-
-                // if (SecretValue.IsSecret(secret))
-                // {
-                //     var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_options.Auth.Secret);
-                //
-                //     if (secretValue == null)
-                //         throw new ArgumentException("secret can't be read");
-                //     
-                //     secret = secretValue.Value;
-                // }
 
                 var issuer = _options.Auth.Issuer;
                 if (string.IsNullOrEmpty(issuer))
