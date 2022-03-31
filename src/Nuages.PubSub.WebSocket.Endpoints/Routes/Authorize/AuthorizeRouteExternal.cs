@@ -42,6 +42,8 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
         var jwtToken = new JwtSecurityTokenHandler()
             .ReadJwtToken(token);
 
+        context.Logger.LogInformation("jwtToken=" + JsonSerializer.Serialize(jwtToken));
+        
         var claimDict = AuthorizeRoute.GetClaims(jwtToken);
 
         claimDict.Add("nuageshub", hub);
