@@ -31,7 +31,6 @@
 </ItemGroup>
     <ItemGroup>
         <None Remove="appsettings.local.json" />
-        <Content Include="appsettings.local.json" CopyToOutputDirectory="Never" Condition="Exists('appsettings.local.json')" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />

@@ -61,7 +61,7 @@ public class SqlServerPubSubContextFactory : IDesignTimeDbContextFactory<SqlServ
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
-            .AddJsonFile("appsettings.local.json", true)
+            .AddJsonFile("appsettings.sqlserver.json", true)
             .Build();
         
         var optionsBuilder = new DbContextOptionsBuilder<PubSubDbContext>();
