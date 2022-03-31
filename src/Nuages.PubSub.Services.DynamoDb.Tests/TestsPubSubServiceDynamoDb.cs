@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Amazon.ApiGatewayManagementApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Services.Tests;
-using Nuages.PubSub.Storage;
 using Nuages.PubSub.Storage.DynamoDb;
 
 namespace Nuages.PubSub.Services.DynamoDb.Tests;

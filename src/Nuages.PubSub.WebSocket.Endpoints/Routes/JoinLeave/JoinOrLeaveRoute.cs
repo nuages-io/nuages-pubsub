@@ -26,8 +26,6 @@ public class JoinOrLeaveRoute
         
         try
         {
-            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
-            
             var inMessage = GetInboundMessage(request);
 
             ackId = inMessage.ackId;
@@ -79,7 +77,6 @@ public class JoinOrLeaveRoute
         catch (Exception e)
         {
             context.Logger.LogLine("Error disconnecting: " + e.Message);
-            context.Logger.LogLine(e.StackTrace);
             
             if (!string.IsNullOrEmpty(ackId))
                 await _pubSubService.SendAckToConnectionAsync(request.GetHub(), connectionId, ackId, false, PubSubAckResult.InternalServerError);

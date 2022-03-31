@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Microsoft.Extensions.Options;
 using Nuages.PubSub.Services;
+using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.DynamoDb.DataModel;
 
 namespace Nuages.PubSub.Storage.DynamoDb;

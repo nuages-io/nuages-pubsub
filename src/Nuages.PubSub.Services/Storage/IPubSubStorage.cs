@@ -1,5 +1,5 @@
 
-namespace Nuages.PubSub.Storage;
+namespace Nuages.PubSub.Services.Storage;
 
 public interface IPubSubStorage 
 {

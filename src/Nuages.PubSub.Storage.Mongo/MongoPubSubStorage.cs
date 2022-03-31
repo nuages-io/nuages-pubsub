@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Nuages.PubSub.Services;
+using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 #pragma warning disable CS8618
 

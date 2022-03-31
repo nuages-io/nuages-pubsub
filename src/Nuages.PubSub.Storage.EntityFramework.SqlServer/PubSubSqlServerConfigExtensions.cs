@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
+using Nuages.PubSub.Services.Storage;
 
 namespace Nuages.PubSub.Storage.EntityFramework.SqlServer;
 

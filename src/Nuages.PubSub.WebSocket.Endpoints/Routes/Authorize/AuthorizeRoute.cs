@@ -50,7 +50,7 @@ public class AuthorizeRoute : IAuthorizeRoute
         var validIssuer = _pubSubOptions.Auth.Issuer;
         var validAudience = _pubSubOptions.Auth.Audience;
 
-        var keys = await LoadKeys(context);
+        var keys = await LoadKeys();
 
         try
         {
@@ -66,27 +66,13 @@ public class AuthorizeRoute : IAuthorizeRoute
     }
 
     [ExcludeFromCodeCoverage]
-    private async Task<List<SecurityKey>> LoadKeys(ILambdaContext context)
+    private async Task<List<SecurityKey>> LoadKeys()
     {
-        context.Logger.LogLine($"Input Secret : {_pubSubOptions.Auth.Secret}");
-        
         if (string.IsNullOrEmpty(_pubSubOptions.Auth.Secret))
             throw new NullReferenceException("secret was not provided");
 
         var secret = _pubSubOptions.Auth.Secret;
-        // if (SecretValue.IsSecret(secret))
-        // {
-        //     var secretValue = await _secretProvider.GetSecretAsync<SecretValue>(_pubSubOptions.Auth.Secret);
-        //
-        //     if (secretValue == null)
-        //         throw new NullReferenceException("secret can't be read");
-        //
-        //     context.Logger.LogLine($"Secret : {secretValue.Value}");
-        //
-        //     secret = secretValue.Value;
-        // }
-        //
-        
+      
         var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
         var keys = new List<SecurityKey> { mySecurityKey };
 
