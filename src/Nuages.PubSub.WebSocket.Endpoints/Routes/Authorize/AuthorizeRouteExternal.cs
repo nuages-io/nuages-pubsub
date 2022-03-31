@@ -48,8 +48,8 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
 
         claimDict.Add("nuageshub", hub);
         
-        claimDict.Add("roles", "SendMessageToGroup");
-        claimDict.Add("roles", "JoinOrLeaveGroup");
+        foreach(var role in _pubSubOptions.ExternalAuth.Roles.Split(","))
+            claimDict.Add("roles", role );
         
         context.Logger.LogInformation("PubSubOptions=" + JsonSerializer.Serialize(_pubSubOptions));
         
