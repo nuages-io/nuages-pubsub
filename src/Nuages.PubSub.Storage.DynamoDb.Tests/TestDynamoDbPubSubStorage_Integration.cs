@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nuages.PubSub.Services;
-using Nuages.PubSub.Storage.Tests;
+using Nuages.PubSub.Services.Tests;
 
 namespace Nuages.PubSub.Storage.DynamoDb.Tests;
 

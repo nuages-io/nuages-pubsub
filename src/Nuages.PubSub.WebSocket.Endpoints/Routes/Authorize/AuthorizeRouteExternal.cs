@@ -47,9 +47,7 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
         var claimDict = AuthorizeRoute.GetClaims(jwtToken);
 
         claimDict.Add("nuageshub", hub);
-        
-        foreach(var role in _pubSubOptions.ExternalAuth.Roles.Split(","))
-            claimDict.Add("roles", role );
+        claimDict.Add("roles", _pubSubOptions.ExternalAuth.Roles );
         
         context.Logger.LogInformation("PubSubOptions=" + JsonSerializer.Serialize(_pubSubOptions));
         
