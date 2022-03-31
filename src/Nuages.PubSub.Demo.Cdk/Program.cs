@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Amazon.CDK;
 using Microsoft.Extensions.Configuration;
+using Nuages.AWS.Secrets;
 using Nuages.Web;
 
 namespace Nuages.PubSub.Demo.Cdk;
@@ -38,6 +39,9 @@ sealed class Program
                 config.AppConfig.ConfigProfileId,true);
         }
 
+        var secretProvider = new AWSSecretProvider();
+        secretProvider.TransformSecrets(configManager);
+        
         var options = configuration.Get<ConfigOptions>();
         
         var app = new App();
