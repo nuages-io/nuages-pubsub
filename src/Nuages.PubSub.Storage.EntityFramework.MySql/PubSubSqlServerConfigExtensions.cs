@@ -20,7 +20,7 @@ public static class PubSubMySqlConfigExtensions
     {
         builder.Services.AddScoped<IPubSubStorage, PubSubStorageEntityFramework<T>>();
 
-        builder.Services.AddDbContext<T>(optionsAction);
+        builder.Services.AddDbContext<T>(optionsAction, ServiceLifetime.Singleton, ServiceLifetime.Singleton);
 
         return builder;
     }

@@ -586,13 +586,26 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
-        var permissions = new []
+        var permissions = new List<string>
         {
             "logs:CreateLogGroup",
             "logs:CreateLogStream",
             "logs:PutLogEvents"
         };
-        
+
+        if (!string.IsNullOrEmpty(VpcId))
+        {
+            permissions.AddRange(new List<string>
+            {
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeInstances",
+                "ec2:AttachNetworkInterface"
+            });
+        }
+
+       
         return new ManagedPolicy(this, MakeId("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
@@ -602,7 +615,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = permissions,
+                        Actions = permissions.ToArray(),
                         Resources = new[] { "*" }
                     })
                 }
