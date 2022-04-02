@@ -114,19 +114,13 @@ public class PubSubStackWithPipeline : Stack
                     new (new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
+                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:*" },
                         Resources = new[] { "*" }
                     }),
                     new (new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
                         Actions = new[] {  "secretsmanager:GetSecretValue" },
-                        Resources = new[] { "*" }
-                    }),
-                    new (new PolicyStatementProps
-                    {
-                        Effect = Effect.ALLOW,
-                        Actions = new[] {  "*" },
                         Resources = new[] { "*" }
                     })
                    
