@@ -62,7 +62,7 @@ public class PubSubStackWithPipeline : Stack
                     new (new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] {  "*" },
+                        Actions = new[] {  "ec2:Describe*" },
                         Resources = new[] { "*" }
                     })
                 }
@@ -99,7 +99,7 @@ public class PubSubStackWithPipeline : Stack
                             }
                         }
                     }
-                }),
+                })/*,
                 RolePolicy = new PolicyStatement[]
                 {
                     new (new PolicyStatementProps
@@ -125,7 +125,7 @@ public class PubSubStackWithPipeline : Stack
                     })
                    
 
-                }
+                }*/
             },
             SelfMutationCodeBuildDefaults = new CodeBuildOptions
             {

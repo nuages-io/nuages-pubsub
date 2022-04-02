@@ -13,6 +13,7 @@ public static class PubSubMongoConfigExtensions
     {
         builder.Services.Configure(options);
 
+        builder.Services.AddSingleton<IMongoClientProvider>(new MongoClientProvider());
         builder.Services.AddScoped<IPubSubStorage, MongoPubSubStorage>();
     }
 }
