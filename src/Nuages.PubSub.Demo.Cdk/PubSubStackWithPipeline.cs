@@ -123,6 +123,12 @@ public class PubSubStackWithPipeline : Stack
                         Actions = new[] {  "secretsmanager:GetSecretValue" },
                         Resources = new[] { "*" }
                     }),
+                    new (new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new[] {  "*" },
+                        Resources = new[] { "*" }
+                    })
                    
 
                 }
