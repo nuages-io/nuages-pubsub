@@ -9,18 +9,18 @@ public static class PubSubMySqlConfigExtensions
 {
     // ReSharper disable once UnusedMethodReturnValue.Global
     public static IPubSubBuilder AddPubSubMySqlStorage(this IPubSubBuilder builder,
-        Action<DbContextOptionsBuilder>? optionsAction = null)
+        Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
     { 
-        return AddPubSubMySqlStorage<MySqlPubSubDbContext>(builder, optionsAction);
+        return AddPubSubMySqlStorage<MySqlPubSubDbContext>(builder, optionsAction, serviceLifetime);
     }
     
     // ReSharper disable once MemberCanBePrivate.Global
     public static IPubSubBuilder AddPubSubMySqlStorage<T>(this IPubSubBuilder builder,  
-        Action<DbContextOptionsBuilder>? optionsAction = null) where T : MySqlPubSubDbContext
+        Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton) where T : MySqlPubSubDbContext
     {
         builder.Services.AddScoped<IPubSubStorage, PubSubStorageEntityFramework<T>>();
 
-        builder.Services.AddDbContext<T>(optionsAction, ServiceLifetime.Singleton, ServiceLifetime.Singleton);
+        builder.Services.AddDbContext<T>(optionsAction, serviceLifetime, serviceLifetime);
 
         return builder;
     }

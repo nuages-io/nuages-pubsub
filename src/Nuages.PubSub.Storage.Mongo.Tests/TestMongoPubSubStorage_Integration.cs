@@ -30,7 +30,7 @@ public class TestMongoPubSubStorage : TestPubSubStorageBase
             .AddPubSubMongoStorage(config =>
             {
                 config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
-            });
+            }, ServiceLifetime.Scoped);
         
         var serviceProvider = serviceCollection.BuildServiceProvider();
 

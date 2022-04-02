@@ -9,11 +9,32 @@ namespace Nuages.PubSub.Storage.Mongo;
 public static class PubSubMongoConfigExtensions
 {
     // ReSharper disable once UnusedMember.Global
-    public static void AddPubSubMongoStorage(this IPubSubBuilder builder, Action<PubSubMongoOptions>? options )
+    public static void AddPubSubMongoStorage(this IPubSubBuilder builder, Action<PubSubMongoOptions>? options, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped )
     {
         builder.Services.Configure(options);
 
-        builder.Services.AddSingleton<IMongoClientProvider>(new MongoClientProvider());
+        switch (serviceLifetime)
+        {
+            case ServiceLifetime.Singleton:
+            {
+                builder.Services.AddSingleton<IMongoClientProvider>(new MongoClientProvider());
+                break;
+            }
+            case ServiceLifetime.Scoped:
+            {
+                builder.Services.AddScoped<IMongoClientProvider, MongoClientProvider>();
+                break;
+            }
+            case ServiceLifetime.Transient:
+            {
+                builder.Services.AddTransient<IMongoClientProvider, MongoClientProvider>();
+                break;
+            }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(serviceLifetime), serviceLifetime, null);
+        }
+        
+        
         builder.Services.AddScoped<IPubSubStorage, MongoPubSubStorage>();
     }
 }
