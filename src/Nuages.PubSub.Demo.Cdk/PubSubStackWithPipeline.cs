@@ -62,7 +62,7 @@ public class PubSubStackWithPipeline : Stack
                     new (new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] {  "ec2:*", "sts:*" },
+                        Actions = new[] {  "*" },
                         Resources = new[] { "*" }
                     })
                 }
