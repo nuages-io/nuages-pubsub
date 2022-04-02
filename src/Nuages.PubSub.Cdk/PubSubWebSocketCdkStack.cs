@@ -144,6 +144,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         {
             if (!string.IsNullOrEmpty(VpcId))
             {
+                Console.WriteLine("Vpc.FromLookup");
                 _vpc ??= Vpc.FromLookup(this, "Vpc", new VpcLookupOptions
                 {
                     VpcId = VpcId
