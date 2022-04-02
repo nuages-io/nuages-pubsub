@@ -58,6 +58,12 @@ public class PubSubStackWithPipeline : Stack
                         Effect = Effect.ALLOW,
                         Actions = new[] {  "secretsmanager:GetSecretValue" },
                         Resources = new[] { "*" }
+                    }),
+                    new (new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new[] {  "ec2:DescribeSecurityGroups", "ec2:DescribeVpcs" },
+                        Resources = new[] { "*" }
                     })
                 }
             },

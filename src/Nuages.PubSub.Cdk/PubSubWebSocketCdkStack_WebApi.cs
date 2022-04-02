@@ -160,7 +160,7 @@ public partial class PubSubWebSocketCdkStack<T>
         {
             Vpc = CurrentVpc!,
             AllowAllOutbound = true,
-            Description = "PuSub API Security Group"
+            Description = "PubSub API Security Group"
         });
     }
 
