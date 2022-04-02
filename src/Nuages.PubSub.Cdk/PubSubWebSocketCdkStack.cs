@@ -317,6 +317,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual void CreateApiMapping(CfnDomainName apiGatewayDomainName, CfnApi api, CfnStage stage)
     {
+        Console.WriteLine($"CreateApiMapping domainName = {apiGatewayDomainName.DomainName}");
+        
         // ReSharper disable once UnusedVariable
         var apiMapping = new CfnApiMapping(this, MakeId("NuagesApiMapping"), new CfnApiMappingProps
         {
@@ -639,6 +641,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual void CreateS3RecordSet(string domainName, CfnDomainName apiGatewayDomainName)
     {
+        Console.WriteLine($"CreateS3RecordSet domainName = {domainName}");
+        
         var hostedZone = HostedZone.FromLookup(this, "Lookup", new HostedZoneProviderProps
         {
             DomainName = GetBaseDomain(domainName)
@@ -660,7 +664,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual CfnDomainName CreateApiGatewayDomainName(string certficateArn, string domainName)
     {
-        Console.WriteLine($"certficateArn = {certficateArn}");
+        Console.WriteLine($"CreateApiGatewayDomainName certficateArn = {certficateArn}");
         // ReSharper disable once UnusedVariable
         var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps
         {
