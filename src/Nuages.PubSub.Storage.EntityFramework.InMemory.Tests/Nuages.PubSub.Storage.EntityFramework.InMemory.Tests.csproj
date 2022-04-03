@@ -7,7 +7,7 @@
         <RootNamespace>Nuages.PubSub.Storage.EntityFramework.Tests</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
       <ProjectReference Include="..\Nuages.PubSub.Services.Tests\Nuages.PubSub.Services.Tests.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.MySql\Nuages.PubSub.Storage.EntityFramework.MySql.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.SqlServer\Nuages.PubSub.Storage.EntityFramework.SqlServer.csproj" />
