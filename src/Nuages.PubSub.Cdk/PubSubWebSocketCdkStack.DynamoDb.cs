@@ -9,7 +9,7 @@ public partial class PubSubWebSocketCdkStack<T>
     // ReSharper disable once VirtualMemberNeverOverridden.Global
     protected virtual void CreateTables()
     {
-        Console.WriteLine($"CreateTables");
+        Console.WriteLine("CreateTables");
         
         var pubSubConnection = CreateConnectionTable();
         

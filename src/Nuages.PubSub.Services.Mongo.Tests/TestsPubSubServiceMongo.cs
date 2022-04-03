@@ -35,7 +35,7 @@ public class TestsPubSubServiceMongo : TestsPubSubServiceBase
             .AddPubSubMongoStorage(config =>
             {
                 config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
-            }, ServiceLifetime.Scoped);
+            });
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApiClientProvider, FakeApiGatewayProvider>();

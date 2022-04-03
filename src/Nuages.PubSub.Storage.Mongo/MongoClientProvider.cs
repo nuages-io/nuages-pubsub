@@ -1,16 +1,15 @@
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Nuages.PubSub.Storage.Mongo;
 
-public partial interface IMongoClientProvider
+public interface IMongoClientProvider
 {
     MongoClient GetMongoClient(string connectionString);
 }
 
 public class MongoClientProvider : IMongoClientProvider
 {
-    public readonly Dictionary<string, MongoClient> _clients = new Dictionary<string, MongoClient>();
+    private readonly Dictionary<string, MongoClient> _clients = new ();
 
     public MongoClient GetMongoClient(string connectionString)
     {

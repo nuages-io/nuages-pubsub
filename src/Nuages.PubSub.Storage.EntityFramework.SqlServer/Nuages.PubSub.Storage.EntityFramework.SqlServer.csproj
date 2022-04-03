@@ -30,7 +30,8 @@
   <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework\Nuages.PubSub.Storage.EntityFramework.csproj" />
 </ItemGroup>
     <ItemGroup>
-        <None Remove="appsettings.local.json" />
+        <None Remove="appsettings.sqlserver.json" />
+        <Content Include="appsettings.sqlserver.json" CopyToOutputDirectory="Always" Condition="Exists('appsettings.sqlserver.json')" />
     </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />

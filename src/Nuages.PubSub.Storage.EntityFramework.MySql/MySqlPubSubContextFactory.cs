@@ -11,7 +11,6 @@ public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSub
 {
     public MySqlPubSubDbContext CreateDbContext(string[] args)
     {
-        Console.WriteLine("Shoud not be called");
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
             .AddJsonFile("appsettings.mysql.json", true)

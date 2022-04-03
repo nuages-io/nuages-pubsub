@@ -133,7 +133,7 @@ public partial class PubSubWebSocketCdkStack<T>
 
     private ISecurityGroup? _vpcApiSecurityGroup;
     
-    private ISecurityGroup[] VpcApiSecurityGroup
+    private ISecurityGroup[] VpcApiSecurityGroups
     {
         get
         {
@@ -156,7 +156,7 @@ public partial class PubSubWebSocketCdkStack<T>
 
     protected virtual SecurityGroup CreateVpcApiSecurityGroup()
     {
-        Console.WriteLine($"CreateVpcApiSecurityGroup");
+        Console.WriteLine("CreateVpcApiSecurityGroup");
         
         return new SecurityGroup(this, MakeId("ApiSecurityGroup"), new SecurityGroupProps
         {
@@ -188,7 +188,7 @@ public partial class PubSubWebSocketCdkStack<T>
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
             AllowPublicSubnet = true,
-            SecurityGroups = VpcApiSecurityGroup
+            SecurityGroups = VpcApiSecurityGroups
         });
 
         Proxy?.GrantConnect(func, DatabaseProxyUser);
