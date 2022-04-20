@@ -34,5 +34,6 @@
       <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.MySql\Nuages.PubSub.Storage.EntityFramework.MySql.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.SqlServer\Nuages.PubSub.Storage.EntityFramework.SqlServer.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj" />
+      <ProjectReference Include="..\Nuages.PubSub.WebSocket.Endpoints\Nuages.PubSub.WebSocket.Endpoints.csproj" />
     </ItemGroup>
 </Project>
