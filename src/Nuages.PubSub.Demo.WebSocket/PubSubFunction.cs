@@ -91,7 +91,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 pubSubBuilder.AddPubSubMongoStorage(dbConfig =>
                 {
                     dbConfig.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"];
-                });
+                }, ServiceLifetime.Singleton);
                 break;
             }
             case "SqlServer":

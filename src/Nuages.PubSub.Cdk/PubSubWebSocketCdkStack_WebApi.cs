@@ -133,7 +133,7 @@ public partial class PubSubWebSocketCdkStack<T>
 
     private ISecurityGroup? _vpcApiSecurityGroup;
     
-    private ISecurityGroup[] VpcApiSecurityGroup
+    private ISecurityGroup[] VpcApiSecurityGroups
     {
         get
         {
@@ -156,16 +156,20 @@ public partial class PubSubWebSocketCdkStack<T>
 
     protected virtual SecurityGroup CreateVpcApiSecurityGroup()
     {
+        Console.WriteLine("CreateVpcApiSecurityGroup");
+        
         return new SecurityGroup(this, MakeId("ApiSecurityGroup"), new SecurityGroupProps
         {
             Vpc = CurrentVpc!,
             AllowAllOutbound = true,
-            Description = "PuSub API Security Group"
+            Description = "PubSub API Security Group"
         });
     }
 
     protected virtual Function CreateWebApiFunction(string url, Role role)
     {
+        Console.WriteLine($"CreateWebApiFunction url = {url}");
+        
         if (string.IsNullOrEmpty(ApiAsset))
         {
             throw new Exception("WebApiAsset must be assigned");
@@ -184,7 +188,7 @@ public partial class PubSubWebSocketCdkStack<T>
             Tracing = Tracing.ACTIVE,
             Vpc = CurrentVpc,
             AllowPublicSubnet = true,
-            SecurityGroups = VpcApiSecurityGroup
+            SecurityGroups = VpcApiSecurityGroups
         });
 
         Proxy?.GrantConnect(func, DatabaseProxyUser);

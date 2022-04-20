@@ -142,9 +142,10 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     {
         get
         {
-            if (!string.IsNullOrEmpty(VpcId))
+            if (!string.IsNullOrEmpty(VpcId) && _vpc == null)
             {
-                _vpc ??= Vpc.FromLookup(this, "Vpc", new VpcLookupOptions
+                Console.WriteLine("Vpc.FromLookup");
+                _vpc = Vpc.FromLookup(this, "Vpc", new VpcLookupOptions
                 {
                     VpcId = VpcId
                 });
@@ -317,6 +318,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual void CreateApiMapping(CfnDomainName apiGatewayDomainName, CfnApi api, CfnStage stage)
     {
+        Console.WriteLine($"CreateApiMapping domainName = {apiGatewayDomainName.DomainName}");
+        
         // ReSharper disable once UnusedVariable
         var apiMapping = new CfnApiMapping(this, MakeId("NuagesApiMapping"), new CfnApiMappingProps
         {
@@ -586,13 +589,26 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
-        var permissions = new []
+        var permissions = new List<string>
         {
             "logs:CreateLogGroup",
             "logs:CreateLogStream",
             "logs:PutLogEvents"
         };
-        
+
+        if (!string.IsNullOrEmpty(VpcId))
+        {
+            permissions.AddRange(new List<string>
+            {
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeInstances",
+                "ec2:AttachNetworkInterface"
+            });
+        }
+
+       
         return new ManagedPolicy(this, MakeId("LambdaBasicExecutionRole" + suffix), new ManagedPolicyProps
         {
             Document = new PolicyDocument(new PolicyDocumentProps
@@ -602,7 +618,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
                     new PolicyStatement(new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = permissions,
+                        Actions = permissions.ToArray(),
                         Resources = new[] { "*" }
                     })
                 }
@@ -626,6 +642,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual void CreateS3RecordSet(string domainName, CfnDomainName apiGatewayDomainName)
     {
+        Console.WriteLine($"CreateS3RecordSet domainName = {domainName}");
+        
         var hostedZone = HostedZone.FromLookup(this, "Lookup", new HostedZoneProviderProps
         {
             DomainName = GetBaseDomain(domainName)
@@ -647,7 +665,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     protected virtual CfnDomainName CreateApiGatewayDomainName(string certficateArn, string domainName)
     {
-        Console.WriteLine($"certficateArn = {certficateArn}");
+        Console.WriteLine($"CreateApiGatewayDomainName certficateArn = {certficateArn}");
         // ReSharper disable once UnusedVariable
         var apiGatewayDomainName = new CfnDomainName(this, "NuagesDomainName", new CfnDomainNameProps
         {

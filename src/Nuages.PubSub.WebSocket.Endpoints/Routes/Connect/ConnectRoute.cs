@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
@@ -22,8 +21,6 @@ public class ConnectRoute : IConnectRoute
         
         try
         {
-            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
-
             await _pubSubService.ConnectAsync(request.GetHub(), request.RequestContext.ConnectionId, userId);
 
             await ProcessRolesAsync(request, request.RequestContext.ConnectionId);
@@ -37,7 +34,7 @@ public class ConnectRoute : IConnectRoute
         catch (Exception e)
         {
             context.Logger.LogLine("Error connecting: " + e.Message);
-            context.Logger.LogLine(e.StackTrace);
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = 500,

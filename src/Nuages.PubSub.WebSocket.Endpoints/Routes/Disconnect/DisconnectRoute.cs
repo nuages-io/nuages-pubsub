@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Nuages.PubSub.Services;
@@ -19,8 +18,6 @@ public class DisconnectRoute : IDisconnectRoute
     {
         try
         {
-            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
-
             await _pubSubService.CloseConnectionAsync(request.GetHub(), request.RequestContext.ConnectionId);
 
             return new APIGatewayProxyResponse
@@ -32,7 +29,7 @@ public class DisconnectRoute : IDisconnectRoute
         catch (Exception e)
         {
             context.Logger.LogLine("Error disconnecting: " + e.Message);
-            context.Logger.LogLine(e.StackTrace);
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = 500,

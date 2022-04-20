@@ -52,6 +52,18 @@ public class PubSubStackWithPipeline : Stack
                         Effect = Effect.ALLOW,
                         Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
                         Resources = new[] { "*" }
+                    }),
+                    new (new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new[] {  "secretsmanager:GetSecretValue" },
+                        Resources = new[] { "*" }
+                    }),
+                    new (new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new[] {  "ec2:Describe*" },
+                        Resources = new[] { "*" }
                     })
                 }
             },
@@ -87,7 +99,7 @@ public class PubSubStackWithPipeline : Stack
                             }
                         }
                     }
-                }),
+                })/*,
                 RolePolicy = new PolicyStatement[]
                 {
                     new (new PolicyStatementProps
@@ -102,7 +114,33 @@ public class PubSubStackWithPipeline : Stack
                     new (new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
+                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:*" },
+                        Resources = new[] { "*" }
+                    }),
+                    new (new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new[] {  "secretsmanager:GetSecretValue" },
+                        Resources = new[] { "*" }
+                    })
+                   
+
+                }*/
+            },
+            SelfMutationCodeBuildDefaults = new CodeBuildOptions
+            {
+                RolePolicy = new PolicyStatement[]
+                {
+                    new (new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
                         Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
+                        Resources = new[] { "*" }
+                    }),
+                    new (new PolicyStatementProps
+                    {
+                        Effect = Effect.ALLOW,
+                        Actions = new[] {  "secretsmanager:GetSecretValue" },
                         Resources = new[] { "*" }
                     })
                 }
@@ -154,28 +192,6 @@ public class PubSubStackWithPipeline : Stack
             });
         }
 
-        // new CfnWebhook(this, "gitHubWebHook", new CfnWebhookProps
-        // {
-        //     Authentication = "GITHUB_HMAC",
-        //     AuthenticationConfiguration = new CfnWebhook.WebhookAuthConfigurationProperty
-        //     {
-        //         SecretToken = configuration["GithubToken"]
-        //     },
-        //     Filters = new[]
-        //     {
-        //         new CfnWebhook.WebhookFilterRuleProperty
-        //         {
-        //             JsonPath = "$.action",
-        //
-        //             // the properties below are optional
-        //             MatchEquals = "published"
-        //         }
-        //     },
-        //     TargetAction = configuration["GithubRepository"].Replace("/", "_"),
-        //     TargetPipeline = $"{configuration["StackName"]}-Pipeline",
-        //     TargetPipelineVersion = 1,
-        //     RegisterWithThirdParty = true
-        // });
     }
 
     private class PipelineAppStage : Stage

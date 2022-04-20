@@ -20,8 +20,6 @@ public class EchoRoute : IEchoRoute
     {
         try
         {
-            context.Logger.LogLine(JsonSerializer.Serialize(request.RequestContext));
-            
             var message = new PubSubMessage
             {
                 from = PubSubMessageSource.self,
@@ -40,7 +38,7 @@ public class EchoRoute : IEchoRoute
         catch (Exception e)
         {
             context.Logger.LogLine("Error disconnecting: " + e.Message);
-            context.Logger.LogLine(e.StackTrace);
+            
             return new APIGatewayProxyResponse
             {
                 StatusCode = 500,

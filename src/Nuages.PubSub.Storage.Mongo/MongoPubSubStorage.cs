@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Nuages.PubSub.Services;
+using Nuages.PubSub.Services.Storage;
 using Nuages.PubSub.Storage.Mongo.DataModel;
 #pragma warning disable CS8618
 
@@ -10,17 +11,19 @@ namespace Nuages.PubSub.Storage.Mongo;
 
 public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubStorage
 {
+    private readonly IMongoClientProvider _mongoClientProvider;
     private IMongoCollection<PubSubConnection> _pubSubConnectionCollection;
     private IMongoCollection<PubSubGroupConnection> _pubSubGroupConnectionCollection;
     private IMongoCollection<PubSubGroupUser> _pubSubGroupUserCollection;
     private IMongoCollection<PubSubAck> _pubSubAckCollection;
-    private readonly PubSubMongoOptions _mongoOptions;
     private readonly PubSubOptions _pubSubOptions;
+    private readonly PubSubMongoOptions _mongoOptions;
 
-    public MongoPubSubStorage(IOptions<PubSubMongoOptions> options, IOptions<PubSubOptions> pubSubOptions)
+    public MongoPubSubStorage(IMongoClientProvider mongoClientProvider, IOptions<PubSubMongoOptions> mongoOptions, IOptions<PubSubOptions> pubSubOptions)
     {
-        _mongoOptions = options.Value;
+        _mongoClientProvider = mongoClientProvider;
         _pubSubOptions = pubSubOptions.Value;
+        _mongoOptions = mongoOptions.Value;
     }
     
     
@@ -85,11 +88,11 @@ public class MongoPubSubStorage : PubSubStorgeBase<PubSubConnection>, IPubSubSto
 
     public void Initialize()
     {
-        var connectionString =  _mongoOptions.ConnectionString;
-           
-        var mongoCLient = new MongoClient(connectionString);
+
+
+        var mongoCLient = _mongoClientProvider.GetMongoClient(_mongoOptions.ConnectionString);
         
-        var mongoUrl = new MongoUrl(connectionString);
+        var mongoUrl = new MongoUrl(_mongoOptions.ConnectionString);
         
         var database = mongoCLient.GetDatabase(mongoUrl.DatabaseName);
 

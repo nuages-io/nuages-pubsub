@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
@@ -41,12 +40,11 @@ public class AuthorizeRouteExternal : IAuthorizeRoute
 
         var jwtToken = new JwtSecurityTokenHandler()
             .ReadJwtToken(token);
-
+        
         var claimDict = AuthorizeRoute.GetClaims(jwtToken);
 
         claimDict.Add("nuageshub", hub);
-
-        context.Logger.LogInformation("PubSubOptions=" + JsonSerializer.Serialize(_pubSubOptions));
+        claimDict.Add("roles", _pubSubOptions.ExternalAuth.Roles );
         
         var validIssuers = _pubSubOptions.ExternalAuth.ValidIssuers.Split(",");
         var validAudiences = _pubSubOptions.ExternalAuth.ValidAudiences?.Split(",").ToList();

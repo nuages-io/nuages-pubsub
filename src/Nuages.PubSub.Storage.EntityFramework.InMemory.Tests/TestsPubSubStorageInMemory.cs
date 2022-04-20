@@ -1,6 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using Nuages.PubSub.Storage.Tests;
+using Nuages.PubSub.Services.Tests;
 
 namespace Nuages.PubSub.Storage.EntityFramework.Tests;
 
