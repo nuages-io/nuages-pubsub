@@ -225,7 +225,6 @@ public partial class PubSubWebSocketCdkStack<T>
         if (!string.IsNullOrEmpty(DataConnectionString))
             variables.Add("Nuages__PubSub__Data__ConnectionString", DataConnectionString);
         
-        variables.Add("Nuages__PubSub__ExternalAuth__Enabled",ExternalAuth_Enabled.ToString());
         
         AddWebApiEnvironmentVariables(variables);
         

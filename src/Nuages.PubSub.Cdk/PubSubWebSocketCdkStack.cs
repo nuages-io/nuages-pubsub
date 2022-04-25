@@ -84,7 +84,6 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string? Auth_Audience { get; set; }
     public string? Auth_Secret { get; set; }
 
-    public bool ExternalAuth_Enabled { get; set; }
     public string? ExternalAuth_ValidIssuers { get; set; } 
     public string? ExternalAuth_ValidAudiences { get; set; }
     public string? ExternalAuth_JsonWebKeySetUrlPath { get; set; } 
@@ -476,7 +475,6 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         if (!string.IsNullOrEmpty(DataConnectionString))
             variables.Add("Nuages__PubSub__Data__ConnectionString",DataConnectionString);
         
-        variables.Add("Nuages__PubSub__ExternalAuth__Enabled",ExternalAuth_Enabled.ToString());
         
         if (!string.IsNullOrEmpty(ExternalAuth_ValidAudiences))
             variables.Add("Nuages__PubSub__ExternalAuth__ValidAudiences",ExternalAuth_ValidAudiences);
