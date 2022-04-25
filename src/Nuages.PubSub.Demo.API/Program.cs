@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using Amazon.SecretsManager;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.EntityFrameworkCore;
@@ -13,8 +12,8 @@ using Nuages.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-var configurationBuilder = builder.Configuration.AddJsonFile("appsettings.json", false, true)
+var configurationBuilder = builder.Configuration
+    .AddJsonFile("appsettings.json", false, true)
     .AddEnvironmentVariables();
 
 var isLambda = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AWS_LAMBDA_FUNCTION_NAME"));
@@ -37,16 +36,14 @@ if (config.AppConfig.Enabled)
         config.AppConfig.ConfigProfileId, true);
 }
 
-var secretProvider = new AWSSecretProvider();
-secretProvider.TransformSecret(builder.Configuration,
-    "Nuages:PubSub:Data:ConnectionString");
-secretProvider.TransformSecret(builder.Configuration, "Nuages:PubSub:Auth:Secret");
 
 var configuration = configurationBuilder.Build();
 
+builder.Configuration.TransformSecrets();
+
 builder.Services.AddSingleton(configuration);
 
-builder.Services.AddAWSService<IAmazonSecretsManager>();
+// builder.Services.AddAWSService<IAmazonSecretsManager>();
 builder.Services.AddSecretsProvider();
 
 var pubSubBuilder = builder.Services

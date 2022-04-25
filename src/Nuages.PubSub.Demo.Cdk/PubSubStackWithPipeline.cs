@@ -74,7 +74,7 @@ public class PubSubStackWithPipeline : Stack
                         "main",
                         new GitHubSourceOptions
                         {
-                            Authentication = SecretValue.PlainText(options.CDKPipeline!.GithubToken!),
+                            Authentication = SecretValue.UnsafePlainText(options.CDKPipeline!.GithubToken!),
                             Trigger = GitHubTrigger.WEBHOOK
                         }),
                     Commands = new []

@@ -30,7 +30,6 @@
       <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework.SqlServer\Nuages.PubSub.Storage.EntityFramework.SqlServer.csproj" />
         <ProjectReference Include="..\Nuages.PubSub.Storage.Mongo\Nuages.PubSub.Storage.Mongo.csproj" />
       <ProjectReference Include="..\Nuages.PubSub.Storage.EntityFramework\Nuages.PubSub.Storage.EntityFramework.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Storage.Tests\Nuages.PubSub.Storage.Tests.csproj" />
     </ItemGroup>
 
 </Project>
