@@ -35,7 +35,7 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
       <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.17.0" />
-      <PackageReference Include="Nuages.AWS" Version="1.0.14" />
+      <PackageReference Include="Nuages.AWS" Version="1.0.15" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.17.0" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
