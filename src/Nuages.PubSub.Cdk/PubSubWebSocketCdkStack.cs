@@ -84,10 +84,10 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string? Auth_Audience { get; set; }
     public string? Auth_Secret { get; set; }
 
-    public string? ExternalAuth_ValidIssuers { get; set; } 
-    public string? ExternalAuth_ValidAudiences { get; set; }
-    public string? ExternalAuth_JsonWebKeySetUrlPath { get; set; } 
-    public bool? ExternalAuth_DisableSslCheck { get; set; }
+    // public string? ExternalAuth_ValidIssuers { get; set; } 
+    // public string? ExternalAuth_ValidAudiences { get; set; }
+    // public string? ExternalAuth_JsonWebKeySetUrlPath { get; set; } 
+    // public bool? ExternalAuth_DisableSslCheck { get; set; }
     
     public List<CfnRoute> Routes { get; set; } = new();
 
@@ -476,17 +476,17 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             variables.Add("Nuages__PubSub__Data__ConnectionString",DataConnectionString);
         
         
-        if (!string.IsNullOrEmpty(ExternalAuth_ValidAudiences))
-            variables.Add("Nuages__PubSub__ExternalAuth__ValidAudiences",ExternalAuth_ValidAudiences);
-        
-        if (!string.IsNullOrEmpty(ExternalAuth_ValidIssuers))
-            variables.Add("Nuages__PubSub__ExternalAuth__ValidIssuers",ExternalAuth_ValidIssuers);
-        
-        if (!string.IsNullOrEmpty(ExternalAuth_JsonWebKeySetUrlPath))
-            variables.Add("Nuages__PubSub__ExternalAuth__JsonWebKeySetUrlPath",ExternalAuth_JsonWebKeySetUrlPath);
-        
-        if (ExternalAuth_DisableSslCheck.HasValue)
-            variables.Add("Nuages__PubSub__ExternalAuth__DisableSslCheck",ExternalAuth_DisableSslCheck.Value.ToString());
+        // if (!string.IsNullOrEmpty(ExternalAuth_ValidAudiences))
+        //     variables.Add("Nuages__PubSub__ExternalAuth__ValidAudiences",ExternalAuth_ValidAudiences);
+        //
+        // if (!string.IsNullOrEmpty(ExternalAuth_ValidIssuers))
+        //     variables.Add("Nuages__PubSub__ExternalAuth__ValidIssuers",ExternalAuth_ValidIssuers);
+        //
+        // if (!string.IsNullOrEmpty(ExternalAuth_JsonWebKeySetUrlPath))
+        //     variables.Add("Nuages__PubSub__ExternalAuth__JsonWebKeySetUrlPath",ExternalAuth_JsonWebKeySetUrlPath);
+        //
+        // if (ExternalAuth_DisableSslCheck.HasValue)
+        //     variables.Add("Nuages__PubSub__ExternalAuth__DisableSslCheck",ExternalAuth_DisableSslCheck.Value.ToString());
         
         AddWebSocketEnvironmentVariables(variables);
         
