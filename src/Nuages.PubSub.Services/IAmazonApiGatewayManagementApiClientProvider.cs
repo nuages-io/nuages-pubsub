@@ -24,7 +24,7 @@ public class AmazonApiGatewayManagementApiClientProvider : IAmazonApiGatewayMana
         Console.WriteLine($"Using Crendentials : {_configuration["AccessKey"]} {_configuration["SecretKey"]}");
         return new AmazonApiGatewayManagementApiClient(_configuration["AccessKey"], _configuration["SecretKey"], new AmazonApiGatewayManagementApiConfig
         {
-            //AuthenticationRegion = region,
+            AuthenticationRegion = region,
             ServiceURL = url
         });
     }
