@@ -50,7 +50,8 @@ public class PubSubStackWithPipeline : Stack
                     new (new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
+                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:StartConfigurationSession",
+                            "appconfig:GetLatestConfiguration"  },
                         Resources = new[] { "*" }
                     }),
                     new (new PolicyStatementProps
@@ -134,7 +135,8 @@ public class PubSubStackWithPipeline : Stack
                     new (new PolicyStatementProps
                     {
                         Effect = Effect.ALLOW,
-                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:GetConfiguration" },
+                        Actions = new[] { "ssm:GetParametersByPath", "appconfig:StartConfigurationSession",
+                            "appconfig:GetLatestConfiguration" },
                         Resources = new[] { "*" }
                     }),
                     new (new PolicyStatementProps
