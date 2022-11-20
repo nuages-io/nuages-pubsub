@@ -38,7 +38,7 @@ jobs:
     #  run: dotnet test Nuages.PubSub.Services.Tests/Nuages.PubSub.Services.Tests.csproj -c RELEASE
     - name: Pack
       run: |
-        dotnet pack Nuages.PubSub.Storage/Nuages.PubSub.Storage.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
+        
         dotnet pack Nuages.PubSub.Storage.Mongo/Nuages.PubSub.Storage.Mongo.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Storage.DynamoDb/Nuages.PubSub.Storage.DynamoDb.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
         dotnet pack Nuages.PubSub.Storage.EntityFramework/Nuages.PubSub.Storage.EntityFramework.csproj --output ./nupkgs -p:PackageVersion=${VERSION} -c RELEASE
