@@ -20,7 +20,8 @@ public class AmazonApiGatewayManagementApiClientProvider : IAmazonApiGatewayMana
     }
     public IAmazonApiGatewayManagementApi Create(string url, string region)
     {
-        Console.WriteLine($"Crwate AmazonApiGatewayManagementApiClient : {url} {region}");
+        Console.WriteLine($"Create AmazonApiGatewayManagementApiClient : {url} {region}");
+        Console.WriteLine($"Using Crendentials : {_configuration["AccessKey"]} {_configuration["SecretKey"]}");
         return new AmazonApiGatewayManagementApiClient(_configuration["AccessKey"], _configuration["SecretKey"], new AmazonApiGatewayManagementApiConfig
         {
             AuthenticationRegion = region,
