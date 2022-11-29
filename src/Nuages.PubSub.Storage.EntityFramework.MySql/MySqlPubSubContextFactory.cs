@@ -12,13 +12,13 @@ public class MySqlPubSubContextFactory : IDesignTimeDbContextFactory<MySqlPubSub
     public MySqlPubSubDbContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.mysql.json", true)
             .Build();
         
         var optionsBuilder = new DbContextOptionsBuilder<PubSubDbContext>();
 
-        var connectionString =  configuration["ConnectionStrings:MySql"];
+        var connectionString =  configuration["ConnectionStrings:MySql"]!;
         
         optionsBuilder
             .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));

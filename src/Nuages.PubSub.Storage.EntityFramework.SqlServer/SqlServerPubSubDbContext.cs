@@ -60,7 +60,7 @@ public class SqlServerPubSubContextFactory : IDesignTimeDbContextFactory<SqlServ
     public SqlServerPubSubDbContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.sqlserver.json", true)
             .Build();
         

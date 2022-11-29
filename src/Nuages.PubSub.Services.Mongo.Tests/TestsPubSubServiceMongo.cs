@@ -22,7 +22,7 @@ public class TestsPubSubServiceMongo : TestsPubSubServiceBase
         UserId = "user";
         
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.local.json", false)
             .Build();
 
@@ -34,7 +34,7 @@ public class TestsPubSubServiceMongo : TestsPubSubServiceBase
             .AddPubSubService(configuration)
             .AddPubSubMongoStorage(config =>
             {
-                config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
+                config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"]!;
             });
 
         serviceCollection.AddScoped<IAmazonApiGatewayManagementApi, FakeApiGateway>();

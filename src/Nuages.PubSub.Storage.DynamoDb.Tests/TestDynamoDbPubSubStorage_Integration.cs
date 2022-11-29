@@ -16,7 +16,7 @@ public class TestDynamoDbPubSubStorage_Integration : TestPubSubStorageBase
     public TestDynamoDbPubSubStorage_Integration()
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.local.json", false)
             .Build();
 

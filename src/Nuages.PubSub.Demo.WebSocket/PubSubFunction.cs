@@ -34,7 +34,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
      
         IConfiguration configuration = builder.Build();
         
-        var config = configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>();
+        var config = configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>()!;
         
         if (config.ParameterStore.Enabled)
         {
@@ -93,7 +93,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubMongoStorage(dbConfig =>
                 {
-                    dbConfig.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"];
+                    dbConfig.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
                 }, ServiceLifetime.Singleton);
                 break;
             }
@@ -111,7 +111,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 
                 pubSubBuilder.AddPubSubMySqlStorage(dbConfig =>
                 {
-                    var connectionString = configuration["Nuages:PubSub:Data:ConnectionString"];
+                    var connectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
                     dbConfig.UseMySQL(connectionString);
                 });
 

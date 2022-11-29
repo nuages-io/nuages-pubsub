@@ -28,7 +28,7 @@ public class TestsPubSubServiceMySql : TestsPubSubServiceBase
         UserId = "user";
         
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 
@@ -38,7 +38,7 @@ public class TestsPubSubServiceMySql : TestsPubSubServiceBase
             
         serviceCollection.AddDbContext<MySqlPubSubDbContext>(builder =>
         {
-            var connectionString =  configuration["ConnectionStrings:MySql"];
+            var connectionString =  configuration["ConnectionStrings:MySql"]!;
 
             builder
                 .UseMySQL(connectionString);

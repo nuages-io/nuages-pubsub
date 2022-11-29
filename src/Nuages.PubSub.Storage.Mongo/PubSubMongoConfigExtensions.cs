@@ -11,7 +11,8 @@ public static class PubSubMongoConfigExtensions
     // ReSharper disable once UnusedMember.Global
     public static void AddPubSubMongoStorage(this IPubSubBuilder builder, Action<PubSubMongoOptions>? options, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped )
     {
-        builder.Services.Configure(options);
+        if (options != null)
+            builder.Services.Configure(options);
 
         switch (serviceLifetime)
         {

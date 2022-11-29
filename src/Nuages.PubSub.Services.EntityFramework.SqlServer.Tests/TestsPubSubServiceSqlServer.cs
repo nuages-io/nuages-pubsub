@@ -25,7 +25,7 @@ public class TestsPubSubServiceSqlServer : TestsPubSubServiceBase
         UserId = "user";
         
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 

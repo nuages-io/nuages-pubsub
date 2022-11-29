@@ -17,7 +17,7 @@ public class TestMongoPubSubStorage : TestPubSubStorageBase
     public TestMongoPubSubStorage()
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.local.json", false)
             .Build();
 
@@ -29,7 +29,7 @@ public class TestMongoPubSubStorage : TestPubSubStorageBase
             .AddPubSubService(configuration)
             .AddPubSubMongoStorage(config =>
             {
-                config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"];
+                config.ConnectionString = configuration["Nuages:Mongo:ConnectionString"]!;
             });
         
         var serviceProvider = serviceCollection.BuildServiceProvider();

@@ -24,12 +24,12 @@ public class BaseTest
     {
         TestOutputHelper = testOutputHelper;
         IConfiguration configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 
-        TestUrl = configuration.GetSection("Url").Value;
-        TestApiKey = configuration.GetSection("ApiKey").Value;
+        TestUrl = configuration.GetSection("Url").Value!;
+        TestApiKey = configuration.GetSection("ApiKey").Value!;
         TestUserId = "user-" + Guid.NewGuid();
         TestHub = "hub-" + Guid.NewGuid();
         TestGroup = "group-" + Guid.NewGuid();

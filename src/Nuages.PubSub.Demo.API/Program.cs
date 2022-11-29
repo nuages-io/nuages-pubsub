@@ -18,7 +18,7 @@ var configurationBuilder = builder.Configuration
 
 var isLambda = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AWS_LAMBDA_FUNCTION_NAME"));
 
-var config = builder.Configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>();
+var config = builder.Configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>()!;
 
 if (config.ParameterStore.Enabled)
 {
@@ -62,7 +62,7 @@ switch (storage)
     {
         pubSubBuilder.AddPubSubMongoStorage(configMongo =>
         {
-            configMongo.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"];
+            configMongo.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
         }, isLambda ? ServiceLifetime.Singleton : ServiceLifetime.Scoped);
         break;
     }
@@ -79,7 +79,7 @@ switch (storage)
     {
         pubSubBuilder.AddPubSubMySqlStorage(configMySql =>
         {
-            var connectionString = configuration["Nuages:PubSub:Data:ConnectionString"];
+            var connectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
             configMySql.UseMySQL(connectionString);
         }, isLambda ? ServiceLifetime.Singleton : ServiceLifetime.Scoped);
 

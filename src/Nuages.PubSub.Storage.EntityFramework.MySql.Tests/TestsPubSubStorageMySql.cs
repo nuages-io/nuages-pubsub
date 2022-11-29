@@ -14,11 +14,11 @@ public class TestsPubSubStorageMySql : TestPubSubStorageBase
     public TestsPubSubStorageMySql()
     {
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName)
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory)?.FullName!)
             .AddJsonFile("appsettings.local.json", true)
             .Build();
 
-        var connectionString = configuration["ConnectionStrings:MySql"];
+        var connectionString = configuration["ConnectionStrings:MySql"]!;
         
         var contextOptions = new DbContextOptionsBuilder<PubSubDbContext>()
             .UseMySQL(connectionString)

@@ -21,7 +21,7 @@ sealed class Program
             .AddEnvironmentVariables()
             .Build();
         
-        var config = configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>();
+        var config = configuration.GetSection("ApplicationConfig").Get<ApplicationConfig>()!;
         
         if (config.ParameterStore.Enabled)
         {
@@ -42,7 +42,7 @@ sealed class Program
         var secretProvider = new AWSSecretProvider();
         secretProvider.TransformSecrets(configManager);
         
-        var options = configuration.Get<ConfigOptions>();
+        var options = configuration.Get<ConfigOptions>()!;
         
         var app = new App();
 
