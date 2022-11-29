@@ -39,7 +39,7 @@ Everything is ready to be used as-is. All you need to do is deploy using the CDK
 **The easy way:**
 
 1. Install the CDK
-1. git clone https://github.com/nuages-io/nuages-pubsub-starter
+1. git clone https://github.com/nuages-io/nuages-pubsub
 2. cdk deploy
 
 That's it. Your web socket services and API are ready to go.
@@ -58,7 +58,7 @@ You can customize most of the settings to fit you needs. Just follow the instruc
 ### 1. Clone this Github repository on your machine
 
 ```
-git clone https://github.com/nuages-io/nuages-pubsub-starter
+git clone https://github.com/nuages-io/nuages-pubsub
 ```
 ### 2. Setup CDK deployment options
 
