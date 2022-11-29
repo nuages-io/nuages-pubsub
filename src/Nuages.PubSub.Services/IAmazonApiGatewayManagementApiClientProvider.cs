@@ -22,7 +22,12 @@ public class AmazonApiGatewayManagementApiClientProvider : IAmazonApiGatewayMana
     {
         Console.WriteLine($"Create AmazonApiGatewayManagementApiClient : {url} {region}");
         Console.WriteLine($"Using Crendentials : {_configuration["AccessKey"]} {_configuration["SecretKey"]}");
-        return new AmazonApiGatewayManagementApiClient(_configuration["AccessKey"], _configuration["SecretKey"], new AmazonApiGatewayManagementApiConfig
+        // return new AmazonApiGatewayManagementApiClient(_configuration["AccessKey"], _configuration["SecretKey"], new AmazonApiGatewayManagementApiConfig
+        // {
+        //     AuthenticationRegion = region,
+        //     ServiceURL = url
+        // });
+        return new AmazonApiGatewayManagementApiClient(new AmazonApiGatewayManagementApiConfig
         {
             AuthenticationRegion = region,
             ServiceURL = url
