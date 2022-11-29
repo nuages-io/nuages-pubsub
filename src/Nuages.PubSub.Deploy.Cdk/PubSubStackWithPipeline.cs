@@ -11,7 +11,7 @@ using Constructs;
 
 // ReSharper disable ObjectCreationAsStatement
 
-namespace Nuages.PubSub.Demo.Cdk;
+namespace Nuages.PubSub.Deploy.Cdk;
 
 [SuppressMessage("Performance", "CA1806:Do not ignore method results")]
 public class PubSubStackWithPipeline : Stack

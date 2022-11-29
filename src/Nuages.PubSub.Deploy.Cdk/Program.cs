@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Nuages.AWS.Secrets;
 using Nuages.Web;
 
-namespace Nuages.PubSub.Demo.Cdk;
+namespace Nuages.PubSub.Deploy.Cdk;
 
 //ReSharper disable once ClassNeverInstantiated.Global
 //ReSharper disable once ArrangeTypeModifiers

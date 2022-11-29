@@ -17,7 +17,7 @@ using Nuages.Web;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
-namespace Nuages.PubSub.Demo.WebSocket;
+namespace Nuages.PubSub.WebSocket;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 [ExcludeFromCodeCoverage]

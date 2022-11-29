@@ -180,7 +180,7 @@ public partial class PubSubWebSocketCdkStack<T>
             FunctionName = MakeId("API"),
             Code = Code.FromAsset(ApiAsset),
             Handler = WebApiHandler,
-            Runtime = new Runtime("dotnet6"),
+            Runtime = Runtime.DOTNET_6,
             Role = role,
             Timeout = Duration.Seconds(30),
             MemorySize = 512,

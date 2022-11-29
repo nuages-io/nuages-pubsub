@@ -57,7 +57,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     public string StageName { get; set; } = "prod";
 
     public string WebApiHandler { get; set; } =
-        "Nuages.PubSub.Demo.API::Nuages.PubSub.Demo.API.LambdaEntryPoint::FunctionHandlerAsync";
+        "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync";
     
     public string NuagesPubSubRole { get; set; } = "Role";
     
@@ -428,7 +428,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
         {
             Code = Code.FromAsset(WebSocketAsset),
             Handler = handler,
-            Runtime = new Runtime("dotnet6"),
+            Runtime = Runtime.DOTNET_6,
             MemorySize = 512,
             Role = role,
             Timeout = Duration.Seconds(30),

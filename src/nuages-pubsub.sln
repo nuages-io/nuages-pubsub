@@ -20,11 +20,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.Dynam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Storage.DynamoDb.Tests", "Nuages.PubSub.Storage.DynamoDb.Tests\Nuages.PubSub.Storage.DynamoDb.Tests.csproj", "{505B99E3-BC2B-4A39-97CE-62510615954D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Demo.WebSocket", "Nuages.PubSub.Demo.WebSocket\Nuages.PubSub.Demo.WebSocket.csproj", "{136AA1C6-86A2-4FDC-85A7-DFF07CB3C7E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.WebSocket", "Nuages.PubSub.WebSocket\Nuages.PubSub.WebSocket.csproj", "{136AA1C6-86A2-4FDC-85A7-DFF07CB3C7E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Demo.Cdk", "Nuages.PubSub.Demo.Cdk\Nuages.PubSub.Demo.Cdk.csproj", "{276C0749-02AC-4FDD-8617-633A8807E1FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Deploy.Cdk", "Nuages.PubSub.Deploy.Cdk\Nuages.PubSub.Deploy.Cdk.csproj", "{276C0749-02AC-4FDD-8617-633A8807E1FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Demo.API", "Nuages.PubSub.Demo.API\Nuages.PubSub.Demo.API.csproj", "{31148DEB-5326-47F2-BFFD-C4E6CC64418E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API", "Nuages.PubSub.API\Nuages.PubSub.API.csproj", "{31148DEB-5326-47F2-BFFD-C4E6CC64418E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.API.Sdk", "Nuages.PubSub.API.Sdk\Nuages.PubSub.API.Sdk.csproj", "{D73B154E-4E33-4559-875B-E8A5D72A4CC3}"
 EndProject
@@ -65,6 +65,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.EntityFramework.InMemory.Tests", "Nuages.PubSub.Services.EntityFramework.InMemory.Tests\Nuages.PubSub.Services.EntityFramework.InMemory.Tests.csproj", "{E4203E95-551B-4D20-AE97-0AFC756D980E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nuages.PubSub.Services.DynamoDb.Tests", "Nuages.PubSub.Services.DynamoDb.Tests\Nuages.PubSub.Services.DynamoDb.Tests.csproj", "{D19404F1-404A-4812-B6E5-BDE45791C38A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".files", ".files", "{E9079DD9-6BCD-4962-83A8-11AF175F5F9D}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+		..\LICENSE = ..\LICENSE
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

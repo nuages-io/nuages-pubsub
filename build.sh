@@ -1,2 +1,2 @@
-dotnet publish ./src/Nuages.PubSub.Demo.WebSocket/Nuages.PubSub.Demo.WebSocket.csproj --configuration Release --framework net6.0 --no-self-contained /p:GenerateRuntimeConfigurationFiles=true --runtime linux-x64
-dotnet publish ./src/Nuages.PubSub.Demo.API/Nuages.PubSub.Demo.API.csproj --configuration Release --framework net6.0 --no-self-contained /p:GenerateRuntimeConfigurationFiles=true --runtime linux-x64
+dotnet publish ./src/Nuages.PubSub.WebSocket/Nuages.PubSub.WebSocket.csproj --configuration Release --framework net6.0 --no-self-contained /p:GenerateRuntimeConfigurationFiles=true --runtime linux-x64
+dotnet publish ./src/Nuages.PubSub.API/Nuages.PubSub.API.csproj --configuration Release --framework net6.0 --no-self-contained /p:GenerateRuntimeConfigurationFiles=true --runtime linux-x64
