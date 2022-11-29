@@ -71,13 +71,7 @@ public class PubSubStackWithPipeline : Stack
             Synth = new ShellStep("Synth",
                 new ShellStepProps
                 {
-                    Input = CodePipelineSource.GitHub(options.CDKPipeline!.GitHubRepository!,
-                        "main",
-                        new GitHubSourceOptions
-                        {
-                            Authentication = SecretValue.SecretsManager(options.CDKPipeline!.GithubToken!),
-                            Trigger = GitHubTrigger.WEBHOOK
-                        }),
+                    Input = CodePipelineSource.GitHub(options.CDKPipeline!.GitHubRepository!,"main"),
                     Commands = new []
                     {
                         "npm install -g aws-cdk",
