@@ -442,22 +442,53 @@ public partial class PubSubWebSocketCdkStack : Stack
             { "Nuages__PubSub__StackName", StackName }
         };
 
+        GetSharedEnvVariables(variables);
+
+        return variables;
+    }
+
+    private void GetSharedEnvVariables(Dictionary<string, string> variables)
+    {
         if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Audience))
-            variables.Add("Nuages__PubSub__Auth__Audience",RuntimeOptions.Auth.Audience);
-        
+            variables.Add("Nuages__PubSub__Auth__Audience", RuntimeOptions.Auth.Audience);
+
         if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Issuer))
             variables.Add("Nuages__PubSub__Auth__Issuer", RuntimeOptions.Auth.Issuer);
-        
+
         if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Secret))
-            variables.Add("Nuages__PubSub__Auth__Secret",RuntimeOptions.Auth.Secret);
-        
+            variables.Add("Nuages__PubSub__Auth__Secret", RuntimeOptions.Auth.Secret);
+
         if (!string.IsNullOrEmpty(RuntimeOptions.Data.Storage))
             variables.Add("Nuages__PubSub__Data__Storage", RuntimeOptions.Data.Storage);
-        
+
         if (!string.IsNullOrEmpty(RuntimeOptions.Data.ConnectionString))
             variables.Add("Nuages__PubSub__Data__ConnectionString", RuntimeOptions.Data.ConnectionString);
-        
-        return variables;
+
+        if (RuntimeOptions.ExternalAuth.Enabled)
+        {
+            if (string.IsNullOrEmpty(RuntimeOptions.ExternalAuth.ValidAudiences))
+                throw new Exception("ValidAudiences must be provided when ExternalAuth si Enabled");
+
+            if (string.IsNullOrEmpty(RuntimeOptions.ExternalAuth.ValidIssuers))
+                throw new Exception("ValidIssuers must be provided when ExternalAuth si Enabled");
+
+            if (string.IsNullOrEmpty(RuntimeOptions.ExternalAuth.JsonWebKeySetUrlPath))
+                throw new Exception("JsonWebKeySetUrlPath must be provided when ExternalAuth si Enabled");
+
+            variables.Add("Nuages__PubSub__ExternalAuth__Enabled", "true");
+            variables.Add("Nuages__PubSub__ExternalAuth__ValidAudiences", RuntimeOptions.ExternalAuth.ValidAudiences);
+            variables.Add("Nuages__PubSub__ExternalAuth__ValidIssuers", RuntimeOptions.ExternalAuth.ValidIssuers);
+
+            if (!string.IsNullOrEmpty(RuntimeOptions.ExternalAuth.JsonWebKeySetUrlPath))
+                variables.Add("Nuages__PubSub__ExternalAuth__JsonWebKeySetUrlPath",
+                    RuntimeOptions.ExternalAuth.JsonWebKeySetUrlPath);
+
+            variables.Add("Nuages__PubSub__ExternalAuth__DisableSslCheck",
+                RuntimeOptions.ExternalAuth.DisableSslCheck.ToString().ToLower());
+
+            if (!string.IsNullOrEmpty(RuntimeOptions.ExternalAuth.Roles))
+                variables.Add("Nuages__PubSub__ExternalAuth__Roles", RuntimeOptions.ExternalAuth.Roles);
+        }
     }
 
     protected  Role CreateWebSocketRole()
