@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.EC2;
@@ -145,7 +146,7 @@ public partial class PubSubWebSocketCdkStack : Stack
                     VpcId = ConfigOptions.VpcId
                 });
             }
-
+            
             return _vpc;
         }
     }

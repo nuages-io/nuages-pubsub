@@ -35,6 +35,9 @@ public class AuthController : Controller
             if (string.IsNullOrEmpty(_options.Auth.Secret))
                 throw new ArgumentException("secret must be provided");
 
+            if (_options.ExternalAuth.Enabled)
+                throw new Exception("Token cannot be created when ExternalAuth is Enabled");
+            
             Console.WriteLine($"PubSubOptions is {JsonSerializer.Serialize(_options)}");
             
             var secret = _options.Auth.Secret;
@@ -81,6 +84,9 @@ public class AuthController : Controller
             if (string.IsNullOrEmpty(hub))
                 throw new ArgumentException("hub must be provided");
 
+            if (_options.ExternalAuth.Enabled)
+                throw new Exception("Url cannot be created when ExternalAuth is Enabled");
+            
             if (string.IsNullOrEmpty(token))
             {
                 if (string.IsNullOrEmpty(_options.Auth.Secret))
