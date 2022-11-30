@@ -1,10 +1,11 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.DynamoDB;
+
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
-namespace Nuages.PubSub.Cdk;
+namespace Nuages.PubSub.Deploy.Cdk;
 
-public partial class PubSubWebSocketCdkStack<T>
+public partial class PubSubWebSocketCdkStack
 {
     // ReSharper disable once VirtualMemberNeverOverridden.Global
     protected virtual void CreateTables()

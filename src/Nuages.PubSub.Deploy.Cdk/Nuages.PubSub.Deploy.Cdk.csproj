@@ -13,6 +13,8 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
         <PackageReference Include="Nuages.Web" Version="1.3.19" />
+        <PackageReference Include="Amazon.CDK.Lib" Version="2.53.0" />
+        <PackageReference Include="Constructs" Version="10.1.174" />
     </ItemGroup>
 
 
@@ -23,7 +25,6 @@
     
     <ItemGroup>
       <ProjectReference Include="..\Nuages.PubSub.WebSocket\Nuages.PubSub.WebSocket.csproj" />
-      <ProjectReference Include="..\Nuages.PubSub.Cdk\Nuages.PubSub.Cdk.csproj" />
     </ItemGroup>
 
 </Project>

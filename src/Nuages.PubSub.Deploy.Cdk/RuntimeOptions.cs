@@ -1,4 +1,4 @@
-namespace Nuages.PubSub.Cdk;
+namespace Nuages.PubSub.Deploy.Cdk;
 
 public class RuntimeOptions
 {

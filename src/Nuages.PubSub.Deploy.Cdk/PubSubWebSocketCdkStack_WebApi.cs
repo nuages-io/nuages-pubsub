@@ -11,9 +11,9 @@ using CfnDomainNameProps = Amazon.CDK.AWS.Apigatewayv2.CfnDomainNameProps;
 
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
-namespace Nuages.PubSub.Cdk;
+namespace Nuages.PubSub.Deploy.Cdk;
 
-public partial class PubSubWebSocketCdkStack<T>
+public partial class PubSubWebSocketCdkStack
 {
     protected string? ApiAsset { get; set; }
 
@@ -215,7 +215,7 @@ public partial class PubSubWebSocketCdkStack<T>
 
         
         if (!string.IsNullOrEmpty(RuntimeOptions.Data.Storage))
-            variables.Add("Nuages__PubSub__Data__Storage", RuntimeOptions.Data.Storage);
+            variables.Add("Nuages__PubSub__Data__Storage",RuntimeOptions.Data.Storage);
         
         if (!string.IsNullOrEmpty(RuntimeOptions.Data.ConnectionString))
             variables.Add("Nuages__PubSub__Data__ConnectionString", RuntimeOptions.Data.ConnectionString);

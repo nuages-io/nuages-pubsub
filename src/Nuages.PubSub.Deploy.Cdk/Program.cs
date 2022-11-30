@@ -2,7 +2,6 @@
 using Amazon.CDK;
 using Microsoft.Extensions.Configuration;
 using Nuages.AWS.Secrets;
-using Nuages.PubSub.Cdk;
 using Nuages.Web;
 
 namespace Nuages.PubSub.Deploy.Cdk;
@@ -48,7 +47,7 @@ sealed class Program
         
         var app = new App();
 
-        PubSubStack.CreateStack(app, options, runtimeOptions);
+        PubSubWebSocketCdkStack.CreateStack(app, options, runtimeOptions);
         
         app.Synth();
     }

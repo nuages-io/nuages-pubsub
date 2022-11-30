@@ -7,6 +7,7 @@ using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.RDS;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
+using Nuages.PubSub.WebSocket;
 using CfnRoute = Amazon.CDK.AWS.Apigatewayv2.CfnRoute;
 using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
 // ReSharper disable MemberCanBePrivate.Global
@@ -17,11 +18,41 @@ using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable ObjectCreationAsStatement
 
-namespace Nuages.PubSub.Cdk;
+namespace Nuages.PubSub.Deploy.Cdk;
 
 [ExcludeFromCodeCoverage]
-public partial class PubSubWebSocketCdkStack<T> : Stack
+public partial class PubSubWebSocketCdkStack : Stack
 {
+    
+    public static void CreateStack(Construct scope, ConfigOptions options, RuntimeOptions runtimeOptions)
+    {
+        var stack = new PubSubWebSocketCdkStack(scope, options.StackName, new StackProps
+        {
+            StackName = options.StackName,
+            Env = new Amazon.CDK.Environment
+            {
+                Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),
+                Region = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_REGION")
+            }
+        })
+        {
+            ConfigOptions = options,
+            RuntimeOptions = runtimeOptions
+        };
+        
+        stack.BuildStack();
+    }
+
+    // // ReSharper disable once UnusedParameter.Local
+    // public PubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) 
+    //     : base(scope, id, props)
+    // {
+    //     WebSocketAsset = "./src/Nuages.PubSub.WebSocket/bin/Release/net6.0/linux-x64/publish";
+    //     ApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
+    //     WebApiHandler = "Nuages.PubSub.API";
+    // }
+    //
+    
     protected string? WebSocketAsset { get; set; }
 
     
@@ -81,7 +112,9 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     
     protected PubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) : base(scope, id, props)
     {
-        
+        WebSocketAsset = "./src/Nuages.PubSub.WebSocket/bin/Release/net6.0/linux-x64/publish";
+        ApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
+        //WebApiHandler = "Nuages.PubSub.API";
     }
     
     private IDatabaseProxy? Proxy
@@ -245,7 +278,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
     private void NormalizeHandlerName()
     {
-        var type = typeof(T);
+        var type = typeof(PubSubFunction);
 
         var functionName = $"{Path.GetFileNameWithoutExtension(type.Module.Name)}::{type.Namespace}.{type.Name}";
 
