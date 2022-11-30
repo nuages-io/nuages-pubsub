@@ -92,7 +92,8 @@ public partial class PubSubWebSocketCdkStack
         // ReSharper disable once UnusedVariable
         var apiKey = new ApiKey(this, MakeId("WebApiKey"), new ApiKeyProps
         {
-            Value = ConfigOptions.Api.ApiKey
+            Value = ConfigOptions.Api.ApiKey,
+            ApiKeyName = StackName + "_Key"
         });
 
         usagePlan.AddApiKey(apiKey);
