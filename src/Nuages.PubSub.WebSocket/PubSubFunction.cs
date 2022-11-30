@@ -52,12 +52,6 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 config.AppConfig.ConfigProfileId,true);
         }
         
-        
-        // var secretProvider = new AWSSecretProvider();
-        // secretProvider.TransformSecret(configManager, "Nuages:PubSub:Data:ConnectionString");
-        // secretProvider.TransformSecret(configManager, "Nuages:PubSub:Auth:Secret");
-        //
-        
         configManager.TransformSecrets();
         
         AWSSDKHandler.RegisterXRayForAllServices();
@@ -68,7 +62,6 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
         serviceCollection
             .AddSingleton(configuration);
 
-        //serviceCollection.AddAWSService<IAmazonSecretsManager>();
         serviceCollection.AddSecretsProvider();
         
         var pubSubBuilder = serviceCollection.AddPubSubService(configuration);
@@ -76,12 +69,13 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
         var pubSubRouteBuilder =
             pubSubBuilder
                 .AddPubSubLambdaRoutes();
-            
-        var enableExternalAUth = configuration.GetValue<bool>("Nuages:PubSub:ExternalAuth:Enabled");
-        if (enableExternalAUth)
+
+        var pubSubOptions = configuration.GetSection("Nuages:PubSub").Get<PubSubOptions>()!;
+        
+        if (pubSubOptions.ExternalAuth.Enabled)
             pubSubRouteBuilder.UseExternalAuthRoute();
 
-        var storage = configuration.GetSection("Nuages:PubSub:Data:Storage").Value;
+        var storage = pubSubOptions.Data.Storage;
         switch (storage)
         {
             case "DynamoDB":
@@ -93,7 +87,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubMongoStorage(dbConfig =>
                 {
-                    dbConfig.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
+                    dbConfig.ConnectionString =  pubSubOptions.Data.ConnectionString!;
                 }, ServiceLifetime.Singleton);
                 break;
             }
@@ -101,7 +95,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
             {
                 pubSubBuilder.AddPubSubSqlServerStorage(dbConfig =>
                 {
-                    dbConfig.UseSqlServer(configuration["Nuages:PubSub:Data:ConnectionString"]);
+                    dbConfig.UseSqlServer(pubSubOptions.Data.ConnectionString!);
                 });
 
                 break;
@@ -111,7 +105,7 @@ public class PubSubFunction : Nuages.PubSub.WebSocket.Endpoints.PubSubFunction
                 
                 pubSubBuilder.AddPubSubMySqlStorage(dbConfig =>
                 {
-                    var connectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
+                    var connectionString = pubSubOptions.Data.ConnectionString!;
                     dbConfig.UseMySQL(connectionString);
                 });
 

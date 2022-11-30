@@ -49,7 +49,9 @@ builder.Services.AddSecretsProvider();
 var pubSubBuilder = builder.Services
     .AddPubSubService(configuration);
 
-var storage = configuration["Nuages:PubSub:Data:Storage"];
+var pubSubOptions = configuration.GetSection("Nuages:PubSub").Get<PubSubOptions>()!;
+
+var storage = pubSubOptions.Data.Storage;
 
 switch (storage)
 {
@@ -62,7 +64,7 @@ switch (storage)
     {
         pubSubBuilder.AddPubSubMongoStorage(configMongo =>
         {
-            configMongo.ConnectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
+            configMongo.ConnectionString = pubSubOptions.Data.ConnectionString!;
         }, isLambda ? ServiceLifetime.Singleton : ServiceLifetime.Scoped);
         break;
     }
@@ -70,7 +72,7 @@ switch (storage)
     {
         pubSubBuilder.AddPubSubSqlServerStorage(configSqlServer =>
         {
-            configSqlServer.UseSqlServer(configuration["Nuages:PubSub:Data:ConnectionString"]);
+            configSqlServer.UseSqlServer(pubSubOptions.Data.ConnectionString);
         }, isLambda ? ServiceLifetime.Singleton : ServiceLifetime.Scoped);
 
         break;
@@ -79,7 +81,7 @@ switch (storage)
     {
         pubSubBuilder.AddPubSubMySqlStorage(configMySql =>
         {
-            var connectionString = configuration["Nuages:PubSub:Data:ConnectionString"]!;
+            var connectionString = pubSubOptions.Data.ConnectionString!;
             configMySql.UseMySQL(connectionString);
         }, isLambda ? ServiceLifetime.Singleton : ServiceLifetime.Scoped);
 
@@ -134,7 +136,7 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    var stackName = configuration.GetSection("Nuages:PubSub:StackName").Value;
+    var stackName = pubSubOptions.StackName;
 
     AWSXRayRecorder.InitializeInstance(configuration);
     AWSSDKHandler.RegisterXRayForAllServices();

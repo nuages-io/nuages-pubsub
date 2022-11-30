@@ -23,6 +23,14 @@ public class PubSubOptions
 
     public Auth Auth { get; set; } = new ();
     public ExternalAuth ExternalAuth { get; set; } = new ();
+
+    public Data Data { get; set; } = new();
+}
+
+public class Data
+{
+    public string? Storage { get; set; }
+    public string? ConnectionString { get; set; }
 }
 
 [ExcludeFromCodeCoverage]
@@ -33,6 +41,7 @@ public class ExternalAuth
     public string Roles { get; set; } = "SendMessageToGroup JoinOrLeaveGroup";
     public string JsonWebKeySetUrlPath { get; set; } = ".well-known/jwks";
     public bool DisableSslCheck { get; set; }
+    public bool Enabled { get; set; } 
 }
 
 public class Auth

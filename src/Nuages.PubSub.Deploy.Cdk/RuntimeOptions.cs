@@ -20,6 +20,7 @@ public class ExternalAuth
     public string Roles { get; set; } = "SendMessageToGroup JoinOrLeaveGroup";
     public string JsonWebKeySetUrlPath { get; set; } = ".well-known/jwks";
     public bool DisableSslCheck { get; set; }
+    public bool Enabled { get; set; }
 }
 
 public class Auth
