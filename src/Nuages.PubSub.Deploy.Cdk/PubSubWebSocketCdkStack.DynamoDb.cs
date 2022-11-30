@@ -8,7 +8,7 @@ namespace Nuages.PubSub.Deploy.Cdk;
 public partial class PubSubWebSocketCdkStack
 {
     // ReSharper disable once VirtualMemberNeverOverridden.Global
-    protected virtual void CreateTables()
+    private void CreateTables()
     {
         Console.WriteLine("CreateTables");
         
@@ -30,7 +30,7 @@ public partial class PubSubWebSocketCdkStack
         pubSubGroupUser.AddLocalSecondaryIndex(Get_GroupUser_UserId_LSIndexProps());
     }
 
-    protected virtual LocalSecondaryIndexProps Get_GroupUser_UserId_LSIndexProps()
+    private static LocalSecondaryIndexProps Get_GroupUser_UserId_LSIndexProps()
     {
         return new LocalSecondaryIndexProps
         {
@@ -44,7 +44,7 @@ public partial class PubSubWebSocketCdkStack
         };
     }
 
-    protected virtual Table CreateGroupUserTable()
+    private Table CreateGroupUserTable()
     {
         return new Table(this, "pub_sub_group_user", new TableProps
         {
@@ -64,7 +64,7 @@ public partial class PubSubWebSocketCdkStack
         });
     }
 
-    protected virtual LocalSecondaryIndexProps Get_Group_UserId_LSIndexProps()
+    private static LocalSecondaryIndexProps Get_Group_UserId_LSIndexProps()
     {
         return new LocalSecondaryIndexProps
         {
@@ -78,7 +78,7 @@ public partial class PubSubWebSocketCdkStack
         };
     }
 
-    protected virtual LocalSecondaryIndexProps Get_Group_GroupAndUserId_LSIndexProps()
+    private static LocalSecondaryIndexProps Get_Group_GroupAndUserId_LSIndexProps()
     {
         return new LocalSecondaryIndexProps
         {
@@ -92,7 +92,7 @@ public partial class PubSubWebSocketCdkStack
         };
     }
 
-    protected virtual LocalSecondaryIndexProps Get_Group_ConnectionId_LSIndexProps()
+    private static LocalSecondaryIndexProps Get_Group_ConnectionId_LSIndexProps()
     {
         return new LocalSecondaryIndexProps
         {
@@ -106,7 +106,7 @@ public partial class PubSubWebSocketCdkStack
         };
     }
 
-    protected virtual Table CreateGroupTable()
+    private Table CreateGroupTable()
     {
         return new Table(this, "pub_sub_group_connection", new TableProps
         {
@@ -127,7 +127,8 @@ public partial class PubSubWebSocketCdkStack
     }
 
     // ReSharper disable once UnusedMethodReturnValue.Global
-    protected virtual Table CreateAckTable()
+    // ReSharper disable once UnusedMethodReturnValue.Local
+    private Table CreateAckTable()
     {
         return new Table(this, "pub_sub_ack", new TableProps
         {
@@ -147,7 +148,7 @@ public partial class PubSubWebSocketCdkStack
         });
     }
 
-    protected virtual LocalSecondaryIndexProps Get_Connection_UserId_LSIndexProps()
+    private static LocalSecondaryIndexProps Get_Connection_UserId_LSIndexProps()
     {
         return new LocalSecondaryIndexProps
         {
@@ -161,7 +162,7 @@ public partial class PubSubWebSocketCdkStack
         };
     }
 
-    protected virtual Table CreateConnectionTable()
+    private Table CreateConnectionTable()
     {
         return new Table(this, "pub_sub_connection", new TableProps
         {

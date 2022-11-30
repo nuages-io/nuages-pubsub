@@ -42,20 +42,9 @@ public partial class PubSubWebSocketCdkStack : Stack
         
         stack.BuildStack();
     }
-
-    // // ReSharper disable once UnusedParameter.Local
-    // public PubSubWebSocketCdkStack(Construct scope, string id, IStackProps? props = null) 
-    //     : base(scope, id, props)
-    // {
-    //     WebSocketAsset = "./src/Nuages.PubSub.WebSocket/bin/Release/net6.0/linux-x64/publish";
-    //     ApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
-    //     WebApiHandler = "Nuages.PubSub.API";
-    // }
-    //
     
     protected string? WebSocketAsset { get; set; }
-
-    
+   
     private string? OnConnectHandler { get; set; }
     private string? OnDisconnectHandler { get; set; }
     private string? OnAuthrorizeHandler { get; set; }
@@ -87,18 +76,16 @@ public partial class PubSubWebSocketCdkStack : Stack
 
     public string StageName { get; set; } = "prod";
 
-    public string WebApiHandler { get; set; } =
-        "Nuages.PubSub.API::Nuages.PubSub.API.LambdaEntryPoint::FunctionHandlerAsync";
+    public string WebApiHandler { get; set; }
     
     public string NuagesPubSubRole { get; set; } = "Role";
     
     protected ConfigOptions ConfigOptions { get; set; } = new();
     protected RuntimeOptions RuntimeOptions { get; set; } = new();
     
-    
     public List<CfnRoute> Routes { get; set; } = new();
 
-    protected virtual string MakeId(string id)
+    protected string MakeId(string id)
     {
         return $"{StackName}-{id}";
     }
@@ -114,7 +101,7 @@ public partial class PubSubWebSocketCdkStack : Stack
     {
         WebSocketAsset = "./src/Nuages.PubSub.WebSocket/bin/Release/net6.0/linux-x64/publish";
         ApiAsset = "./src/Nuages.PubSub.API/bin/Release/net6.0/linux-x64/publish";
-        //WebApiHandler = "Nuages.PubSub.API";
+        WebApiHandler = "Nuages.PubSub.API";
     }
     
     private IDatabaseProxy? Proxy
@@ -195,7 +182,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         }
     }
 
-    protected virtual SecurityGroup CreateVpcSecurityGroup()
+    protected SecurityGroup CreateVpcSecurityGroup()
     {
         return new SecurityGroup(this, MakeId("WSSSecurityGroup"), new SecurityGroupProps
         {
@@ -207,11 +194,9 @@ public partial class PubSubWebSocketCdkStack : Stack
 
     
     // ReSharper disable once UnusedMember.Global
-    public virtual void BuildStack()
+    public void BuildStack()
     {
         NormalizeHandlerName();
-        
-        //ReadContextVariables();
         
         var api = CreateWebSocketApi();
 
@@ -239,8 +224,6 @@ public partial class PubSubWebSocketCdkStack : Stack
 
         var leaveFunction = CreateWebSocketFunction(LeaveFunctionName, LeaveHandler, role, api);
         CreateRoute("Leave", LeaveRouteKey, api, leaveFunction);
-
-        CreateAdditionalFunctionsAndRoutes(api);
 
         var deployment = CreateDeployment(api);
 
@@ -304,12 +287,7 @@ public partial class PubSubWebSocketCdkStack : Stack
             LeaveHandler = $"{functionName}::LeaveHandlerAsync";
     }
 
-    // ReSharper disable once UnusedParameter.Global
-    protected virtual void CreateAdditionalFunctionsAndRoutes(CfnApi api)
-    {
-    }
-
-    protected virtual CfnDeployment CreateDeployment(CfnApi api)
+    protected CfnDeployment CreateDeployment(CfnApi api)
     {
         var deployment = new CfnDeployment(this, "NuagesPubSubDeployment", new CfnDeploymentProps
         {
@@ -324,7 +302,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         return deployment;
     }
 
-    protected virtual void CreateApiMapping(CfnDomainName apiGatewayDomainName, CfnApi api, CfnStage stage)
+    protected void CreateApiMapping(CfnDomainName apiGatewayDomainName, CfnApi api, CfnStage stage)
     {
         Console.WriteLine($"CreateApiMapping domainName = {apiGatewayDomainName.DomainName}");
         
@@ -337,14 +315,14 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual void GrantPermissions(Function func)
+    protected static void GrantPermissions(Function func)
     {
         var principal = new ServicePrincipal("apigateway.amazonaws.com");
 
         func.GrantInvoke(principal);
     }
 
-    protected virtual CfnStage CreateStage(CfnApi api, CfnDeployment deployment)
+    protected CfnStage CreateStage(CfnApi api, CfnDeployment deployment)
     {
         return new CfnStage(this, "Stage", new CfnStageProps
         {
@@ -354,7 +332,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual void CreateConnectRoute(CfnApi api, CfnAuthorizer authorizer, Function onConnectFunction)
+    protected void CreateConnectRoute(CfnApi api, CfnAuthorizer authorizer, Function onConnectFunction)
     {
         var route = new CfnRoute(this, "ConnectRoute", new CfnRouteProps
         {
@@ -370,7 +348,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         Routes.Add(route);
     }
 
-    protected virtual void CreateRoute(string name, string key, CfnApi api, Function func)
+    protected void CreateRoute(string name, string key, CfnApi api, Function func)
     {
         // ReSharper disable once UnusedVariable
         var route = new CfnRoute(this, name + "Route", new CfnRouteProps
@@ -383,7 +361,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual CfnIntegration CreateIntegration(string name, string apiId, Function func)
+    protected CfnIntegration CreateIntegration(string name, string apiId, Function func)
     {
         return new CfnIntegration(this, name, new CfnIntegrationProps
         {
@@ -394,7 +372,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual CfnAuthorizer CreateAuthorizer(CfnApi api, Function onAuthorizeFunction)
+    protected CfnAuthorizer CreateAuthorizer(CfnApi api, Function onAuthorizeFunction)
     {
         var name = MakeId(AuthorizerName);
 
@@ -412,7 +390,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         return authorizer;
     }
 
-    protected virtual CfnApi CreateWebSocketApi()
+    protected CfnApi CreateWebSocketApi()
     {
         var name = MakeId(ApiNameWebSocket);
 
@@ -425,7 +403,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         return api;
     }
 
-    protected virtual Function CreateWebSocketFunction(string name, string? handler, Role role, CfnApi api)
+    protected Function CreateWebSocketFunction(string name, string? handler, Role role, CfnApi api)
     {
         if (string.IsNullOrEmpty(handler))
             throw new Exception($"Handler for {name} must be set");
@@ -482,7 +460,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         return variables;
     }
 
-    protected virtual Role CreateWebSocketRole()
+    protected  Role CreateWebSocketRole()
     {
         var role = new Role(this, NuagesPubSubRole, new RoleProps
         {
@@ -498,7 +476,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         return role;
     }
 
-    protected virtual ManagedPolicy CreateDynamoDbRolePolicy(string suffix = "")
+    protected ManagedPolicy CreateDynamoDbRolePolicy(string suffix = "")
     {
         return new ManagedPolicy(this, MakeId("DynamoDbRole" + suffix), new ManagedPolicyProps
         {
@@ -517,7 +495,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual ManagedPolicy CreateExecuteApiConnectionRolePolicy(string suffix = "")
+    protected ManagedPolicy CreateExecuteApiConnectionRolePolicy(string suffix = "")
     {
         return new ManagedPolicy(this, MakeId("ExecuteApiConnectionRole" + suffix), new ManagedPolicyProps
         {
@@ -536,7 +514,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual ManagedPolicy CreateSystemsManagerPolicy(string suffix = "")
+    protected ManagedPolicy CreateSystemsManagerPolicy(string suffix = "")
     {
         return new ManagedPolicy(this, MakeId("SystemsManagerParametersRole" + suffix), new ManagedPolicyProps
         {
@@ -556,7 +534,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
     
-    protected virtual ManagedPolicy CreateSecretsManagerPolicy(string suffix = "")
+    protected ManagedPolicy CreateSecretsManagerPolicy(string suffix = "")
     {
         return new ManagedPolicy(this, MakeId("SecretsManagerRole" + suffix), new ManagedPolicyProps
         {
@@ -575,7 +553,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
+    protected ManagedPolicy CreateLambdaBasicExecutionRolePolicy(string suffix = "")
     {
         var permissions = new List<string>
         {
@@ -628,7 +606,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         return tok[0] + "." + tok[1];
     }
 
-    protected virtual void CreateS3RecordSet(string domainName, CfnDomainName apiGatewayDomainName)
+    protected void CreateS3RecordSet(string domainName, CfnDomainName apiGatewayDomainName)
     {
         Console.WriteLine($"CreateS3RecordSet domainName = {domainName}");
         
@@ -651,7 +629,7 @@ public partial class PubSubWebSocketCdkStack : Stack
         });
     }
 
-    protected virtual CfnDomainName CreateApiGatewayDomainName(string certficateArn, string domainName)
+    protected CfnDomainName CreateApiGatewayDomainName(string certficateArn, string domainName)
     {
         Console.WriteLine($"CreateApiGatewayDomainName certficateArn = {certficateArn}");
         // ReSharper disable once UnusedVariable

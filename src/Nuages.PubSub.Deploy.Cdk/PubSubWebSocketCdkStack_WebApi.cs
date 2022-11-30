@@ -15,7 +15,7 @@ namespace Nuages.PubSub.Deploy.Cdk;
 
 public partial class PubSubWebSocketCdkStack
 {
-    protected string? ApiAsset { get; set; }
+    private string? ApiAsset { get; }
 
     private void CreateWebApi(string url)
     {
@@ -98,7 +98,7 @@ public partial class PubSubWebSocketCdkStack
         usagePlan.AddApiKey(apiKey);
     }
 
-    protected virtual void AddEventSources(Function func)
+    private static void AddEventSources(IFunction func)
     {
         func.AddEventSource(new ApiEventSource("ANY", "/{proxy+}", new MethodOptions
         {
@@ -154,7 +154,7 @@ public partial class PubSubWebSocketCdkStack
         }
     }
 
-    protected virtual SecurityGroup CreateVpcApiSecurityGroup()
+    private SecurityGroup CreateVpcApiSecurityGroup()
     {
         Console.WriteLine("CreateVpcApiSecurityGroup");
         
@@ -166,7 +166,7 @@ public partial class PubSubWebSocketCdkStack
         });
     }
 
-    protected virtual Function CreateWebApiFunction(string url, Role role)
+    private Function CreateWebApiFunction(string url, IRole role)
     {
         Console.WriteLine($"CreateWebApiFunction url = {url}");
         
@@ -224,7 +224,7 @@ public partial class PubSubWebSocketCdkStack
         return variables;
     }
 
-    protected virtual Role CreateWebApiRole()
+    private Role CreateWebApiRole()
     {
         var role = new Role(this, "RoleWebApi", new RoleProps
         {
