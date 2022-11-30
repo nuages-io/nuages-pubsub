@@ -2,6 +2,7 @@
 using Amazon.CDK;
 using Microsoft.Extensions.Configuration;
 using Nuages.AWS.Secrets;
+using Nuages.PubSub.Cdk;
 using Nuages.Web;
 
 namespace Nuages.PubSub.Deploy.Cdk;
@@ -42,18 +43,12 @@ sealed class Program
         var secretProvider = new AWSSecretProvider();
         secretProvider.TransformSecrets(configManager);
         
-        var options = configuration.Get<ConfigOptions>()!;
+        var options = configuration.GetSection("ConfigOptions").Get<ConfigOptions>()!;
+        var runtimeOptions = configuration.GetSection("RuntimeOptions").Get<RuntimeOptions>()!;
         
         var app = new App();
 
-        if (args.Contains("--pipeline"))
-        {
-            PubSubStackWithPipeline.Create(app, options);
-        }
-        else
-        {
-            PubSubStack.CreateStack(app, options);
-        }
+        PubSubStack.CreateStack(app, options, runtimeOptions);
         
         app.Synth();
     }

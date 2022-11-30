@@ -9,7 +9,7 @@ namespace Nuages.PubSub.Deploy.Cdk;
 [ExcludeFromCodeCoverage]
 public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
 {
-    public static void CreateStack(Construct scope, ConfigOptions options)
+    public static void CreateStack(Construct scope, ConfigOptions options, RuntimeOptions runtimeOptions)
     {
         var stack = new PubSubStack(scope, options.StackName, new StackProps
         {
@@ -21,22 +21,13 @@ public class PubSubStack : PubSubWebSocketCdkStack<PubSubFunction>
             }
         })
         {
-            WebSocketDomainName = options.WebSocket.Domain,
-            WebSocketCertificateArn = options.WebSocket.CertificateArn,
-            ApiDomainName = options.Api.Domain,
-            ApiCertificateArn = options.Api.CertificateArn,
-            ApiApiKey = options.Api.ApiKey,
-            VpcId = options.VpcId,
-            SecurityGroupId = options.SecurityGroupId,
-            DatabaseProxyArn = options.DatabaseDbProxy.Arn,
-            DatabaseProxyEndpoint = options.DatabaseDbProxy.Endpoint,
-            DatabaseProxyName = options.DatabaseDbProxy.Name,
-            DatabaseProxyUser = options.DatabaseDbProxy.UserName
+            ConfigOptions = options,
+            RuntimeOptions = runtimeOptions
         };
         
         stack.BuildStack();
     }
-    
+
     // ReSharper disable once UnusedParameter.Local
     private PubSubStack(Construct scope, string id, IStackProps? props = null) 
         : base(scope, id, props)

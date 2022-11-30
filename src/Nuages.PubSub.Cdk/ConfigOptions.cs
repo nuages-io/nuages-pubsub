@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Nuages.PubSub.Deploy.Cdk;
+namespace Nuages.PubSub.Cdk;
 
 [ExcludeFromCodeCoverage]
 public class ConfigOptions

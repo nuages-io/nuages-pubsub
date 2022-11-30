@@ -61,33 +61,9 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     
     public string NuagesPubSubRole { get; set; } = "Role";
     
-    public string? WebSocketDomainName { get; set; }
-    public string? WebSocketCertificateArn { get; set; }
-
-    public string? ApiDomainName { get; set; }
-    public string? ApiCertificateArn { get; set; }
-    public string? ApiApiKey { get; set; }
+    protected ConfigOptions ConfigOptions { get; set; } = new();
+    protected RuntimeOptions RuntimeOptions { get; set; } = new();
     
-    public string? SecurityGroupId { get; set; }
-
-    public string? VpcId { get; set; }
-
-    public string? DataStorage { get; set; }
-    public string? DataConnectionString { get; set; }
-    
-    public string? DatabaseProxyArn { get; set; }
-    public string? DatabaseProxyName { get; set; }
-    public string? DatabaseProxyEndpoint { get; set; }
-    public string? DatabaseProxyUser { get; set; }
-    
-    public string? Auth_Issuer { get; set; }
-    public string? Auth_Audience { get; set; }
-    public string? Auth_Secret { get; set; }
-
-    // public string? ExternalAuth_ValidIssuers { get; set; } 
-    // public string? ExternalAuth_ValidAudiences { get; set; }
-    // public string? ExternalAuth_JsonWebKeySetUrlPath { get; set; } 
-    // public bool? ExternalAuth_DisableSslCheck { get; set; }
     
     public List<CfnRoute> Routes { get; set; } = new();
 
@@ -112,22 +88,22 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     {
         get
         {
-            if (!string.IsNullOrEmpty(DatabaseProxyArn))
+            if (!string.IsNullOrEmpty(ConfigOptions.DatabaseDbProxy.Arn))
             {
-                if (string.IsNullOrEmpty(DatabaseProxyName))
+                if (string.IsNullOrEmpty(ConfigOptions.DatabaseDbProxy.Name))
                     throw new Exception("ProxyName is required");
 
-                if (string.IsNullOrEmpty(DatabaseProxyEndpoint))
+                if (string.IsNullOrEmpty(ConfigOptions.DatabaseDbProxy.Endpoint))
                     throw new Exception("ProxyEndpoint is required");
                 
-                if (string.IsNullOrEmpty(SecurityGroupId))
+                if (string.IsNullOrEmpty(ConfigOptions.SecurityGroupId))
                     throw new Exception("SecurityGroup is required");
 
                 _proxy ??= DatabaseProxy.FromDatabaseProxyAttributes(this, MakeId("Proxy"), new DatabaseProxyAttributes
                 {
-                    DbProxyArn = DatabaseProxyArn,
-                    DbProxyName = DatabaseProxyName,
-                    Endpoint = DatabaseProxyEndpoint,
+                    DbProxyArn = ConfigOptions.DatabaseDbProxy.Arn,
+                    DbProxyName = ConfigOptions.DatabaseDbProxy.Name,
+                    Endpoint = ConfigOptions.DatabaseDbProxy.Endpoint,
                     SecurityGroups = new[] { SecurityGroup! }
                 });
 
@@ -141,12 +117,12 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     {
         get
         {
-            if (!string.IsNullOrEmpty(VpcId) && _vpc == null)
+            if (!string.IsNullOrEmpty(ConfigOptions.VpcId) && _vpc == null)
             {
                 Console.WriteLine("Vpc.FromLookup");
                 _vpc = Vpc.FromLookup(this, "Vpc", new VpcLookupOptions
                 {
-                    VpcId = VpcId
+                    VpcId = ConfigOptions.VpcId
                 });
             }
 
@@ -158,8 +134,8 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     {
         get
         {
-            if (_securityGroup == null && !string.IsNullOrEmpty(SecurityGroupId))
-                _securityGroup = Amazon.CDK.AWS.EC2.SecurityGroup.FromLookupById(this, "WebApiSGDefault", SecurityGroupId!);
+            if (_securityGroup == null && !string.IsNullOrEmpty(ConfigOptions.SecurityGroupId))
+                _securityGroup = Amazon.CDK.AWS.EC2.SecurityGroup.FromLookupById(this, "WebApiSGDefault", ConfigOptions.SecurityGroupId!);
 
             return _securityGroup;
         }
@@ -169,7 +145,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
     {
         get
         {
-            if (_vpcSecurityGroup == null && !string.IsNullOrEmpty(VpcId))
+            if (_vpcSecurityGroup == null && !string.IsNullOrEmpty(ConfigOptions.VpcId))
             {
                 _vpcSecurityGroup ??= CreateVpcSecurityGroup();
             }
@@ -237,16 +213,16 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
         var stage = CreateStage(api, deployment);
 
-        if (!string.IsNullOrEmpty(WebSocketDomainName))
+        if (!string.IsNullOrEmpty(ConfigOptions.WebSocket.Domain))
         {
-            var apiGatewayDomainName = CreateApiGatewayDomainName(WebSocketCertificateArn!, WebSocketDomainName);
-            CreateS3RecordSet(WebSocketDomainName, apiGatewayDomainName);
+            var apiGatewayDomainName = CreateApiGatewayDomainName(ConfigOptions.WebSocket.CertificateArn!, ConfigOptions.WebSocket.Domain);
+            CreateS3RecordSet(ConfigOptions.WebSocket.Domain, apiGatewayDomainName);
             CreateApiMapping(apiGatewayDomainName, api, stage);
 
             // ReSharper disable once UnusedVariable
             var output2 = new CfnOutput(this, "NuagesPubSubCustomURI", new CfnOutputProps
             {
-                Value = $"wss://{WebSocketDomainName}",
+                Value = $"wss://{ConfigOptions.WebSocket.Domain}",
                 Description = "The Custom WSS Protocol URI to connect to"
             });
         }
@@ -441,14 +417,9 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
 
         GrantPermissions(func);
 
-        Proxy?.GrantConnect(func, DatabaseProxyUser);
+        Proxy?.GrantConnect(func, ConfigOptions.DatabaseDbProxy.UserName);
 
         return func;
-    }
-
-    // ReSharper disable once UnusedParameter.Global
-    protected virtual void AddWebSocketEnvironmentVariables(Dictionary<string, string> environmentVariables)
-    {
     }
     
     private Dictionary<string, string> GetEnvVariables(CfnApi api)
@@ -460,35 +431,20 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             { "Nuages__PubSub__StackName", StackName }
         };
 
-        if (!string.IsNullOrEmpty(Auth_Audience))
-            variables.Add("Nuages__PubSub__Auth__Audience",Auth_Audience);
+        if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Audience))
+            variables.Add("Nuages__PubSub__Auth__Audience",RuntimeOptions.Auth.Audience);
         
-        if (!string.IsNullOrEmpty(Auth_Issuer))
-            variables.Add("Nuages__PubSub__Auth__Issuer", Auth_Issuer);
+        if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Issuer))
+            variables.Add("Nuages__PubSub__Auth__Issuer", RuntimeOptions.Auth.Issuer);
         
-        if (!string.IsNullOrEmpty(Auth_Secret))
-            variables.Add("Nuages__PubSub__Auth__Secret",Auth_Secret);
+        if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Secret))
+            variables.Add("Nuages__PubSub__Auth__Secret",RuntimeOptions.Auth.Secret);
         
-        if (!string.IsNullOrEmpty(DataStorage))
-            variables.Add("Nuages__PubSub__Data__Storage",DataStorage);
+        if (!string.IsNullOrEmpty(RuntimeOptions.Data.Storage))
+            variables.Add("Nuages__PubSub__Data__Storage", RuntimeOptions.Data.Storage);
         
-        if (!string.IsNullOrEmpty(DataConnectionString))
-            variables.Add("Nuages__PubSub__Data__ConnectionString",DataConnectionString);
-        
-        
-        // if (!string.IsNullOrEmpty(ExternalAuth_ValidAudiences))
-        //     variables.Add("Nuages__PubSub__ExternalAuth__ValidAudiences",ExternalAuth_ValidAudiences);
-        //
-        // if (!string.IsNullOrEmpty(ExternalAuth_ValidIssuers))
-        //     variables.Add("Nuages__PubSub__ExternalAuth__ValidIssuers",ExternalAuth_ValidIssuers);
-        //
-        // if (!string.IsNullOrEmpty(ExternalAuth_JsonWebKeySetUrlPath))
-        //     variables.Add("Nuages__PubSub__ExternalAuth__JsonWebKeySetUrlPath",ExternalAuth_JsonWebKeySetUrlPath);
-        //
-        // if (ExternalAuth_DisableSslCheck.HasValue)
-        //     variables.Add("Nuages__PubSub__ExternalAuth__DisableSslCheck",ExternalAuth_DisableSslCheck.Value.ToString());
-        
-        AddWebSocketEnvironmentVariables(variables);
+        if (!string.IsNullOrEmpty(RuntimeOptions.Data.ConnectionString))
+            variables.Add("Nuages__PubSub__Data__ConnectionString", RuntimeOptions.Data.ConnectionString);
         
         return variables;
     }
@@ -595,7 +551,7 @@ public partial class PubSubWebSocketCdkStack<T> : Stack
             "logs:PutLogEvents"
         };
 
-        if (!string.IsNullOrEmpty(VpcId))
+        if (!string.IsNullOrEmpty(ConfigOptions.VpcId))
         {
             permissions.AddRange(new List<string>
             {

@@ -27,24 +27,24 @@ public partial class PubSubWebSocketCdkStack<T>
 
         var webApi = (RestApi)Node.Children.Single(c => c.GetType() == typeof(RestApi));
         
-        if (!string.IsNullOrEmpty(ApiDomainName))
+        if (!string.IsNullOrEmpty(ConfigOptions.Api.Domain))
         {
             var apiGatewayDomainName = new CfnDomainName(this, "NuagesApiDomainName", new CfnDomainNameProps
             {
-                DomainName = ApiDomainName,
+                DomainName = ConfigOptions.Api.Domain,
                 DomainNameConfigurations = new[]
                 {
                     new CfnDomainName.DomainNameConfigurationProperty
                     {
                         EndpointType = "REGIONAL",
-                        CertificateArn = ApiCertificateArn
+                        CertificateArn = ConfigOptions.Api.CertificateArn
                     }
                 }
             });
 
             var hostedZone = HostedZone.FromLookup(this, "LookupApi", new HostedZoneProviderProps
             {
-                DomainName = GetBaseDomain(ApiDomainName)
+                DomainName = GetBaseDomain(ConfigOptions.Api.Domain)
             });
 
             // ReSharper disable once UnusedVariable
@@ -56,7 +56,7 @@ public partial class PubSubWebSocketCdkStack<T>
                     HostedZoneId = apiGatewayDomainName.AttrRegionalHostedZoneId
                 },
                 HostedZoneId = hostedZone.HostedZoneId,
-                Name = ApiDomainName,
+                Name = ConfigOptions.Api.Domain,
                 Type = "A"
             });
 
@@ -92,7 +92,7 @@ public partial class PubSubWebSocketCdkStack<T>
         // ReSharper disable once UnusedVariable
         var apiKey = new ApiKey(this, MakeId("WebApiKey"), new ApiKeyProps
         {
-            Value = ApiApiKey
+            Value = ConfigOptions.Api.ApiKey
         });
 
         usagePlan.AddApiKey(apiKey);
@@ -137,7 +137,7 @@ public partial class PubSubWebSocketCdkStack<T>
     {
         get
         {
-            if (_vpcApiSecurityGroup == null && !string.IsNullOrEmpty(VpcId))
+            if (_vpcApiSecurityGroup == null && !string.IsNullOrEmpty(ConfigOptions.VpcId))
             {
                 _vpcApiSecurityGroup ??= CreateVpcApiSecurityGroup();
             }
@@ -191,14 +191,9 @@ public partial class PubSubWebSocketCdkStack<T>
             SecurityGroups = VpcApiSecurityGroups
         });
 
-        Proxy?.GrantConnect(func, DatabaseProxyUser);
+        Proxy?.GrantConnect(func, ConfigOptions.DatabaseDbProxy.UserName);
         
         return func;
-    }
-
-    // ReSharper disable once UnusedParameter.Global
-    protected virtual void AddWebApiEnvironmentVariables(Dictionary<string, string> environmentVariables)
-    {
     }
     
     private Dictionary<string, string> GetWebApiEnvVariables(string url)
@@ -209,24 +204,22 @@ public partial class PubSubWebSocketCdkStack<T>
             { "Nuages__PubSub__Region", Aws.REGION },
             { "Nuages__PubSub__StackName", StackName }
         };
+        if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Audience))
+            variables.Add("Nuages__PubSub__Auth__Audience",RuntimeOptions.Auth.Audience);
+        
+        if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Issuer))
+            variables.Add("Nuages__PubSub__Auth__Issuer", RuntimeOptions.Auth.Issuer);
+        
+        if (!string.IsNullOrEmpty(RuntimeOptions.Auth.Secret))
+            variables.Add("Nuages__PubSub__Auth__Secret",RuntimeOptions.Auth.Secret);
 
-        if (!string.IsNullOrEmpty(Auth_Audience))
-            variables.Add("Nuages__PubSub__Auth__Audience",Auth_Audience);
         
-        if (!string.IsNullOrEmpty(Auth_Issuer))
-            variables.Add("Nuages__PubSub__Auth__Issuer", Auth_Issuer);
+        if (!string.IsNullOrEmpty(RuntimeOptions.Data.Storage))
+            variables.Add("Nuages__PubSub__Data__Storage", RuntimeOptions.Data.Storage);
         
-        if (!string.IsNullOrEmpty(Auth_Secret))
-            variables.Add("Nuages__PubSub__Auth__Secret",Auth_Secret);
+        if (!string.IsNullOrEmpty(RuntimeOptions.Data.ConnectionString))
+            variables.Add("Nuages__PubSub__Data__ConnectionString", RuntimeOptions.Data.ConnectionString);
         
-        if (!string.IsNullOrEmpty(DataStorage))
-            variables.Add("Nuages__PubSub__Data__Storage",DataStorage);
-        
-        if (!string.IsNullOrEmpty(DataConnectionString))
-            variables.Add("Nuages__PubSub__Data__ConnectionString", DataConnectionString);
-        
-        
-        AddWebApiEnvironmentVariables(variables);
         
         return variables;
     }
