@@ -23,8 +23,7 @@ Nuages.PubSub is a WebSocket services based on API Gateway WebSocket. It provide
 
 ## Prerequisites
 
-**IMPORTANT!** You need to have CDK configured on your machine
-**IMPORTANT!** You need .NET 6.
+**IMPORTANT!** You need .NET 6. You need to have CDK configured on your machine
 
 https://docs.aws.amazon.com/cdk/v2/guide/work-with.html#work-with-prerequisites
 
@@ -209,6 +208,6 @@ Additional capabilities are offered using the API Endpoint.
 
 ## API / SDK
 
-API Documentaton is available here https://app.swaggerhub.com/apis-docs/Nuages/NuagesPubSub/1.0.0#/
+API Documentaton is available here https://app.swaggerhub.com/apis/Nuages/nuages-pub_sub/v1
 
 C# SDK is available here https://www.nuget.org/packages/Nuages.PubSub.API.Sdk/
