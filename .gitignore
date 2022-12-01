@@ -22,3 +22,5 @@ tailwind-output.css
 cdk.out
 nlog.config
 cdk.context.json
+*.sh
+*.bat
