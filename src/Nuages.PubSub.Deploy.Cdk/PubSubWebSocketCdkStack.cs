@@ -297,7 +297,7 @@ public partial class PubSubWebSocketCdkStack : Stack
 
         foreach (var route in Routes)
         {
-            deployment.AddDependsOn(route);
+            deployment.AddDependency(route);
         }
 
         return deployment;
